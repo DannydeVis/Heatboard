@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0F0D0C">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFaklEQVR42u3d225UVRjA8b0mfYDRZwAvaasxxqi0lHI2RCQQEY/4VF6IR8RAEEM4FCgtrSViCkW9VJ6hzhOwvEASUEr3cWbtze+XzCWk7Pn3y7d299CQJSIuH4gZrRW2XwpJfB0jC3hpv4C7HPjU5dD5oOPNfSJ+HuOevhI6E3RcEDGPBTfTbNyN/eXxxl4hs3F4O+dCK4KO83uETP4AZ6+GZIOO13eLmeIR7roWkgo6XtslZKrHuPt6GHnQcW5WzNQX9d75MLKg4xUx00DU+8pHXeoPxss7hUzzYe+/ERoPOl6aETPDi/rAQmgs6Hhxh5gZftRvL4bag44XpsXM6KI+eDNXq2P5x7OLSgvCz9XyT1NyZvSxvrMUKgcdz28XM+lEfWg5lA46nntLzKQX9eGfQ7kdOuqZjuzQ8ewbaibdcI/cCrmDjmfETAuiPvr/qMesGnR65YinX1cz7Qn42C/h2RPadKYrEzqeek3NtC/i47+Gp09o05mW+0/QLggdWTni16/KmfaG/PFqeHJCWzfo1MohaLqycsSTL6uZ9sd8Yi2MOQzSvZXjgaLpUtD2Z7qydsTPx9VMhya06YygIdWgH7gImNAgaBA0CBqHQjChQdAgaMi5QwsaExpSDdpFwIQGQYNDIZjQCBq6EbSLgAkNDoVgQoOgcSgEExpMaBA05Avah2QxoUHQMIygg6uACQ2CBkGDoBE0CBoEDYIGQSNoEDQkE7RnOTChQdDQfNA+sYIJDYIGQYOgETQIGgQNgoa8QXuWAxMaBA2CBkEjaBA0CBoEDfmC9okVTOhi+gt/u9Jkg5kX2ht0f1HEbDzYBjuaibuXxZDV/RIzuQZeA+3VOqH7S+veKfL3cvNhL4OpF+uc0FlWx0vMVBqENXVYS9D9ZTFTMerleqJ2H5p01NBi5QndXzGdqWlKr6yPduXo3xIzNUd9a93KgdXjEUHTqaBLrxz929YNGlo7bq9bOTClrRx0MWj/LwcpBh3KBu3aYeWARIP2iRVS9KBs0CY0Vg5INejMXQ5SFASNoN2HJtGVw4TGhBY0goaUg+65diSoVzJoh0IcCsEODYJG0HZo7NDQkZXDbTtSVPa2nQmNQyE4FIJDISa0oBE0dGSHdtuOFHdot+0woQWNoEHQMKRDoaBJ8VBYrsteWF0JD78bir6g6Qld7BVWV8LYv127fiSm9G278vsKJHgoFDTdCbqXZVkWVhdDFkNW6AVNHwoLvMLqYnhsQpvSdGrlEDQdWjmyLMvCnfngth1pBZ3zdt2d+fCUCZ1lnrwjnR26XIu9st8Vg5fedNFpxMO2ym0LTwQd7s5ZO2jXunF3LmxwKHQ4pN0Hwg3/ZHzlQO5fqtX/c8n1p8Z1Yyp/vHcvhU126EdF57+hPdg67V2gnpi3Tlf+4d5Tgw5rF+3SpL07r10MhZeV+PLB/KvHXwveDypM55n82a9d2LDbTW729XK/BltnvSuUjHm2UGuVjpNx8lDh37rcv3/du8TmIW/ZVXwpuXc+VL4/EiffLRH1Ne8Yz4h5d4mYf9y019wnujh5OJb94vv3r3oHyQZb9pQ/Lt47l6vVsWIn0LL/kL3eTYaiUKVx8kh0yRh6pPfOhkaCzrIsixNHRc3wYv7tTKFGS+0RceI9UTOEmH8o3GelH/PFiWPCpoGQT5fusvLPrePE+6Kmxpi/r9RkLQ9ixInjoqaGmE9V7rHWJ4vi+AfCpniEv39XW4e1PyoXxz8UNQVi/rbWBht79jOOfyRsnhHyN4201/jDzHH8E2HzWMhfNdrcUJ/Oj9s+FffzGPEfXw6ts5F93CRuOyHuTkd8ciRtJfP5qbjtM4G3OuAvkmjpH8nDeht+sicpAAAAAElFTkSuQmCC">
+<meta name="mobile-web-app-capable" content="yes">
+
+<title>HeatBoard · Fitness Race Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;500;600;700;800&family=Saira+Condensed:wght@600;700;800&family=Chivo+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   HEATBOARD — "a scoreboard that heats up"
+   Warm near-black base · thermal heat-scale · Saira + Chivo Mono
+   The lane strip glows from cold ember to white-hot as it fills.
+   ============================================================ */
+:root{
+  /* base — warm near-black, never pure grey */
+  --void:#0F0D0C;
+  --panel:#1A1614;
+  --panel-2:#221D1A;
+  --line:#332B27;
+  --line-soft:#28221F;
+  --paper:#1A1614;
+  --ink:#F5EFEA;
+  --muted:#9C8F86;
+  --muted-dim:#6E635C;
+
+  /* THE HEAT SCALE — the only colour in the product */
+  --h-cold:#FFC24B;   /* gold   — early */
+  --h-warm:#FF7A1A;   /* orange — mid   */
+  --h-hot:#FF3B1F;    /* red    — late  */
+  --h-white:#FF2E63;  /* magenta— finish / hottest */
+  --heat-grad:linear-gradient(90deg, var(--h-cold), var(--h-warm) 45%, var(--h-hot) 78%, var(--h-white));
+
+  --go:var(--h-white);
+  --danger:#C7524A;
+  --radius:14px;
+  --radius-sm:9px;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 30px rgba(0,0,0,.35);
+  --glow:0 0 22px rgba(255,122,26,.28);
+  --font-ui:'Saira', system-ui, -apple-system, sans-serif;
+  --font-cond:'Saira Condensed','Saira', system-ui, sans-serif;
+  --font-mono:'Chivo Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-ui);
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255,122,26,.06), transparent 60%),
+    var(--void);
+  color:var(--ink);
+  font-size:16px;line-height:1.45;min-height:100vh;
+  padding-bottom:60px;-webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
+::placeholder{color:var(--muted-dim)}
+:focus-visible{outline:2px solid var(--h-warm);outline-offset:2px;border-radius:5px}
+
+/* ============ APP BAR ============ */
+.app-bar{
+  background:linear-gradient(180deg, var(--panel), var(--void));
+  border-bottom:1px solid var(--line);
+  padding:calc(env(safe-area-inset-top, 0px) + 12px) 16px 0;
+  position:sticky;top:0;z-index:50;
+}
+.app-bar-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  max-width:980px;margin:0 auto;padding-bottom:11px;
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-mark{
+  width:26px;height:26px;flex-shrink:0;border-radius:6px;
+  background:var(--heat-grad);position:relative;overflow:hidden;
+  box-shadow:var(--glow);
+}
+.brand-mark::after{
+  content:'';position:absolute;left:2px;right:2px;bottom:2px;top:56%;
+  background:var(--void);border-radius:0 0 4px 4px;
+}
+.brand-name{
+  font-family:var(--font-cond);font-weight:800;
+  font-size:23px;letter-spacing:1px;text-transform:uppercase;line-height:1;
+}
+.brand-name .hot{
+  background:var(--heat-grad);-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.brand-tag{
+  font-family:var(--font-mono);font-size:10px;color:var(--muted);
+  border:1px solid var(--line);border-radius:4px;padding:1px 6px;letter-spacing:1px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.event-name-display{
+  font-size:13px;color:var(--muted);text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;
+}
+.lang-toggle{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-shrink:0}
+.lang-toggle button{
+  padding:6px 11px;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.5px;
+}
+.lang-toggle button.active{background:var(--h-warm);color:var(--void)}
+
+/* ============ TABS ============ */
+.tabs{display:flex;max-width:980px;margin:0 auto;gap:4px}
+.tab{
+  flex:1;padding:12px 4px 14px;text-align:center;
+  font-family:var(--font-cond);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted-dim);position:relative;
+  border-bottom:2px solid transparent;transition:color .15s, border-color .15s;
+}
+.tab .tab-count{
+  font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:1px 6px;margin-left:6px;color:var(--muted);
+}
+.tab.active{color:var(--ink);border-bottom-color:var(--h-warm)}
+.tab.active .tab-count{background:var(--h-warm);color:var(--void);border-color:var(--h-warm)}
+.tab.live-dot::after{
+  content:'';position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;
+  background:var(--h-hot);box-shadow:0 0 8px var(--h-hot);animation:pulse 1.3s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.75)}}
+
+/* ============ LAYOUT ============ */
+.view{display:none;max-width:980px;margin:0 auto;padding:20px 16px 40px}
+.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:19px;margin-bottom:16px;
+}
+.card-title{
+  font-family:var(--font-cond);font-weight:800;font-size:17px;text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:4px;
+}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:15px}
+.field{margin-bottom:15px}
+.field label{
+  display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--muted);margin-bottom:7px;
+}
+.field input[type=text],.field input[type=number],.field select,.field textarea{
+  width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--panel-2);color:var(--ink);
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--h-warm)}
+.field textarea{min-height:110px;font-family:var(--font-mono);font-size:13px;line-height:1.7}
+.hint{font-size:12px;color:var(--muted-dim);margin-top:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > *{flex:1;min-width:120px}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 20px;border-radius:var(--radius-sm);
+  font-family:var(--font-ui);font-size:14px;font-weight:700;letter-spacing:.4px;
+  transition:transform .08s, filter .15s, background .15s;min-height:50px;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--h-warm);color:var(--void);box-shadow:var(--glow)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-dark{background:var(--panel-2);color:var(--ink);border:1px solid var(--line)}
+.btn-dark:hover{border-color:var(--muted-dim)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn-danger-ghost{background:transparent;border:1px solid var(--line);color:var(--danger)}
+.btn-danger-ghost:hover{border-color:var(--danger)}
+.btn-sm{padding:9px 14px;min-height:40px;font-size:13px}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
+
+/* ============ FORMAT PICKER ============ */
+.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.format-grid{grid-template-columns:1fr}}
+.format-opt{
+  border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:15px;
+  text-align:left;background:var(--panel-2);transition:border-color .15s, background .15s;
+}
+.format-opt.selected{border-color:var(--h-warm);background:rgba(255,122,26,.08)}
+.format-opt .fo-name{font-family:var(--font-cond);font-weight:700;font-size:15px;letter-spacing:.5px;margin-bottom:3px}
+.format-opt .fo-desc{font-size:12px;color:var(--muted)}
+
+/* ============ SEGMENT PREVIEW ============ */
+.seg-preview{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.seg-chip{
+  font-family:var(--font-mono);font-size:11px;padding:5px 8px;border-radius:5px;
+  border:1px solid var(--line);color:var(--muted);background:var(--panel-2);
+}
+.seg-chip.station{background:var(--panel-2);color:var(--h-cold);border-color:rgba(255,194,75,.35)}
+
+/* ============ CHIPS ============ */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 13px;border-radius:20px;border:1px solid var(--line);
+  font-size:13px;font-weight:600;background:var(--panel-2);
+}
+.chip .x{color:var(--muted-dim);font-weight:400;font-size:15px;line-height:1;padding:0 2px}
+.chip .x:hover{color:var(--danger)}
+.chip.selectable{cursor:pointer;font-family:var(--font-cond);font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-size:13px}
+.chip.selectable.active{background:var(--ink);color:var(--void);border-color:var(--ink)}
+
+/* ============ ATHLETE LIST ============ */
+.heat-group{margin-bottom:22px}
+.heat-group-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 2px;margin-bottom:9px;border-bottom:1px solid var(--line);
+}
+.heat-group-head h3{
+  font-family:var(--font-cond);font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1px;
+}
+.heat-group-head .hg-count{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.ath-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:11px 12px;margin-bottom:7px;
+}
+.ath-lane{
+  font-family:var(--font-mono);font-size:12px;color:var(--muted);
+  border:1px solid var(--line);border-radius:5px;padding:3px 7px;flex-shrink:0;
+}
+.ath-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ath-div{font-size:12px;color:var(--muted);flex-shrink:0}
+.ath-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{
+  width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:8px;border:1px solid var(--line);font-size:15px;color:var(--muted);
+  background:var(--panel-2);
+}
+.icon-btn:hover{border-color:var(--muted);color:var(--ink)}
+
+/* ============ RACE VIEW ============ */
+.race-clock-card{
+  background:linear-gradient(180deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line);border-radius:var(--radius);
+  padding:24px 18px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;
+}
+.race-clock-card::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:3px;background:var(--heat-grad);opacity:.5;
+}
+.race-heat-label{
+  font-family:var(--font-cond);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);
+}
+.race-clock{
+  font-family:var(--font-mono);font-weight:600;
+  font-size:clamp(56px, 16vw, 96px);line-height:1.02;letter-spacing:-2px;
+  font-variant-numeric:tabular-nums;margin:6px 0 14px;color:var(--muted-dim);
+}
+.race-clock.live{
+  color:var(--h-warm);text-shadow:0 0 30px rgba(255,122,26,.4);
+}
+.race-controls{display:flex;gap:10px;justify-content:center;position:relative}
+.heat-select-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+
+/* Race athlete card */
+.race-ath{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:15px;margin-bottom:11px;box-shadow:var(--shadow);transition:border-color .2s;
+}
+.race-ath.finished{
+  border-color:var(--h-white);
+  background:linear-gradient(180deg, rgba(255,46,99,.10), var(--panel) 60%);
+}
+.race-ath.dnf{opacity:.5}
+.race-ath-top{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+/* big numbered lane label, mockup-style */
+.race-lane-no{
+  font-family:var(--font-mono);font-weight:700;font-size:26px;line-height:1;
+  color:var(--muted-dim);font-variant-numeric:tabular-nums;flex-shrink:0;width:1.6em;text-align:center;
+}
+.race-ath.finished .race-lane-no{color:var(--h-white)}
+.race-ath-idblock{flex:1;min-width:0}
+.race-ath-name{display:block;font-family:var(--font-cond);font-weight:700;font-size:20px;letter-spacing:.3px;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.race-ath-sub{display:block;font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* status badge pill */
+.race-badge{
+  flex-shrink:0;display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-cond);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+  padding:6px 11px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--panel-2);white-space:nowrap;
+}
+.race-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--muted-dim)}
+.race-badge.on-course{color:var(--h-warm);border-color:rgba(255,122,26,.4)}
+.race-badge.on-course .dot{background:var(--h-warm);box-shadow:0 0 7px var(--h-warm);animation:pulse 1.3s ease-in-out infinite}
+.race-badge.done-badge{color:var(--h-white);border-color:rgba(255,46,99,.45);background:rgba(255,46,99,.08)}
+.race-badge.done-badge .dot{background:var(--h-white)}
+.race-badge.dnf-badge{color:var(--danger);border-color:rgba(199,82,74,.4)}
+.race-badge.dnf-badge .dot{background:var(--danger)}
+.race-ath-time{
+  flex-shrink:0;font-family:var(--font-mono);font-size:16px;font-weight:600;color:var(--muted);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.race-ath.finished .race-ath-time{color:var(--h-white);font-size:19px;text-shadow:0 0 16px rgba(255,46,99,.5)}
+
+/* ===== THE SIGNATURE: the lane strip that heats up ===== */
+.lane-strip{display:flex;gap:3px;margin-bottom:14px;padding:3px 0}
+.lane-seg{
+  flex:1;height:17px;border-radius:3px;
+  border:1px solid var(--line);background:var(--panel-2);position:relative;overflow:hidden;
+  transition:box-shadow .3s;
+}
+/* station segments read as slightly taller notches via inner mark */
+.lane-seg.station::after{
+  content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:3px;height:6px;border-radius:2px;background:var(--line);
+}
+/* done segments take a colour along the heat gradient by their position (set inline via --heat) */
+.lane-seg.done{
+  background:var(--heat, var(--h-warm));border-color:var(--heat, var(--h-warm));
+  box-shadow:0 0 12px -1px var(--heat, var(--h-warm)), 0 0 4px var(--heat, var(--h-warm));
+}
+.lane-seg.done.station::after{background:rgba(15,13,12,.55)}
+.lane-seg.current{
+  border-color:var(--ink);
+  animation:segpulse 1.1s ease-in-out infinite;
+}
+@keyframes segpulse{0%,100%{box-shadow:0 0 0 0 rgba(245,239,234,.4)}50%{box-shadow:0 0 0 3px rgba(245,239,234,0)}}
+
+.race-ath-bottom{display:flex;gap:8px;align-items:stretch}
+.split-btn{
+  flex:1;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:var(--radius-sm);
+  padding:15px 12px;min-height:58px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:filter .15s;
+}
+.split-btn:active{transform:scale(.98)}
+.split-btn:hover{border-color:var(--muted-dim)}
+.split-btn .sb-action{font-family:var(--font-cond);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.split-btn .sb-seg{font-family:var(--font-cond);font-weight:700;font-size:16px;letter-spacing:.4px}
+.split-btn.last-seg{background:var(--h-white);border-color:var(--h-white);color:var(--void);box-shadow:0 0 20px rgba(255,46,99,.4)}
+.split-btn.last-seg .sb-action{color:rgba(15,13,12,.7)}
+.race-ath-bottom .icon-btn{width:46px;height:auto;min-height:58px}
+
+/* ============ LEADERBOARD ============ */
+.board-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.board-filters select{
+  padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--panel-2);color:var(--ink);flex:1;min-width:130px;
+}
+.board-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.board-row{
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-sm);
+  margin-bottom:7px;overflow:hidden;transition:border-color .2s;
+}
+.board-row-main{display:flex;align-items:center;gap:13px;padding:13px 14px;width:100%;text-align:left}
+.board-rank{
+  font-family:var(--font-mono);font-weight:700;font-size:18px;width:36px;flex-shrink:0;
+  color:var(--muted-dim);font-variant-numeric:tabular-nums;
+}
+.board-row.podium-1{border-color:var(--h-white);background:linear-gradient(90deg, rgba(255,46,99,.08), var(--panel) 40%)}
+.board-row.podium-1 .board-rank{color:var(--h-white);text-shadow:0 0 14px rgba(255,46,99,.5)}
+.board-info{flex:1;min-width:0}
+.board-name{font-family:var(--font-cond);font-weight:700;font-size:16px;letter-spacing:.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board-meta{font-size:12px;color:var(--muted)}
+.board-time{
+  font-family:var(--font-mono);font-weight:600;font-size:16px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.board-row.podium-1 .board-time{color:var(--h-white)}
+.board-time.progress{color:var(--muted-dim);font-size:13px}
+.board-time.dnf{color:var(--danger);font-size:13px;font-weight:700}
+.board-splits{border-top:1px dashed var(--line);padding:13px 14px;background:var(--panel-2);display:none}
+.board-row.open .board-splits{display:block}
+.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 16px}
+.split-line{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--line-soft)}
+.split-line .sl-name{color:var(--muted)}
+.split-line .sl-time{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.board-splits .btn{margin-top:12px}
+.empty-state{text-align:center;padding:48px 20px;color:var(--muted);font-size:14px}
+.empty-state .es-icon{font-size:36px;margin-bottom:12px;filter:grayscale(.2)}
+
+/* ============ TV MODE ============ */
+.tv-overlay{
+  position:fixed;inset:0;background:var(--void);color:var(--ink);z-index:200;
+  display:none;flex-direction:column;padding:3vh 4vw;
+}
+.tv-overlay.active{display:flex}
+.tv-overlay::before{
+  content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--heat-grad);
+}
+.tv-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:2.5vh}
+.tv-title{font-family:var(--font-cond);font-weight:800;font-size:clamp(24px,3.6vw,48px);text-transform:uppercase;letter-spacing:1.5px}
+.tv-title .hot{background:var(--heat-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tv-clock{
+  font-family:var(--font-mono);font-weight:600;font-size:clamp(26px,4.2vw,56px);
+  color:var(--h-warm);font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(255,122,26,.4);
+}
+.tv-list{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:1vh}
+.tv-row{
+  display:flex;align-items:center;gap:2.5vw;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:1.2vh 2vw;flex:1;min-height:0;max-height:9vh;
+}
+.tv-row:nth-child(1){border-color:var(--h-white);background:linear-gradient(90deg, rgba(255,46,99,.1), var(--panel) 45%)}
+.tv-rank{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(20px,2.8vw,38px);
+  width:2.2em;color:var(--muted-dim);font-variant-numeric:tabular-nums;flex-shrink:0;
+}
+.tv-row:nth-child(1) .tv-rank{color:var(--h-white)}
+.tv-name{flex:1;font-family:var(--font-cond);font-weight:700;font-size:clamp(18px,2.6vw,34px);letter-spacing:.4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv-div{font-size:clamp(11px,1.3vw,17px);color:var(--muted-dim);white-space:nowrap}
+.tv-time{
+  font-family:var(--font-mono);font-weight:600;font-size:clamp(18px,2.8vw,36px);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.tv-row:nth-child(1) .tv-time{color:var(--h-white)}
+.tv-time.progress{color:var(--muted-dim);font-size:clamp(13px,1.9vw,23px)}
+.tv-close{
+  position:absolute;top:14px;right:16px;color:var(--muted);font-size:14px;font-weight:700;
+  border:1px solid var(--line);border-radius:8px;padding:8px 14px;background:var(--panel);z-index:2;
+}
+.tv-strip{display:flex;gap:.35vw;width:16vw;flex-shrink:0}
+.tv-strip .lane-seg{height:1.5vh;border-radius:2px}
+.tv-strip .lane-seg::after{display:none}
+
+/* ============ TOAST & MISC ============ */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+  padding:13px 20px;border-radius:11px;box-shadow:var(--shadow);
+  font-size:14px;font-weight:600;opacity:0;pointer-events:none;
+  transition:opacity .25s, transform .25s;z-index:300;max-width:88vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.setup-footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+details.adv{margin-top:10px}
+details.adv summary{font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:6px 0;list-style:none}
+details.adv summary::-webkit-details-marker{display:none}
+details.adv summary::before{content:'＋ ';color:var(--h-warm);font-weight:700}
+details.adv[open] summary::before{content:'－ '}
+.demo-link{font-size:12.5px;color:var(--h-warm);text-decoration:underline;background:none}
+
+/* ============ LIVE SYNC ============ */
+.live-ind{width:9px;height:9px;border-radius:50%;background:#4A423D;flex-shrink:0;display:none}
+.live-ind.on{display:inline-block;background:#3DD68C;box-shadow:0 0 8px #3DD68C}
+.live-ind.queued{display:inline-block;background:var(--h-cold);box-shadow:0 0 8px var(--h-cold);animation:pulse 1.3s infinite}
+.live-code-big{
+  font-family:var(--font-mono);font-weight:700;font-size:34px;letter-spacing:6px;
+  color:var(--h-warm);text-shadow:0 0 18px rgba(255,122,26,.4);text-align:center;
+  padding:10px 0 4px;
+}
+.live-status-line{font-size:12.5px;color:var(--muted);text-align:center;margin-bottom:12px}
+.judge-picker{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+body.role-judge .hide-judge{display:none !important}
+body.role-judge #tab-athletes{display:none}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<!-- ============ APP BAR ============ -->
+<header class="app-bar">
+  <div class="app-bar-top">
+    <div class="brand">
+      <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
+      <span class="brand-tag">SIM v0.1</span>
+    </div>
+    <div class="event-name-display" id="eventNameDisplay"></div>
+    <span class="live-ind" id="liveDot"></span>
+    <div class="lang-toggle" role="group" aria-label="Taal / Language">
+      <button id="langNL" onclick="setLang('nl')">NL</button>
+      <button id="langEN" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" id="tab-setup" onclick="showView('setup')" data-i18n="tabSetup">Opzet</button>
+    <button class="tab" id="tab-athletes" onclick="showView('athletes')"><span data-i18n="tabAthletes">Atleten</span><span class="tab-count" id="athCount">0</span></button>
+    <button class="tab" id="tab-race" onclick="showView('race')" data-i18n="tabRace">Race</button>
+    <button class="tab" id="tab-board" onclick="showView('board')" data-i18n="tabBoard">Klassement</button>
+  </nav>
+</header>
+
+<!-- ============ SETUP VIEW ============ -->
+<section class="view active" id="view-setup">
+  <div class="card">
+    <div class="card-title" data-i18n="setupTitle">Simulatie opzetten</div>
+    <div class="card-sub" data-i18n="setupSub">Naam, format en divisies. Alles wordt automatisch lokaal opgeslagen op dit apparaat.</div>
+    <div class="field">
+      <label for="eventName" data-i18n="lblEventName">Naam van de simulatie</label>
+      <input type="text" id="eventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim — Gym Rotterdam" oninput="updateEventName(this.value)">
+    </div>
+    <div class="field">
+      <label data-i18n="lblFormat">Format</label>
+      <div class="format-grid">
+        <button class="format-opt" id="fmt-full" onclick="setFormat('full')">
+          <div class="fo-name" data-i18n="fmtFullName">Volledige sim</div>
+          <div class="fo-desc" data-i18n="fmtFullDesc">8× 1 km run + 8 stations, officiële volgorde</div>
+        </button>
+        <button class="format-opt" id="fmt-half" onclick="setFormat('half')">
+          <div class="fo-name" data-i18n="fmtHalfName">Halve sim</div>
+          <div class="fo-desc" data-i18n="fmtHalfDesc">4× run + 4 stations, ideaal voor een training</div>
+        </button>
+        <button class="format-opt" id="fmt-custom" onclick="setFormat('custom')">
+          <div class="fo-name" data-i18n="fmtCustomName">Eigen format</div>
+          <div class="fo-desc" data-i18n="fmtCustomDesc">Stel zelf de segmenten samen</div>
+        </button>
+      </div>
+      <div class="field" id="customSegField" style="display:none;margin-top:12px">
+        <label for="customSegs" data-i18n="lblCustomSegs">Segmenten (één per regel, R = run, S = station)</label>
+        <textarea id="customSegs" data-i18n-ph="phCustomSegs" placeholder="R Run 1 km&#10;S SkiErg 500 m&#10;R Run 1 km&#10;S Wall Balls 50" onchange="updateCustomSegs(this.value)"></textarea>
+        <div class="hint" data-i18n="hintCustomSegs">Begin een regel met R (run) of S (station), gevolgd door de naam.</div>
+      </div>
+      <div class="seg-preview" id="segPreview"></div>
+    </div>
+    <div class="field">
+      <label data-i18n="lblDivisions">Divisies</label>
+      <div class="chips" id="divisionChips"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="text" id="newDivision" data-i18n-ph="phNewDivision" placeholder="Nieuwe divisie…" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px">
+        <button class="btn btn-ghost btn-sm" onclick="addDivision()" data-i18n="btnAddDivision" style="flex:0 0 auto">+ Toevoegen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="dataTitle">Gegevens</div>
+    <div class="card-sub" data-i18n="dataSub">Maak een back-up of zet de simulatie over naar een ander apparaat.</div>
+    <div class="setup-footer">
+      <button class="btn btn-ghost btn-sm" onclick="exportJSON()" data-i18n="btnBackup">Back-up downloaden</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" data-i18n="btnRestore">Back-up laden</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)">
+      <button class="btn btn-danger-ghost btn-sm" onclick="resetAll()" data-i18n="btnResetAll">Alles wissen</button>
+    </div>
+    <details class="adv">
+      <summary data-i18n="demoSummary">Even snel demonstreren?</summary>
+      <p class="hint" data-i18n="demoHint">Laad voorbeelddata met twee heats en uitslagen om de tool aan collega's of een gym te laten zien.</p>
+      <button class="demo-link" onclick="loadDemo()" data-i18n="btnDemo">Demo-data laden</button>
+    </details>
+  </div>
+
+  <div class="card" id="liveCard">
+    <div class="card-title" data-i18n="liveTitle">Live sessie (bèta)</div>
+    <div class="card-sub" data-i18n="liveSub">Judges tikken splits op hun eigen telefoon en alles komt live samen op de TV. Eenmalig een Supabase-koppeling instellen.</div>
+    <div id="liveOff">
+      <details class="adv">
+        <summary data-i18n="advConn">Verbinding instellen</summary>
+        <div class="field" style="margin-top:8px">
+          <label for="sbUrl" data-i18n="lblSbUrl">Supabase URL</label>
+          <input type="text" id="sbUrl" placeholder="https://xxxx.supabase.co">
+        </div>
+        <div class="field">
+          <label for="sbKey" data-i18n="lblSbKey">Supabase anon key</label>
+          <input type="text" id="sbKey" placeholder="eyJ...">
+        </div>
+      </details>
+      <button class="btn btn-primary btn-block" style="margin-top:10px" onclick="startLiveSession()" data-i18n="btnStartLive">Start live sessie (organisator)</button>
+      <div class="row" style="margin-top:10px">
+        <input type="text" id="joinCode" data-i18n-ph="phJoinCode" placeholder="Code, bijv. K7M2PX" style="padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);text-transform:uppercase;font-family:var(--font-mono)">
+        <select id="joinRole" style="padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--ink);max-width:130px">
+          <option value="judge" data-i18n="roleJudge">Judge</option>
+          <option value="tv" data-i18n="roleTV">TV / kijker</option>
+        </select>
+        <button class="btn btn-ghost" onclick="joinLiveSession()" data-i18n="btnJoin" style="flex:0 0 auto">Deelnemen</button>
+      </div>
+    </div>
+    <div id="liveOn" style="display:none">
+      <div class="live-code-big" id="liveCodeShow"></div>
+      <div class="live-status-line" id="liveStatusLine"></div>
+      <div class="setup-footer">
+        <button class="btn btn-ghost btn-sm" id="btnPushSetup" onclick="pushSnapshot(true)" data-i18n="btnPushSetup">Setup opnieuw sturen</button>
+        <button class="btn btn-danger-ghost btn-sm" onclick="leaveLiveSession()" data-i18n="btnLeaveLive">Sessie verlaten</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ATHLETES VIEW ============ -->
+<section class="view" id="view-athletes">
+  <div class="card">
+    <div class="card-title" data-i18n="athTitle">Atleet toevoegen</div>
+    <div class="row">
+      <div class="field" style="flex:2;min-width:170px">
+        <label for="athName" data-i18n="lblAthName">Naam (of duo/team)</label>
+        <input type="text" id="athName" data-i18n-ph="phAthName" placeholder="Bijv. Lisa de Jong">
+      </div>
+      <div class="field">
+        <label for="athDivision" data-i18n="lblAthDivision">Divisie</label>
+        <select id="athDivision"></select>
+      </div>
+      <div class="field" style="max-width:110px">
+        <label for="athHeat" data-i18n="lblAthHeat">Heat</label>
+        <input type="number" id="athHeat" min="1" max="99" value="1" inputmode="numeric">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="addAthlete()" data-i18n="btnAddAthlete">Atleet toevoegen</button>
+    <details class="adv">
+      <summary data-i18n="bulkSummary">Meerdere tegelijk plakken</summary>
+      <div class="field" style="margin-top:8px">
+        <textarea id="bulkPaste" data-i18n-ph="phBulk" placeholder="Naam; Divisie; Heat&#10;Lisa de Jong; Dames Open; 1&#10;Tom Bakker; Heren Open; 1"></textarea>
+        <div class="hint" data-i18n="hintBulk">Eén atleet per regel: Naam; Divisie; Heatnummer. Divisie en heat zijn optioneel.</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="bulkAdd()" data-i18n="btnBulk">Lijst toevoegen</button>
+    </details>
+  </div>
+  <div id="athleteList"></div>
+</section>
+
+<!-- ============ RACE VIEW ============ -->
+<section class="view" id="view-race">
+  <div class="heat-select-bar" id="heatSelectBar"></div>
+  <div class="race-clock-card">
+    <div class="race-heat-label" id="raceHeatLabel"></div>
+    <div class="race-clock" id="raceClock">00:00</div>
+    <div class="race-controls">
+      <button class="btn btn-primary hide-judge" id="btnStartHeat" onclick="startHeat()" data-i18n="btnStartHeat">Start heat</button>
+      <button class="btn btn-ghost hide-judge" id="btnResetHeat" onclick="resetHeat()" style="background:transparent;color:#B9C1C9;border-color:#3A42AB;border-color:#3A424B" data-i18n="btnResetHeat">Reset heat</button>
+    </div>
+  </div>
+  <div id="raceAthletes"></div>
+</section>
+
+<!-- ============ BOARD VIEW ============ -->
+<section class="view" id="view-board">
+  <div class="board-filters">
+    <select id="filterDivision" onchange="renderBoard()"></select>
+    <select id="filterHeat" onchange="renderBoard()"></select>
+  </div>
+  <div class="board-actions">
+    <button class="btn btn-dark btn-sm" onclick="openTV()" data-i18n="btnTV">📺 TV-weergave</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()" data-i18n="btnCSV">CSV exporteren</button>
+  </div>
+  <div id="boardList"></div>
+</section>
+
+<!-- ============ TV OVERLAY ============ -->
+<div class="tv-overlay" id="tvOverlay">
+  <button class="tv-close" onclick="closeTV()" data-i18n="btnCloseTV">Sluiten ✕</button>
+  <div class="tv-head">
+    <div class="tv-title" id="tvTitle">HEAT<span class="hot">BOARD</span></div>
+    <div class="tv-clock" id="tvClock"></div>
+  </div>
+  <div class="tv-list" id="tvList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="shareCanvas" width="1080" height="1350" style="display:none"></canvas>
+
+<script>
+/* ============================================================
+   HEATBOARD v0.1 — single-file fitness race simulator
+   Timing · heats · lane strips · leaderboard · TV mode
+   ============================================================ */
+
+/* ---------- i18n ---------- */
+const I18N = {
+  nl: {
+    tabSetup:'Opzet', tabAthletes:'Atleten', tabRace:'Race', tabBoard:'Klassement',
+    setupTitle:'Simulatie opzetten',
+    setupSub:'Naam, format en divisies. Alles wordt automatisch lokaal opgeslagen op dit apparaat.',
+    lblEventName:'Naam van de simulatie', phEventName:'Bijv. Winter Sim — Gym Rotterdam',
+    lblFormat:'Format',
+    fmtFullName:'Volledige sim', fmtFullDesc:'8× 1 km run + 8 stations, officiële volgorde',
+    fmtHalfName:'Halve sim', fmtHalfDesc:'4× run + 4 stations, ideaal voor een training',
+    fmtCustomName:'Eigen format', fmtCustomDesc:'Stel zelf de segmenten samen',
+    lblCustomSegs:'Segmenten (één per regel, R = run, S = station)',
+    phCustomSegs:'R Run 1 km\nS SkiErg 500 m\nR Run 1 km\nS Wall Balls 50',
+    hintCustomSegs:'Begin een regel met R (run) of S (station), gevolgd door de naam.',
+    lblDivisions:'Divisies', phNewDivision:'Nieuwe divisie…', btnAddDivision:'+ Toevoegen',
+    dataTitle:'Gegevens', dataSub:'Maak een back-up of zet de simulatie over naar een ander apparaat.',
+    btnBackup:'Back-up downloaden', btnRestore:'Back-up laden', btnResetAll:'Alles wissen',
+    demoSummary:'Even snel demonstreren?',
+    demoHint:'Laad voorbeelddata met twee heats en uitslagen om de tool aan collega\u2019s of een gym te laten zien.',
+    btnDemo:'Demo-data laden',
+    liveTitle:'Live sessie (bèta)',
+    liveSub:'Judges tikken splits op hun eigen telefoon en alles komt live samen op de TV. Eenmalig een Supabase-koppeling instellen.',
+    advConn:'Verbinding instellen', lblSbUrl:'Supabase URL', lblSbKey:'Supabase anon key',
+    btnStartLive:'Start live sessie (organisator)', phJoinCode:'Code, bijv. K7M2PX',
+    roleJudge:'Judge', roleTV:'TV / kijker', btnJoin:'Deelnemen',
+    btnPushSetup:'Setup opnieuw sturen', btnLeaveLive:'Sessie verlaten',
+    liveAsHost:'Jij bent organisator', liveAsJudge:'Jij bent judge', liveAsTV:'TV-weergave',
+    liveConnected:'Live verbonden', liveOffline:'Offline, tikken komen in de wachtrij', liveQueuedN:'in wachtrij',
+    myAthletes:'Mijn atleten:', allMine:'Alle',
+    toastLiveStarted:'Live sessie gestart', toastJoined:'Verbonden met sessie', toastLeft:'Sessie verlaten',
+    toastCfgMissing:'Vul eerst Supabase URL en anon key in (Verbinding instellen)',
+    toastCodeMissing:'Vul een sessiecode in', toastSbFail:'Verbinden met Supabase mislukt',
+    toastSetupSent:'Setup naar alle apparaten gestuurd', toastNoSnapshot:'Nog geen setup ontvangen van de organisator',
+    athTitle:'Atleet toevoegen', lblAthName:'Naam (of duo/team)', phAthName:'Bijv. Lisa de Jong',
+    lblAthDivision:'Divisie', lblAthHeat:'Heat', btnAddAthlete:'Atleet toevoegen',
+    bulkSummary:'Meerdere tegelijk plakken',
+    phBulk:'Naam; Divisie; Heat\nLisa de Jong; Dames Open; 1\nTom Bakker; Heren Open; 1',
+    hintBulk:'Eén atleet per regel: Naam; Divisie; Heatnummer. Divisie en heat zijn optioneel.',
+    btnBulk:'Lijst toevoegen',
+    heat:'Heat', athletes_one:'atleet', athletes_other:'atleten',
+    btnStartHeat:'Start heat', btnResetHeat:'Reset heat', btnCloseTV:'Sluiten ✕',
+    btnTV:'📺 TV-weergave', btnCSV:'CSV exporteren',
+    allDivisions:'Alle divisies', allHeats:'Alle heats',
+    statusFinished:'Finish', statusDNF:'DNF', statusBusy:'Onderweg', statusWaiting:'Nog niet gestart',
+    badgeDone:'Klaar', badgeOnCourse:'Onderweg', badgeWaiting:'Wacht', badgeDNF:'DNF',
+    confirmChangeFormat:'Format wijzigen wist alle geregistreerde tijden. Doorgaan?',
+    confirmResetHeat:'Alle tijden van deze heat wissen en de klok terugzetten?',
+    confirmResetAll:'Weet je zeker dat je ALLES wilt wissen? Dit kan niet ongedaan worden gemaakt.',
+    confirmDeleteAth:'Deze atleet verwijderen?',
+    confirmImport:'Back-up laden overschrijft de huidige simulatie. Doorgaan?',
+    promptRename:'Nieuwe naam:', promptHeat:'Naar welke heat? (nummer)',
+    toastAdded:'toegevoegd', toastFinished:'FINISH', toastSaved:'Opgeslagen',
+    toastNeedName:'Vul eerst een naam in', toastNoAthletes:'Nog geen atleten in deze heat',
+    toastHeatStarted:'Heat gestart', toastImported:'Back-up geladen', toastDemo:'Demo-data geladen',
+    toastCardSaved:'Scorekaart gedownload', toastCSV:'CSV gedownload', toastNothingToExport:'Nog geen resultaten om te exporteren',
+    noAthletesYet:'Nog geen atleten. Voeg ze toe via het tabblad Atleten.',
+    btnGoAthletes:'Atleten toevoegen',
+    noBoardYet:'Nog geen deelnemers of resultaten. Het klassement vult zich zodra de eerste splits binnenkomen.',
+    undo:'Splits terugdraaien', dnf:'DNF', dnfUndo:'DNF ongedaan maken', del:'Verwijderen', rename:'Naam wijzigen', moveHeat:'Andere heat',
+    finishAction:'Finish!', nextAction:'Volgende', shareCard:'Scorekaart (PNG)',
+    segTotal:'Totaal', segOf:'van', splitsTitle:'Splits (cumulatief)',
+    csvHeaders:'Positie;Naam;Divisie;Heat;Status;Totaal',
+    demoEventName:'Demo Sim — Rotterdam',
+  },
+  en: {
+    tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
+    setupTitle:'Set up your simulation',
+    setupSub:'Name, format and divisions. Everything is saved automatically on this device.',
+    lblEventName:'Simulation name', phEventName:'E.g. Winter Sim — Gym Rotterdam',
+    lblFormat:'Format',
+    fmtFullName:'Full sim', fmtFullDesc:'8× 1 km run + 8 stations, official order',
+    fmtHalfName:'Half sim', fmtHalfDesc:'4× run + 4 stations, perfect for a class',
+    fmtCustomName:'Custom format', fmtCustomDesc:'Build your own segment list',
+    lblCustomSegs:'Segments (one per line, R = run, S = station)',
+    phCustomSegs:'R Run 1 km\nS SkiErg 500 m\nR Run 1 km\nS Wall Balls 50',
+    hintCustomSegs:'Start a line with R (run) or S (station), followed by the name.',
+    lblDivisions:'Divisions', phNewDivision:'New division…', btnAddDivision:'+ Add',
+    dataTitle:'Data', dataSub:'Make a backup or move this simulation to another device.',
+    btnBackup:'Download backup', btnRestore:'Load backup', btnResetAll:'Erase everything',
+    demoSummary:'Need a quick demo?',
+    demoHint:'Load sample data with two heats and results to show the tool to colleagues or a gym.',
+    btnDemo:'Load demo data',
+    liveTitle:'Live session (beta)',
+    liveSub:'Judges tap splits on their own phones and everything syncs live to the TV. One-time Supabase setup required.',
+    advConn:'Connection settings', lblSbUrl:'Supabase URL', lblSbKey:'Supabase anon key',
+    btnStartLive:'Start live session (organiser)', phJoinCode:'Code, e.g. K7M2PX',
+    roleJudge:'Judge', roleTV:'TV / viewer', btnJoin:'Join',
+    btnPushSetup:'Resend setup', btnLeaveLive:'Leave session',
+    liveAsHost:'You are the organiser', liveAsJudge:'You are a judge', liveAsTV:'TV display',
+    liveConnected:'Live connected', liveOffline:'Offline, taps are queued', liveQueuedN:'queued',
+    myAthletes:'My athletes:', allMine:'All',
+    toastLiveStarted:'Live session started', toastJoined:'Joined session', toastLeft:'Left session',
+    toastCfgMissing:'Enter your Supabase URL and anon key first (Connection settings)',
+    toastCodeMissing:'Enter a session code', toastSbFail:'Could not connect to Supabase',
+    toastSetupSent:'Setup sent to all devices', toastNoSnapshot:'No setup received from the organiser yet',
+    athTitle:'Add athlete', lblAthName:'Name (or duo/team)', phAthName:'E.g. Lisa Jones',
+    lblAthDivision:'Division', lblAthHeat:'Heat', btnAddAthlete:'Add athlete',
+    bulkSummary:'Paste multiple at once',
+    phBulk:'Name; Division; Heat\nLisa Jones; Women Open; 1\nTom Baker; Men Open; 1',
+    hintBulk:'One athlete per line: Name; Division; Heat number. Division and heat are optional.',
+    btnBulk:'Add list',
+    heat:'Heat', athletes_one:'athlete', athletes_other:'athletes',
+    btnStartHeat:'Start heat', btnResetHeat:'Reset heat', btnCloseTV:'Close ✕',
+    btnTV:'📺 TV display', btnCSV:'Export CSV',
+    allDivisions:'All divisions', allHeats:'All heats',
+    statusFinished:'Finish', statusDNF:'DNF', statusBusy:'On course', statusWaiting:'Not started',
+    badgeDone:'Complete', badgeOnCourse:'On course', badgeWaiting:'Waiting', badgeDNF:'DNF',
+    confirmChangeFormat:'Changing the format erases all recorded times. Continue?',
+    confirmResetHeat:'Erase all times in this heat and reset the clock?',
+    confirmResetAll:'Are you sure you want to erase EVERYTHING? This cannot be undone.',
+    confirmDeleteAth:'Delete this athlete?',
+    confirmImport:'Loading a backup overwrites the current simulation. Continue?',
+    promptRename:'New name:', promptHeat:'Move to which heat? (number)',
+    toastAdded:'added', toastFinished:'FINISH', toastSaved:'Saved',
+    toastNeedName:'Enter a name first', toastNoAthletes:'No athletes in this heat yet',
+    toastHeatStarted:'Heat started', toastImported:'Backup loaded', toastDemo:'Demo data loaded',
+    toastCardSaved:'Score card downloaded', toastCSV:'CSV downloaded', toastNothingToExport:'No results to export yet',
+    noAthletesYet:'No athletes yet. Add them in the Athletes tab.',
+    btnGoAthletes:'Add athletes',
+    noBoardYet:'No participants or results yet. The leaderboard fills up as soon as the first splits come in.',
+    undo:'Undo split', dnf:'DNF', dnfUndo:'Undo DNF', del:'Delete', rename:'Rename', moveHeat:'Move heat',
+    finishAction:'Finish!', nextAction:'Next up', shareCard:'Score card (PNG)',
+    segTotal:'Total', segOf:'of', splitsTitle:'Splits (cumulative)',
+    csvHeaders:'Rank;Name;Division;Heat;Status;Total',
+    demoEventName:'Demo Sim — Rotterdam',
+  }
+};
+function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
+
+/* ---------- Segment presets (language-neutral labels) ---------- */
+const FULL_SEGS = [
+  ['R','Run 1 km'],['S','SkiErg 1000 m'],
+  ['R','Run 1 km'],['S','Sled Push 50 m'],
+  ['R','Run 1 km'],['S','Sled Pull 50 m'],
+  ['R','Run 1 km'],['S','Burpee Broad Jump 80 m'],
+  ['R','Run 1 km'],['S','Row 1000 m'],
+  ['R','Run 1 km'],['S','Farmers Carry 200 m'],
+  ['R','Run 1 km'],['S','Sandbag Lunges 100 m'],
+  ['R','Run 1 km'],['S','Wall Balls']
+];
+const HALF_SEGS = [
+  ['R','Run 1 km'],['S','SkiErg 500 m'],
+  ['R','Run 1 km'],['S','Sled Push 25 m'],
+  ['R','Run 1 km'],['S','Row 500 m'],
+  ['R','Run 1 km'],['S','Wall Balls 50']
+];
+const DEFAULT_DIVISIONS_NL = ['Dames Open','Heren Open','Dames Pro','Heren Pro','Doubles'];
+const DEFAULT_DIVISIONS_EN = ['Women Open','Men Open','Women Pro','Men Pro','Doubles'];
+
+/* ---------- State ---------- */
+const LS_KEY = 'heatboard_v1';
+let state = defaultState();
+function defaultState(){
+  return {
+    lang:'nl',
+    event:{ name:'', format:'full', customSegs:[] },
+    divisions: DEFAULT_DIVISIONS_NL.slice(),
+    athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false}
+    heats: {},             // "1": {startedAt:null, running:false}
+    ui:{ currentHeat:1, view:'setup' }
+  };
+}
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ const s = JSON.parse(raw); state = Object.assign(defaultState(), s);
+      state.event = Object.assign(defaultState().event, s.event||{});
+      state.ui = Object.assign(defaultState().ui, s.ui||{});
+    }
+  }catch(e){ state = defaultState(); }
+}
+function uid(){ return 'a'+Math.random().toString(36).slice(2,9); }
+
+function getSegments(){
+  if(state.event.format==='half') return HALF_SEGS.map(s=>({type:s[0],label:s[1]}));
+  if(state.event.format==='custom'){
+    const c = state.event.customSegs;
+    if(c && c.length) return c.map(s=>({type:s[0],label:s[1]}));
+    return [];
+  }
+  return FULL_SEGS.map(s=>({type:s[0],label:s[1]}));
+}
+function heatOf(n){ if(!state.heats[n]) state.heats[n]={startedAt:null,running:false}; return state.heats[n]; }
+function heatNumbers(){
+  const set = new Set(state.athletes.map(a=>a.heat));
+  if(set.size===0) set.add(1);
+  return [...set].sort((a,b)=>a-b);
+}
+
+/* ---------- Time formatting ---------- */
+function fmtTime(ms){
+  if(ms==null || isNaN(ms)) return '–';
+  const s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+  const p = n=>String(n).padStart(2,'0');
+  return h>0 ? h+':'+p(m)+':'+p(ss) : p(m)+':'+p(ss);
+}
+
+/* ---------- View & language ---------- */
+function showView(v){
+  state.ui.view = v; save();
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('tab-'+v).classList.add('active');
+  if(v==='race') renderRace();
+  if(v==='board') renderBoard();
+  if(v==='athletes') renderAthletes();
+  if(v==='setup') renderSetup();
+}
+function setLang(l){
+  state.lang = l; save(); applyI18n(); renderAll();
+}
+function applyI18n(){
+  document.documentElement.lang = state.lang;
+  document.getElementById('langNL').classList.toggle('active', state.lang==='nl');
+  document.getElementById('langEN').classList.toggle('active', state.lang==='en');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-ph')); });
+}
+
+/* ---------- Setup ---------- */
+function updateEventName(v){ state.event.name = v; save(); renderHeader(); liveStructural(); }
+function renderHeader(){
+  document.getElementById('eventNameDisplay').textContent = state.event.name || '';
+  document.getElementById('athCount').textContent = state.athletes.length;
+  const anyLive = Object.values(state.heats).some(h=>h.running);
+  document.getElementById('tab-race').classList.toggle('live-dot', anyLive);
+}
+function setFormat(f){
+  const hasTimes = state.athletes.some(a=>a.splits.length>0);
+  if(hasTimes && f!==state.event.format){
+    if(!confirm(t('confirmChangeFormat'))) return;
+    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; });
+    state.heats = {};
+  }
+  state.event.format = f; save(); renderSetup(); renderHeader(); liveStructural();
+}
+function updateCustomSegs(text){
+  const segs = [];
+  text.split('\n').forEach(line=>{
+    line = line.trim(); if(!line) return;
+    let type='S', label=line;
+    const m = line.match(/^([RSrs])[\s:.\-]+(.+)$/);
+    if(m){ type = m[1].toUpperCase(); label = m[2].trim(); }
+    segs.push([type,label]);
+  });
+  const hasTimes = state.athletes.some(a=>a.splits.length>0);
+  if(hasTimes){ if(!confirm(t('confirmChangeFormat'))) { renderSetup(); return; }
+    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; }); state.heats={};
+  }
+  state.event.customSegs = segs; save(); renderSetup(); liveStructural();
+}
+function renderSetup(){
+  document.getElementById('eventName').value = state.event.name;
+  ['full','half','custom'].forEach(f=>{
+    document.getElementById('fmt-'+f).classList.toggle('selected', state.event.format===f);
+  });
+  document.getElementById('customSegField').style.display = state.event.format==='custom' ? 'block' : 'none';
+  if(state.event.format==='custom' && state.event.customSegs.length){
+    document.getElementById('customSegs').value = state.event.customSegs.map(s=>s[0]+' '+s[1]).join('\n');
+  }
+  const prev = document.getElementById('segPreview');
+  prev.innerHTML = getSegments().map(s=>
+    '<span class="seg-chip'+(s.type==='S'?' station':'')+'">'+esc(s.label)+'</span>'
+  ).join('');
+  renderDivisions();
+}
+function renderDivisions(){
+  const wrap = document.getElementById('divisionChips');
+  wrap.innerHTML = state.divisions.map((d,i)=>
+    '<span class="chip">'+esc(d)+'<button class="x" onclick="removeDivision('+i+')" aria-label="remove">×</button></span>'
+  ).join('');
+  const sel = document.getElementById('athDivision');
+  if(sel) sel.innerHTML = state.divisions.map(d=>'<option>'+esc(d)+'</option>').join('');
+}
+function addDivision(){
+  const inp = document.getElementById('newDivision');
+  const v = inp.value.trim(); if(!v) return;
+  if(!state.divisions.includes(v)) state.divisions.push(v);
+  inp.value=''; save(); renderDivisions(); liveStructural();
+}
+function removeDivision(i){ state.divisions.splice(i,1); save(); renderDivisions(); liveStructural(); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- Athletes ---------- */
+function addAthlete(){
+  const name = document.getElementById('athName').value.trim();
+  if(!name){ toast(t('toastNeedName')); return; }
+  const division = document.getElementById('athDivision').value || state.divisions[0] || '';
+  const heat = Math.max(1, parseInt(document.getElementById('athHeat').value)||1);
+  state.athletes.push({id:uid(), name, division, heat, splits:[], dnf:false});
+  document.getElementById('athName').value='';
+  save(); renderAthletes(); renderHeader(); liveStructural();
+  toast(name+' '+t('toastAdded'));
+}
+function bulkAdd(){
+  const lines = document.getElementById('bulkPaste').value.split('\n');
+  let n=0;
+  lines.forEach(line=>{
+    const parts = line.split(/[;\t]/).map(p=>p.trim());
+    if(!parts[0]) return;
+    const division = parts[1] && parts[1].length ? parts[1] : (state.divisions[0]||'');
+    if(division && !state.divisions.includes(division)) state.divisions.push(division);
+    const heat = Math.max(1, parseInt(parts[2])||1);
+    state.athletes.push({id:uid(), name:parts[0], division, heat, splits:[], dnf:false});
+    n++;
+  });
+  if(n){ document.getElementById('bulkPaste').value=''; save(); renderAthletes(); renderDivisions(); renderHeader(); liveStructural(); toast(n+' '+t(n===1?'athletes_one':'athletes_other')+' '+t('toastAdded')); }
+}
+function deleteAthlete(id){
+  if(!confirm(t('confirmDeleteAth'))) return;
+  state.athletes = state.athletes.filter(a=>a.id!==id);
+  save(); renderAthletes(); renderHeader(); renderRace(); liveStructural();
+}
+function renameAthlete(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const v = prompt(t('promptRename'), a.name);
+  if(v && v.trim()){ a.name = v.trim(); save(); renderAthletes(); liveStructural(); }
+}
+function moveAthlete(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const v = prompt(t('promptHeat'), a.heat);
+  const h = parseInt(v);
+  if(h>=1){ a.heat = h; save(); renderAthletes(); liveStructural(); }
+}
+function renderAthletes(){
+  const wrap = document.getElementById('athleteList');
+  if(state.athletes.length===0){
+    wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🏁</div>'+t('noAthletesYet')+'</div>';
+    return;
+  }
+  let html='';
+  heatNumbers().forEach(h=>{
+    const list = state.athletes.filter(a=>a.heat===h);
+    if(!list.length) return;
+    html += '<div class="heat-group"><div class="heat-group-head"><h3>'+t('heat')+' '+h+'</h3>'+
+      '<span class="hg-count">'+list.length+' '+t(list.length===1?'athletes_one':'athletes_other')+'</span></div>';
+    list.forEach((a,idx)=>{
+      html += '<div class="ath-row">'+
+        '<span class="ath-lane">L'+(idx+1)+'</span>'+
+        '<span class="ath-name">'+esc(a.name)+'</span>'+
+        '<span class="ath-div">'+esc(a.division)+'</span>'+
+        '<span class="ath-actions">'+
+        '<button class="icon-btn" title="'+t('rename')+'" onclick="renameAthlete(\''+a.id+'\')">✎</button>'+
+        '<button class="icon-btn" title="'+t('moveHeat')+'" onclick="moveAthlete(\''+a.id+'\')">⇄</button>'+
+        '<button class="icon-btn" title="'+t('del')+'" onclick="deleteAthlete(\''+a.id+'\')">🗑</button>'+
+        '</span></div>';
+    });
+    html += '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
+/* ---------- Race ---------- */
+let wakeLock = null;
+async function requestWake(){ try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } }catch(e){} }
+function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+
+function selectHeat(n){ state.ui.currentHeat = n; save(); renderRace(); }
+function startHeat(){
+  const n = state.ui.currentHeat;
+  const list = state.athletes.filter(a=>a.heat===n);
+  if(!list.length){ toast(t('toastNoAthletes')); return; }
+  const h = heatOf(n);
+  if(h.running) return;
+  if(!h.startedAt){ h.startedAt = Date.now(); }
+  h.running = true;
+  save(); renderRace(); renderHeader(); requestWake();
+  liveEmit('start_heat',{heat:n, startedAt:h.startedAt});
+  toast(t('toastHeatStarted')+' · '+t('heat')+' '+n);
+}
+function resetHeat(){
+  const n = state.ui.currentHeat;
+  if(!confirm(t('confirmResetHeat'))) return;
+  state.heats[n] = {startedAt:null, running:false};
+  state.athletes.filter(a=>a.heat===n).forEach(a=>{ a.splits=[]; a.dnf=false; });
+  save(); renderRace(); renderHeader(); releaseWake();
+  liveEmit('reset_heat',{heat:n});
+}
+function heatElapsed(n){
+  const h = state.heats[n];
+  if(!h || !h.startedAt) return 0;
+  return Date.now() - h.startedAt;
+}
+let lastTapAt = {};
+function recordSplit(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const h = heatOf(a.heat);
+  if(!h.running) return;
+  // double-tap guard: ignore a second tap on the same athlete within 600ms
+  const nowT = Date.now();
+  if(nowT - (lastTapAt[id]||0) < 600) return;
+  lastTapAt[id] = nowT;
+  const segs = getSegments();
+  if(a.splits.length >= segs.length) return;
+  const ms = heatElapsed(a.heat);
+  _applySplit(a, ms, true);
+  liveEmit('split',{id:a.id, ms:ms});
+  save(); renderRace(); renderHeader();
+}
+function _applySplit(a, ms, showToast){
+  const segs = getSegments();
+  if(a.splits.length >= segs.length) return;
+  a.splits.push(ms);
+  if(a.splits.length === segs.length){
+    if(showToast) toast('🏁 '+a.name+' — '+t('toastFinished')+' '+fmtTime(ms));
+    const list = state.athletes.filter(x=>x.heat===a.heat);
+    const allDone = list.every(x=>x.dnf || x.splits.length===segs.length);
+    if(allDone){ heatOf(a.heat).running = false; releaseWake(); }
+  }
+}
+function undoSplit(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  if(a.splits.length){ a.splits.pop(); heatOf(a.heat).running = true; save(); renderRace(); renderHeader(); liveEmit('undo',{id:a.id}); }
+}
+function toggleDNF(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  a.dnf = !a.dnf; save(); renderRace();
+  liveEmit('dnf',{id:a.id, dnf:a.dnf});
+}
+/* heat gradient stops: cold -> hot as the race progresses */
+const HEAT_STOPS = [[255,194,75],[255,122,26],[255,59,31],[255,46,99]];
+function heatColor(frac){ // frac 0..1 across the race
+  frac = Math.max(0, Math.min(1, frac));
+  const seg = frac*(HEAT_STOPS.length-1);
+  const i = Math.min(HEAT_STOPS.length-2, Math.floor(seg));
+  const tt = seg - i;
+  const a = HEAT_STOPS[i], b = HEAT_STOPS[i+1];
+  const mix = k=>Math.round(a[k]+(b[k]-a[k])*tt);
+  return 'rgb('+mix(0)+','+mix(1)+','+mix(2)+')';
+}
+function laneStrip(a, segs, mini){
+  let html = '<div class="'+(mini?'tv-strip':'lane-strip')+'">';
+  const n = Math.max(1, segs.length-1);
+  segs.forEach((s,i)=>{
+    const done = i < a.splits.length;
+    const current = !a.dnf && i === a.splits.length;
+    const heat = done ? ' style="--heat:'+heatColor(i/n)+'"' : '';
+    html += '<span class="lane-seg'+(s.type==='S'?' station':'')+(done?' done':'')+(current&&!mini?' current':'')+'"'+heat+'></span>';
+  });
+  return html+'</div>';
+}
+function renderRace(){
+  const bar = document.getElementById('heatSelectBar');
+  const nums = heatNumbers();
+  if(!nums.includes(state.ui.currentHeat)) state.ui.currentHeat = nums[0];
+  bar.innerHTML = nums.map(n=>{
+    const h = state.heats[n];
+    const live = h && h.running;
+    return '<button class="chip selectable'+(state.ui.currentHeat===n?' active':'')+'" onclick="selectHeat('+n+')">'+
+      t('heat')+' '+n+(live?' ●':'')+'</button>';
+  }).join('');
+
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  document.getElementById('raceHeatLabel').textContent = (state.event.name? state.event.name+' · ':'') + t('heat')+' '+n;
+  const clockEl = document.getElementById('raceClock');
+  clockEl.textContent = fmtTime(heatElapsed(n));
+  clockEl.classList.toggle('live', !!(h && h.running));
+  document.getElementById('btnStartHeat').disabled = !!(h && h.running);
+
+  const segs = getSegments();
+  const wrap = document.getElementById('raceAthletes');
+  let list = state.athletes.filter(a=>a.heat===n);
+  const pickerHtml = judgePickerHtml(list);
+  if(live.role==='judge' && live.judgeAthletes.length){
+    list = list.filter(a=>live.judgeAthletes.includes(a.id));
+  }
+  if(!list.length){ wrap.innerHTML = pickerHtml+'<div class="empty-state"><div class="es-icon">🏃</div>'+t('noAthletesYet')+'<br><br><button class="btn btn-primary btn-sm" onclick="showView(\'athletes\')">'+t('btnGoAthletes')+'</button></div>'; return; }
+  wrap.innerHTML = pickerHtml + list.map((a,idx)=>{
+    const done = a.splits.length;
+    const finished = done===segs.length && segs.length>0;
+    const next = segs[done];
+    const fullHeat = state.athletes.filter(x=>x.heat===n);
+    const laneNo = String(fullHeat.indexOf(a)+1).padStart(2,'0');
+    // status badge + time
+    let badge, timeLabel;
+    if(a.dnf){
+      badge = '<span class="race-badge dnf-badge"><span class="dot"></span>'+t('badgeDNF')+'</span>';
+      timeLabel = '';
+    } else if(finished){
+      badge = '<span class="race-badge done-badge"><span class="dot"></span>'+t('badgeDone')+'</span>';
+      timeLabel = '<span class="race-ath-time">'+fmtTime(a.splits[done-1])+'</span>';
+    } else if(done>0){
+      badge = '<span class="race-badge on-course"><span class="dot"></span>'+done+'/'+segs.length+'</span>';
+      timeLabel = '<span class="race-ath-time">'+fmtTime(heatElapsed(a.heat))+'</span>';
+    } else {
+      badge = '<span class="race-badge"><span class="dot"></span>'+t('badgeWaiting')+'</span>';
+      timeLabel = '';
+    }
+    let bottom = '';
+    if(!finished && !a.dnf && next){
+      const isLast = done===segs.length-1;
+      bottom = '<button class="split-btn'+(isLast?' last-seg':'')+'" onclick="recordSplit(\''+a.id+'\')">'+
+        '<span class="sb-action">'+(isLast?t('finishAction'):t('nextAction'))+'</span>'+
+        '<span class="sb-seg">'+esc(next.label)+'</span></button>';
+    }
+    const undoBtn = done>0 ? '<button class="icon-btn" title="'+t('undo')+'" onclick="undoSplit(\''+a.id+'\')">↩</button>' : '';
+    const dnfBtn = !finished ? '<button class="icon-btn" title="'+(a.dnf?t('dnfUndo'):t('dnf'))+'" onclick="toggleDNF(\''+a.id+'\')">'+(a.dnf?'♻':'✕')+'</button>' : '';
+    const bottomRow = (bottom||undoBtn||dnfBtn) ? '<div class="race-ath-bottom">'+bottom+undoBtn+dnfBtn+'</div>' : '';
+    return '<div class="race-ath'+(finished?' finished':'')+(a.dnf?' dnf':'')+'">'+
+      '<div class="race-ath-top">'+
+        '<span class="race-lane-no">'+laneNo+'</span>'+
+        '<span class="race-ath-idblock"><span class="race-ath-name">'+esc(a.name)+'</span>'+
+          '<span class="race-ath-sub">'+esc(a.division)+'</span></span>'+
+        badge+timeLabel+
+      '</div>'+
+      laneStrip(a, segs, false)+
+      bottomRow+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- Leaderboard ---------- */
+function ranking(divFilter, heatFilter){
+  const segs = getSegments();
+  let list = state.athletes.slice();
+  if(divFilter) list = list.filter(a=>a.division===divFilter);
+  if(heatFilter) list = list.filter(a=>a.heat===parseInt(heatFilter));
+  const score = a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(a.dnf) return [3,0,0];
+    if(finished) return [0, a.splits[a.splits.length-1], 0];
+    if(a.splits.length>0) return [1, -a.splits.length, a.splits[a.splits.length-1]];
+    return [2,0,0];
+  };
+  list.sort((x,y)=>{
+    const sx=score(x), sy=score(y);
+    for(let i=0;i<3;i++){ if(sx[i]!==sy[i]) return sx[i]-sy[i]; }
+    return x.name.localeCompare(y.name);
+  });
+  return list;
+}
+function boardFilters(){
+  return [document.getElementById('filterDivision').value, document.getElementById('filterHeat').value];
+}
+function renderBoard(){
+  const divSel = document.getElementById('filterDivision');
+  const heatSel = document.getElementById('filterHeat');
+  const prevDiv = divSel.value, prevHeat = heatSel.value;
+  divSel.innerHTML = '<option value="">'+t('allDivisions')+'</option>'+state.divisions.map(d=>'<option'+(prevDiv===d?' selected':'')+'>'+esc(d)+'</option>').join('');
+  heatSel.innerHTML = '<option value="">'+t('allHeats')+'</option>'+heatNumbers().map(n=>'<option value="'+n+'"'+(prevHeat==String(n)?' selected':'')+'>'+t('heat')+' '+n+'</option>').join('');
+
+  const segs = getSegments();
+  const [df,hf] = boardFilters();
+  const list = ranking(df,hf);
+  const wrap = document.getElementById('boardList');
+  if(!list.length){ wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🏆</div>'+t('noBoardYet')+'<br><br><button class="btn btn-ghost btn-sm" onclick="showView(\'athletes\')">'+t('btnGoAthletes')+'</button></div>'; return; }
+  let rank=0;
+  wrap.innerHTML = list.map(a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(finished && !a.dnf) rank++;
+    let timeHtml, meta = esc(a.division)+' · '+t('heat')+' '+a.heat;
+    if(a.dnf) timeHtml = '<span class="board-time dnf">DNF</span>';
+    else if(finished) timeHtml = '<span class="board-time">'+fmtTime(a.splits[a.splits.length-1])+'</span>';
+    else if(a.splits.length>0) timeHtml = '<span class="board-time progress">'+t('statusBusy')+' · '+a.splits.length+'/'+segs.length+'</span>';
+    else timeHtml = '<span class="board-time progress">'+t('statusWaiting')+'</span>';
+    let splits='';
+    if(a.splits.length){
+      splits = '<div class="splits-grid">'+a.splits.map((ms,i)=>{
+        const dur = i===0 ? ms : ms - a.splits[i-1];
+        return '<div class="split-line"><span class="sl-name">'+esc(segs[i]?segs[i].label:'#'+(i+1))+'</span>'+
+          '<span class="sl-time">'+fmtTime(ms)+' <span style="color:var(--muted)">(+'+fmtTime(dur)+')</span></span></div>';
+      }).join('')+'</div>';
+      if(finished && !a.dnf){
+        splits += '<button class="btn btn-dark btn-sm" onclick="event.stopPropagation();shareCard(\''+a.id+'\')">📸 '+t('shareCard')+'</button>';
+      }
+    }
+    return '<div class="board-row'+(finished&&!a.dnf&&rank===1?' podium-1':'')+'">'+
+      '<button class="board-row-main" onclick="this.parentElement.classList.toggle(\'open\')">'+
+      '<span class="board-rank">'+(finished&&!a.dnf?rank:'·')+'</span>'+
+      '<span class="board-info"><span class="board-name">'+esc(a.name)+'</span><br><span class="board-meta">'+meta+'</span></span>'+
+      timeHtml+'</button>'+
+      (splits?'<div class="board-splits"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">'+t('splitsTitle')+'</div>'+splits+'</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- TV mode ---------- */
+let tvOpen = false;
+function openTV(){
+  tvOpen = true;
+  document.getElementById('tvOverlay').classList.add('active');
+  document.getElementById('tvTitle').innerHTML = state.event.name ? esc(state.event.name) : 'HEAT<span class="hot">BOARD</span>';
+  try{ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }catch(e){}
+  renderTV();
+}
+function closeTV(){
+  tvOpen = false;
+  document.getElementById('tvOverlay').classList.remove('active');
+  try{ document.exitFullscreen && document.fullscreenElement && document.exitFullscreen(); }catch(e){}
+}
+function renderTV(){
+  const segs = getSegments();
+  const [df,hf] = boardFilters();
+  const list = ranking(df,hf).slice(0,10);
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  document.getElementById('tvClock').textContent = (h&&h.startedAt) ? fmtTime(heatElapsed(n)) : '';
+  let rank=0;
+  document.getElementById('tvList').innerHTML = list.map(a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(finished && !a.dnf) rank++;
+    let timeHtml;
+    if(a.dnf) timeHtml = '<span class="tv-time progress">DNF</span>';
+    else if(finished) timeHtml = '<span class="tv-time">'+fmtTime(a.splits[a.splits.length-1])+'</span>';
+    else if(a.splits.length>0) timeHtml = '<span class="tv-time progress">'+a.splits.length+'/'+segs.length+'</span>';
+    else timeHtml = '<span class="tv-time progress">–</span>';
+    return '<div class="tv-row">'+
+      '<span class="tv-rank">'+(finished&&!a.dnf?rank:'·')+'</span>'+
+      '<span class="tv-name">'+esc(a.name)+'</span>'+
+      '<span class="tv-div">'+esc(a.division)+'</span>'+
+      laneStrip(a, segs, true)+
+      timeHtml+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- CSV export ---------- */
+function exportCSV(){
+  const segs = getSegments();
+  const list = ranking('','');
+  if(!list.length){ toast(t('toastNothingToExport')); return; }
+  let rank=0;
+  const rows = [t('csvHeaders')+';'+segs.map(s=>s.label).join(';')];
+  list.forEach(a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(finished && !a.dnf) rank++;
+    const status = a.dnf ? 'DNF' : finished ? t('statusFinished') : (a.splits.length>0? t('statusBusy') : t('statusWaiting'));
+    const total = finished && !a.dnf ? fmtTime(a.splits[a.splits.length-1]) : '';
+    const cells = [finished&&!a.dnf?rank:'', a.name, a.division, a.heat, status, total];
+    segs.forEach((s,i)=> cells.push(a.splits[i]!=null ? fmtTime(a.splits[i]) : ''));
+    rows.push(cells.map(c=>String(c).replace(/;/g,',')).join(';'));
+  });
+  const blob = new Blob(['\ufeff'+rows.join('\r\n')], {type:'text/csv;charset=utf-8'});
+  downloadBlob(blob, safeFile((state.event.name||'heatboard')+'-results')+'.csv');
+  toast(t('toastCSV'));
+}
+function safeFile(s){ return s.toLowerCase().replace(/[^a-z0-9\-_]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'heatboard'; }
+function downloadBlob(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ---------- Share card (canvas PNG) ---------- */
+function shareCard(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const segs = getSegments();
+  const total = a.splits[a.splits.length-1];
+  const cv = document.getElementById('shareCanvas');
+  const ctx = cv.getContext('2d');
+  const W=1080,H=1350;
+  const HOT='#FF2E63', WARM='#FF7A1A', TXT='#F5EFEA', MUT='#9C8F86', DIM='#6E635C', LINE='#332B27';
+  // background — warm near-black with a top heat glow
+  ctx.fillStyle = '#0F0D0C'; ctx.fillRect(0,0,W,H);
+  const glow = ctx.createRadialGradient(W/2,-120,60, W/2,-120,720);
+  glow.addColorStop(0,'rgba(255,122,26,0.16)'); glow.addColorStop(1,'rgba(255,122,26,0)');
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,320);
+  // top heat bar
+  const topbar = ctx.createLinearGradient(0,0,W,0);
+  topbar.addColorStop(0,'#FFC24B'); topbar.addColorStop(.45,'#FF7A1A'); topbar.addColorStop(.78,'#FF3B1F'); topbar.addColorStop(1,'#FF2E63');
+  ctx.fillStyle = topbar; ctx.fillRect(0,0,W,8);
+  // top brand
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = '800 34px "Saira Condensed", Saira, sans-serif';
+  ctx.fillStyle = TXT; ctx.fillText('HEAT', 72, 112);
+  const w1 = ctx.measureText('HEAT').width;
+  ctx.fillStyle = WARM; ctx.fillText('BOARD', 72+w1+4, 112);
+  ctx.font = '500 24px "Chivo Mono", monospace'; ctx.fillStyle = DIM;
+  const dateStr = new Date().toLocaleDateString(state.lang==='nl'?'nl-NL':'en-GB');
+  ctx.textAlign = 'right'; ctx.fillText(dateStr, W-72, 108); ctx.textAlign = 'left';
+  // event name
+  ctx.font = '600 30px Saira, sans-serif'; ctx.fillStyle = MUT;
+  ctx.fillText(clip(ctx, state.event.name || (state.lang==='nl'?'Fitness race simulatie':'Fitness race simulation'), W-144), 72, 224);
+  // athlete name
+  ctx.font = '800 80px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle = TXT;
+  ctx.fillText(clip(ctx, a.name.toUpperCase(), W-144), 72, 318);
+  // division
+  ctx.font = '600 28px Saira, sans-serif'; ctx.fillStyle = DIM;
+  ctx.fillText(a.division+'  ·  '+t('heat')+' '+a.heat, 72, 366);
+  // big time — hottest colour
+  ctx.font = '600 176px "Chivo Mono", monospace';
+  ctx.save(); ctx.shadowColor = 'rgba(255,46,99,0.45)'; ctx.shadowBlur = 40;
+  ctx.fillStyle = HOT; ctx.fillText(fmtTime(total), 66, 572);
+  ctx.restore();
+  ctx.font = '700 24px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle = MUT;
+  ctx.fillText((t('segTotal')).toUpperCase()+'  ·  '+t('statusFinished').toUpperCase(), 72, 616);
+  // THE HERO: glowing lane strip, each segment a colour along the heat scale
+  const stripY = 672, stripW = W-144, gap = 8;
+  const segW = (stripW - gap*(segs.length-1)) / segs.length;
+  const n = Math.max(1, segs.length-1);
+  segs.forEach((s,i)=>{
+    const col = heatColor(i/n);
+    ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 18;
+    ctx.fillStyle = col;
+    roundRect(ctx, 72 + i*(segW+gap), stripY, segW, 30, 6); ctx.fill();
+    ctx.restore();
+    if(s.type==='S'){ ctx.fillStyle='rgba(15,13,12,0.55)'; ctx.fillRect(72+i*(segW+gap)+segW/2-2, stripY+9, 4, 12); }
+  });
+  // splits two columns
+  ctx.font = '400 27px "Chivo Mono", monospace';
+  const colX = [72, 72 + (W-144)/2 + 24];
+  const rowH = 56; const startY = 786;
+  const half = Math.ceil(segs.length/2);
+  segs.forEach((s,i)=>{
+    const col = i < half ? 0 : 1;
+    const y = startY + (i - col*half)*rowH;
+    ctx.fillStyle = MUT;
+    ctx.fillText(clip(ctx, s.label, (W-144)/2 - 170), colX[col], y);
+    ctx.fillStyle = TXT; ctx.textAlign='right';
+    ctx.fillText(fmtTime(a.splits[i]), colX[col] + (W-144)/2 - 24, y);
+    ctx.textAlign='left';
+  });
+  // footer
+  ctx.fillStyle = LINE; ctx.fillRect(72, H-120, W-144, 1);
+  ctx.font = '500 22px "Chivo Mono", monospace'; ctx.fillStyle = DIM;
+  ctx.fillText('heatboard · fitness race sim', 72, H-68);
+  cv.toBlob(blob=>{
+    downloadBlob(blob, safeFile(a.name)+'-'+safeFile(state.event.name||'sim')+'.png');
+    toast(t('toastCardSaved'));
+  }, 'image/png');
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function clip(ctx, text, maxW){
+  if(ctx.measureText(text).width <= maxW) return text;
+  while(text.length>1 && ctx.measureText(text+'…').width > maxW){ text = text.slice(0,-1); }
+  return text+'…';
+}
+
+/* ---------- Backup / restore / demo ---------- */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  downloadBlob(blob, safeFile((state.event.name||'heatboard'))+'-backup.json');
+  toast(t('toastSaved'));
+}
+function importJSON(input){
+  const file = input.files[0]; if(!file) return;
+  if(!confirm(t('confirmImport'))){ input.value=''; return; }
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const s = JSON.parse(r.result);
+      state = Object.assign(defaultState(), s);
+      save(); applyI18n(); renderAll(); toast(t('toastImported'));
+    }catch(e){ alert('Invalid file'); }
+    input.value='';
+  };
+  r.readAsText(file);
+}
+function resetAll(){
+  if(!confirm(t('confirmResetAll'))) return;
+  const lang = state.lang;
+  state = defaultState(); state.lang = lang;
+  save(); applyI18n(); renderAll();
+}
+function loadDemo(){
+  const lang = state.lang;
+  state = defaultState(); state.lang = lang;
+  state.event.name = t('demoEventName');
+  state.event.format = 'full';
+  if(lang==='en') state.divisions = DEFAULT_DIVISIONS_EN.slice();
+  const segs = FULL_SEGS;
+  const names1 = lang==='nl'
+    ? [['Lisa de Jong','Dames Open'],['Tom Bakker','Heren Open'],['Sanne Visser','Dames Open'],['Mike van Dijk','Heren Pro']]
+    : [['Lisa Jones','Women Open'],['Tom Baker','Men Open'],['Sanne Fisher','Women Open'],['Mike Dixon','Men Pro']];
+  const names2 = lang==='nl'
+    ? [['Kim & Roos','Doubles'],['Daan Smit','Heren Open'],['Femke Mulder','Dames Pro']]
+    : [['Kim & Rose','Doubles'],['Dan Smith','Men Open'],['Femke Miller','Women Pro']];
+  const now = Date.now();
+  const mkSplits = (base)=>{ // base = avg seconds per segment pair, add noise
+    const arr=[]; let tms=0;
+    segs.forEach((s,i)=>{
+      const runS = base + (Math.random()*60-30);
+      const statS = base*0.9 + (Math.random()*80-40);
+      tms += (s[0]==='R'? runS : statS)*1000;
+      arr.push(Math.round(tms));
+    });
+    return arr;
+  };
+  names1.forEach((nd,i)=>{
+    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:1, splits:mkSplits(230+i*12), dnf:false});
+  });
+  names2.forEach(nd=>{
+    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:2, splits:[], dnf:false});
+  });
+  const dur = Math.max(...state.athletes.filter(a=>a.heat===1).map(a=>a.splits[a.splits.length-1]));
+  state.heats = { '1':{startedAt: now - dur - 60000, running:false}, '2':{startedAt:null, running:false} };
+  state.ui.currentHeat = 1;
+  save(); applyI18n(); renderAll(); showView('board');
+  toast(t('toastDemo'));
+}
+
+
+/* ============================================================
+   LIVE SYNC (fase 2) — judges op eigen telefoon via Supabase
+   Event-sourcing: elke split/undo/dnf/start/reset is een rij in
+   heatboard_events. Clients reduceren lokaal en luisteren realtime.
+   Werkt volledig optioneel: zonder configuratie blijft alles lokaal.
+   ============================================================ */
+const LIVE_CFG_LS='heatboard_live_cfg', LIVE_SESS_LS='heatboard_live_sess';
+let live={enabled:false, role:null, code:null, sb:null, channel:null,
+  clientId:uid()+uid(), applied:new Set(), queue:[], connected:false, judgeAthletes:[]};
+
+function liveCfg(){ try{return JSON.parse(localStorage.getItem(LIVE_CFG_LS))||{}}catch(e){return{}} }
+function saveLiveCfg(url,key){ localStorage.setItem(LIVE_CFG_LS, JSON.stringify({url:url,key:key})); }
+function saveLiveSess(){ if(live.enabled) localStorage.setItem(LIVE_SESS_LS, JSON.stringify({code:live.code, role:live.role, judgeAthletes:live.judgeAthletes})); else localStorage.removeItem(LIVE_SESS_LS); }
+
+function loadSbLib(){
+  return new Promise((res,rej)=>{
+    if(window.supabase) return res();
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    s.onload=()=>res(); s.onerror=()=>rej(new Error('cdn'));
+    document.head.appendChild(s);
+  });
+}
+async function liveConnect(){
+  const url=(document.getElementById('sbUrl').value||liveCfg().url||'').trim();
+  const key=(document.getElementById('sbKey').value||liveCfg().key||'').trim();
+  if(!url||!key){ toast(t('toastCfgMissing')); return null; }
+  saveLiveCfg(url,key);
+  await loadSbLib();
+  return window.supabase.createClient(url,key);
+}
+function genCode(){
+  const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let c='';
+  for(let i=0;i<6;i++) c+=A[Math.floor(Math.random()*A.length)];
+  return c;
+}
+async function startLiveSession(){
+  try{
+    const sb=await liveConnect(); if(!sb) return;
+    live.sb=sb; live.role='host'; live.code=genCode(); live.enabled=true;
+    subscribeLive();
+    await pushSnapshot(false);
+    saveLiveSess(); renderLiveUI(); toast(t('toastLiveStarted'));
+  }catch(e){ toast(t('toastSbFail')); liveTeardown(); }
+}
+async function joinLiveSession(codeArg, roleArg){
+  try{
+    const code=(codeArg||document.getElementById('joinCode').value||'').trim().toUpperCase();
+    if(!code){ toast(t('toastCodeMissing')); return; }
+    const role=roleArg||document.getElementById('joinRole').value||'judge';
+    const sb=await liveConnect(); if(!sb) return;
+    live.sb=sb; live.role=role; live.code=code; live.enabled=true;
+    // fetch history and reduce
+    const r=await sb.from('heatboard_events').select('*').eq('code',code).order('id',{ascending:true});
+    if(r.error) throw r.error;
+    let sawSnapshot=false;
+    (r.data||[]).forEach(row=>{
+      const p=row.payload||{};
+      if(p.uuid) live.applied.add(p.uuid);
+      if(row.type==='snapshot') sawSnapshot=true;
+      applyEvent(row.type,p,false);
+    });
+    if(!sawSnapshot) toast(t('toastNoSnapshot'));
+    subscribeLive();
+    saveLiveSess(); applyRoleUI(); renderLiveUI(); renderAll();
+    if(role==='tv') openTV();
+    toast(t('toastJoined')+' · '+code);
+  }catch(e){ toast(t('toastSbFail')); liveTeardown(); }
+}
+function subscribeLive(){
+  live.channel=live.sb.channel('hb_'+live.code)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'heatboard_events',filter:'code=eq.'+live.code},(msg)=>{
+      const row=msg.new||{}; const p=row.payload||{};
+      if(p.uuid && live.applied.has(p.uuid)) return;
+      if(p.uuid) live.applied.add(p.uuid);
+      applyEvent(row.type,p,true);
+    })
+    .subscribe((status)=>{ live.connected=(status==='SUBSCRIBED'); renderLiveDot(); });
+}
+function liveTeardown(){
+  try{ if(live.channel) live.sb.removeChannel(live.channel); }catch(e){}
+  live={enabled:false, role:null, code:null, sb:null, channel:null,
+    clientId:live.clientId, applied:new Set(), queue:[], connected:false, judgeAthletes:[]};
+  document.body.classList.remove('role-judge','role-tv');
+  saveLiveSess(); renderLiveUI(); renderLiveDot();
+}
+function leaveLiveSession(){ liveTeardown(); toast(t('toastLeft')); }
+
+/* ---- emitting ---- */
+function liveEmit(type,payload){
+  if(!live.enabled) return;
+  const p=Object.assign({}, payload, {uuid:uid()+uid(), clientId:live.clientId});
+  live.applied.add(p.uuid); // we already applied locally
+  liveInsert({code:live.code, type:type, payload:p});
+}
+async function liveInsert(row){
+  try{
+    const r=await live.sb.from('heatboard_events').insert(row);
+    if(r.error) throw r.error;
+    renderLiveDot();
+  }catch(e){
+    live.queue.push(row); renderLiveDot();
+  }
+}
+async function flushQueue(){
+  if(!live.enabled || !live.queue.length) return;
+  const q=live.queue; live.queue=[];
+  for(const row of q){ await liveInsert(row); }
+}
+setInterval(flushQueue, 4000);
+window.addEventListener('online', flushQueue);
+
+/* ---- snapshot (host pushes full setup) ---- */
+let snapTimer=null;
+function liveStructural(){
+  if(!live.enabled || live.role!=='host') return;
+  clearTimeout(snapTimer);
+  snapTimer=setTimeout(()=>pushSnapshot(false), 800);
+}
+async function pushSnapshot(showToast){
+  if(!live.enabled || live.role!=='host') return;
+  liveEmit('snapshot',{event:state.event, divisions:state.divisions, athletes:state.athletes, heats:state.heats});
+  if(showToast) toast(t('toastSetupSent'));
+}
+
+/* ---- applying incoming events ---- */
+function applyEvent(type,p,rerender){
+  if(type==='snapshot'){
+    if(p.event) state.event=p.event;
+    if(p.divisions) state.divisions=p.divisions;
+    if(p.athletes) state.athletes=p.athletes;
+    if(p.heats) state.heats=p.heats;
+  } else if(type==='split'){
+    const a=state.athletes.find(x=>x.id===p.id);
+    if(a) _applySplit(a, p.ms, false);
+  } else if(type==='undo'){
+    const a=state.athletes.find(x=>x.id===p.id);
+    if(a && a.splits.length){ a.splits.pop(); heatOf(a.heat).running=true; }
+  } else if(type==='dnf'){
+    const a=state.athletes.find(x=>x.id===p.id);
+    if(a) a.dnf=!!p.dnf;
+  } else if(type==='start_heat'){
+    const hh=heatOf(p.heat); hh.startedAt=p.startedAt; hh.running=true;
+  } else if(type==='reset_heat'){
+    state.heats[p.heat]={startedAt:null,running:false};
+    state.athletes.filter(a=>a.heat===p.heat).forEach(a=>{a.splits=[];a.dnf=false;});
+  }
+  save();
+  if(rerender){ renderHeader(); renderRace(); if(document.getElementById('view-board').classList.contains('active')) renderBoard(); }
+}
+
+/* ---- role UI ---- */
+function applyRoleUI(){
+  document.body.classList.toggle('role-judge', live.role==='judge');
+  document.body.classList.toggle('role-tv', live.role==='tv');
+  if(live.role==='judge') showView('race');
+}
+function renderLiveUI(){
+  const off=document.getElementById('liveOff'), on=document.getElementById('liveOn');
+  if(!off||!on) return;
+  off.style.display=live.enabled?'none':'block';
+  on.style.display=live.enabled?'block':'none';
+  if(live.enabled){
+    document.getElementById('liveCodeShow').textContent=live.code;
+    const roleTxt=live.role==='host'?t('liveAsHost'):live.role==='judge'?t('liveAsJudge'):t('liveAsTV');
+    document.getElementById('liveStatusLine').textContent=roleTxt;
+    document.getElementById('btnPushSetup').style.display=(live.role==='host')?'inline-flex':'none';
+  }
+  const cfg=liveCfg();
+  const u=document.getElementById('sbUrl'), k=document.getElementById('sbKey');
+  if(u && !u.value && cfg.url) u.value=cfg.url;
+  if(k && !k.value && cfg.key) k.value=cfg.key;
+}
+function renderLiveDot(){
+  const d=document.getElementById('liveDot'); if(!d) return;
+  d.className='live-ind'+(live.enabled?(live.queue.length?' queued':(live.connected?' on':' queued')):'');
+  d.title=live.enabled?(live.queue.length? live.queue.length+' '+t('liveQueuedN') : (live.connected?t('liveConnected'):t('liveOffline'))):'';
+}
+/* judge athlete picker */
+function toggleJudgeAthlete(id){
+  const i=live.judgeAthletes.indexOf(id);
+  if(i>=0) live.judgeAthletes.splice(i,1); else live.judgeAthletes.push(id);
+  saveLiveSess(); renderRace();
+}
+function judgePickerHtml(list){
+  if(live.role!=='judge') return '';
+  let html='<div class="judge-picker"><span style="font-size:12px;color:var(--muted);align-self:center">'+t('myAthletes')+'</span>';
+  html+='<button class="chip selectable'+(live.judgeAthletes.length===0?' active':'')+'" onclick="live.judgeAthletes=[];saveLiveSess();renderRace()">'+t('allMine')+'</button>';
+  list.forEach(a=>{
+    html+='<button class="chip selectable'+(live.judgeAthletes.includes(a.id)?' active':'')+'" onclick="toggleJudgeAthlete(\''+a.id+'\')">'+esc(a.name)+'</button>';
+  });
+  return html+'</div>';
+}
+
+/* ---------- Toast, tick, init ---------- */
+let toastTimer=null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+function renderAll(){
+  renderHeader(); renderSetup(); renderAthletes(); renderRace(); renderBoard();
+  showView(state.ui.view || 'setup');
+}
+setInterval(()=>{
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  if(h && h.running && document.getElementById('view-race').classList.contains('active')){
+    const el = document.getElementById('raceClock');
+    if(el) el.textContent = fmtTime(heatElapsed(n));
+    // live-tick the running time on on-course athletes (started but not finished)
+    const segs = getSegments();
+    const el2 = document.getElementById('tvClock');
+    const running = fmtTime(heatElapsed(n));
+    document.querySelectorAll('#raceAthletes .race-ath').forEach((card,i)=>{
+      const a = state.athletes.filter(x=>x.heat===n)[i];
+      if(!a) return;
+      const finished = a.splits.length===segs.length && segs.length>0;
+      if(a.splits.length>0 && !finished && !a.dnf){
+        const tEl = card.querySelector('.race-ath-time');
+        if(tEl) tEl.textContent = running;
+      }
+    });
+  }
+  if(tvOpen) renderTV();
+}, 250);
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible'){
+    const anyLive = Object.values(state.heats).some(h=>h.running);
+    if(anyLive) requestWake();
+  }
+});
+
+
+/* ---------- PWA: dynamic manifest so 'add to home screen' installs as an app ---------- */
+(function(){
+  try{
+    var icon = document.querySelector('link[rel="apple-touch-icon"]').href;
+    var manifest = {name:'HeatBoard', short_name:'HeatBoard', display:'standalone',
+      background_color:'#0F0D0C', theme_color:'#0F0D0C', start_url:'.',
+      icons:[{src:icon, sizes:'180x180', type:'image/png'}]};
+    var link = document.createElement('link'); link.rel='manifest';
+    link.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/json'}));
+    document.head.appendChild(link);
+  }catch(e){}
+})();
+
+load();
+applyI18n();
+renderAll();
+renderLiveUI();
+(function(){
+  try{
+    const s=JSON.parse(localStorage.getItem(LIVE_SESS_LS));
+    if(s && s.code){
+      if(s.role==='host'){
+        // host resumes: reconnect and re-announce
+        liveConnect().then(sb=>{ if(!sb) return; live.sb=sb; live.role='host'; live.code=s.code; live.enabled=true; subscribeLive(); renderLiveUI(); });
+      } else {
+        live.judgeAthletes=s.judgeAthletes||[];
+        joinLiveSession(s.code, s.role);
+      }
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
