@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#EDEFF1">
+<title>HeatBoard · Fitness Race Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Archivo+Black&family=Chivo+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   HEATBOARD DESIGN TOKENS
+   Concrete-floor light UI · signal orange · dark TV mode
+   ============================================================ */
+:root{
+  --ink:#171B20;
+  --muted:#5C6670;
+  --floor:#EDEFF1;
+  --paper:#FFFFFF;
+  --line:#D7DCE1;
+  --line-soft:#E6E9EC;
+  --signal:#FF4D00;
+  --signal-dark:#C93D00;
+  --signal-soft:#FFE6DB;
+  --go:#0F9D6B;
+  --go-soft:#DDF3EA;
+  --danger:#D3382C;
+  --tv-bg:#0B0E11;
+  --tv-panel:#14181D;
+  --tv-line:#252B32;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 1px 2px rgba(23,27,32,.06), 0 4px 14px rgba(23,27,32,.06);
+  --font-ui:'Archivo', system-ui, -apple-system, sans-serif;
+  --font-display:'Archivo Black', 'Archivo', system-ui, sans-serif;
+  --font-mono:'Chivo Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-ui);
+  background:var(--floor);
+  color:var(--ink);
+  font-size:16px;
+  line-height:1.45;
+  min-height:100vh;
+  padding-bottom:60px;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:4px}
+
+/* ============ APP BAR ============ */
+.app-bar{
+  background:var(--ink);
+  color:#fff;
+  padding:calc(env(safe-area-inset-top, 0px) + 12px) 16px 0;
+  position:sticky;top:0;z-index:50;
+}
+.app-bar-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  max-width:960px;margin:0 auto;padding-bottom:10px;
+}
+.brand{display:flex;align-items:baseline;gap:8px;min-width:0}
+.brand-name{
+  font-family:var(--font-display);
+  font-size:20px;letter-spacing:.5px;text-transform:uppercase;
+}
+.brand-name .hot{color:var(--signal)}
+.brand-tag{
+  font-family:var(--font-mono);font-size:10px;color:#9AA4AE;
+  border:1px solid #3A424B;border-radius:4px;padding:1px 6px;letter-spacing:1px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.event-name-display{
+  font-size:13px;color:#B9C1C9;text-align:right;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;
+}
+.lang-toggle{display:flex;border:1px solid #3A424B;border-radius:6px;overflow:hidden;flex-shrink:0}
+.lang-toggle button{
+  padding:5px 10px;font-size:12px;font-weight:600;color:#9AA4AE;letter-spacing:.5px;
+}
+.lang-toggle button.active{background:var(--signal);color:#fff}
+
+/* ============ TABS ============ */
+.tabs{
+  display:flex;max-width:960px;margin:0 auto;gap:2px;
+}
+.tab{
+  flex:1;padding:11px 4px 13px;text-align:center;
+  font-size:13px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:#8A939D;border-radius:8px 8px 0 0;position:relative;
+  transition:color .15s;
+}
+.tab .tab-count{
+  font-family:var(--font-mono);font-size:10px;font-weight:400;
+  background:#2A3138;border-radius:10px;padding:1px 6px;margin-left:5px;color:#B9C1C9;
+}
+.tab.active{background:var(--floor);color:var(--ink)}
+.tab.active .tab-count{background:var(--ink);color:#fff}
+.tab.live-dot::after{
+  content:'';position:absolute;top:8px;right:10px;width:7px;height:7px;border-radius:50%;
+  background:var(--signal);animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+
+/* ============ LAYOUT ============ */
+.view{display:none;max-width:960px;margin:0 auto;padding:20px 16px 40px}
+.view.active{display:block}
+.card{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;margin-bottom:16px;
+}
+.card-title{
+  font-family:var(--font-display);font-size:15px;text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:4px;
+}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.field{margin-bottom:14px}
+.field label{
+  display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--muted);margin-bottom:6px;
+}
+.field input[type=text],.field input[type=number],.field select,.field textarea{
+  width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--paper);
+}
+.field textarea{min-height:110px;font-family:var(--font-mono);font-size:13px;line-height:1.7}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > *{flex:1;min-width:120px}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border-radius:var(--radius-sm);
+  font-size:14px;font-weight:700;letter-spacing:.4px;
+  transition:transform .08s, background .15s;
+  min-height:48px;
+}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--signal);color:#fff}
+.btn-primary:hover{background:var(--signal-dark)}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-ghost{background:var(--paper);border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink)}
+.btn-danger-ghost{background:var(--paper);border:1px solid var(--line);color:var(--danger)}
+.btn-sm{padding:8px 14px;min-height:38px;font-size:13px}
+.btn-block{width:100%}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ============ FORMAT PICKER ============ */
+.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.format-grid{grid-template-columns:1fr}}
+.format-opt{
+  border:2px solid var(--line);border-radius:var(--radius-sm);padding:14px;
+  text-align:left;background:var(--paper);
+}
+.format-opt.selected{border-color:var(--signal);background:var(--signal-soft)}
+.format-opt .fo-name{font-weight:700;font-size:14px;margin-bottom:3px}
+.format-opt .fo-desc{font-size:12px;color:var(--muted)}
+
+/* ============ SEGMENT PREVIEW ============ */
+.seg-preview{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.seg-chip{
+  font-family:var(--font-mono);font-size:11px;padding:5px 8px;border-radius:5px;
+  border:1.5px solid var(--line);color:var(--muted);background:var(--paper);
+}
+.seg-chip.station{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ============ CHIPS (divisions, heats) ============ */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:8px 13px;border-radius:20px;border:1.5px solid var(--line);
+  font-size:13px;font-weight:600;background:var(--paper);
+}
+.chip .x{color:var(--muted);font-weight:400;font-size:15px;line-height:1;padding:0 2px}
+.chip .x:hover{color:var(--danger)}
+.chip.selectable.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ============ ATHLETE LIST ============ */
+.heat-group{margin-bottom:20px}
+.heat-group-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 2px;margin-bottom:8px;border-bottom:2px solid var(--ink);
+}
+.heat-group-head h3{
+  font-family:var(--font-display);font-size:14px;text-transform:uppercase;letter-spacing:.8px;
+}
+.heat-group-head .hg-count{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.ath-row{
+  display:flex;align-items:center;gap:10px;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:10px 12px;margin-bottom:7px;
+}
+.ath-lane{
+  font-family:var(--font-mono);font-size:12px;color:var(--muted);
+  border:1px solid var(--line);border-radius:5px;padding:3px 7px;flex-shrink:0;
+}
+.ath-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ath-div{font-size:12px;color:var(--muted);flex-shrink:0}
+.ath-actions{display:flex;gap:6px;flex-shrink:0}
+.icon-btn{
+  width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:7px;border:1px solid var(--line);font-size:15px;color:var(--muted);
+  background:var(--paper);
+}
+.icon-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+/* ============ RACE VIEW ============ */
+.race-clock-card{
+  background:var(--ink);color:#fff;border-radius:var(--radius);
+  padding:22px 18px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;
+}
+.race-clock-card::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(-45deg, transparent 0 26px, rgba(255,255,255,.025) 26px 52px);
+  pointer-events:none;
+}
+.race-heat-label{
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#8A939D;
+}
+.race-clock{
+  font-family:var(--font-mono);font-weight:600;
+  font-size:clamp(52px, 15vw, 88px);line-height:1.05;letter-spacing:-1px;
+  font-variant-numeric:tabular-nums;margin:4px 0 10px;
+}
+.race-clock.live{color:var(--signal)}
+.race-controls{display:flex;gap:10px;justify-content:center;position:relative}
+.heat-select-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+
+/* Race athlete card */
+.race-ath{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px;margin-bottom:10px;box-shadow:var(--shadow);
+}
+.race-ath.finished{border-color:var(--go);background:linear-gradient(0deg, var(--go-soft), var(--paper) 55%)}
+.race-ath.dnf{opacity:.55}
+.race-ath-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
+.race-ath-name{font-weight:700;font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.race-ath-name .lane-tag{font-family:var(--font-mono);font-size:11px;color:var(--muted);font-weight:400;margin-right:6px}
+.race-ath-time{
+  font-family:var(--font-mono);font-size:15px;font-weight:600;color:var(--muted);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.race-ath.finished .race-ath-time{color:var(--go);font-size:17px}
+
+/* THE SIGNATURE: lane strip */
+.lane-strip{display:flex;gap:3px;margin-bottom:11px}
+.lane-seg{
+  flex:1;height:14px;border-radius:3px;
+  border:1.5px solid var(--line);background:var(--paper);
+  transition:background .2s, border-color .2s;
+}
+.lane-seg.station{background:var(--line-soft)}
+.lane-seg.done{background:var(--signal);border-color:var(--signal)}
+.lane-seg.done.station{background:var(--signal-dark);border-color:var(--signal-dark)}
+.lane-seg.current{border-color:var(--ink);animation:segblink 1.2s ease-in-out infinite}
+@keyframes segblink{0%,100%{box-shadow:0 0 0 0 rgba(23,27,32,.35)}50%{box-shadow:0 0 0 3px rgba(23,27,32,0)}}
+
+.race-ath-bottom{display:flex;gap:8px;align-items:stretch}
+.split-btn{
+  flex:1;background:var(--ink);color:#fff;border-radius:var(--radius-sm);
+  padding:14px 12px;min-height:56px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+}
+.split-btn:active{transform:scale(.98)}
+.split-btn .sb-action{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#9AA4AE}
+.split-btn .sb-seg{font-weight:700;font-size:15px}
+.split-btn.last-seg{background:var(--signal)}
+.split-btn.last-seg .sb-action{color:#FFD9C7}
+.race-ath-bottom .icon-btn{width:44px;height:auto;min-height:56px}
+
+/* ============ LEADERBOARD ============ */
+.board-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.board-filters select{
+  padding:10px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);
+  background:var(--paper);flex:1;min-width:130px;
+}
+.board-actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.board-row{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);
+  margin-bottom:7px;overflow:hidden;
+}
+.board-row-main{display:flex;align-items:center;gap:12px;padding:12px 14px;width:100%;text-align:left}
+.board-rank{
+  font-family:var(--font-mono);font-weight:600;font-size:17px;width:34px;flex-shrink:0;
+  color:var(--muted);font-variant-numeric:tabular-nums;
+}
+.board-row.podium-1 .board-rank{color:var(--signal)}
+.board-row.podium-1{border-color:var(--signal)}
+.board-info{flex:1;min-width:0}
+.board-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board-meta{font-size:12px;color:var(--muted)}
+.board-time{
+  font-family:var(--font-mono);font-weight:600;font-size:16px;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.board-time.progress{color:var(--muted);font-size:13px}
+.board-time.dnf{color:var(--danger);font-size:13px;font-weight:700}
+.board-splits{
+  border-top:1px dashed var(--line);padding:12px 14px;background:#FAFBFC;
+  display:none;
+}
+.board-row.open .board-splits{display:block}
+.splits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 16px}
+.split-line{display:flex;justify-content:space-between;font-size:12.5px;padding:3px 0;border-bottom:1px solid var(--line-soft)}
+.split-line .sl-name{color:var(--muted)}
+.split-line .sl-time{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.board-splits .btn{margin-top:12px}
+.empty-state{
+  text-align:center;padding:44px 20px;color:var(--muted);font-size:14px;
+}
+.empty-state .es-icon{font-size:34px;margin-bottom:10px}
+
+/* ============ TV MODE ============ */
+.tv-overlay{
+  position:fixed;inset:0;background:var(--tv-bg);color:#fff;z-index:200;
+  display:none;flex-direction:column;padding:3vh 4vw;
+}
+.tv-overlay.active{display:flex}
+.tv-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:2.5vh}
+.tv-title{font-family:var(--font-display);font-size:clamp(22px,3.4vw,44px);text-transform:uppercase;letter-spacing:1px}
+.tv-title .hot{color:var(--signal)}
+.tv-clock{
+  font-family:var(--font-mono);font-weight:600;font-size:clamp(24px,4vw,52px);
+  color:var(--signal);font-variant-numeric:tabular-nums;
+}
+.tv-list{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:1vh}
+.tv-row{
+  display:flex;align-items:center;gap:2.5vw;
+  background:var(--tv-panel);border:1px solid var(--tv-line);border-radius:10px;
+  padding:1.2vh 2vw;flex:1;min-height:0;max-height:9vh;
+}
+.tv-rank{
+  font-family:var(--font-mono);font-weight:600;font-size:clamp(18px,2.6vw,36px);
+  width:2.2em;color:#6B7580;font-variant-numeric:tabular-nums;flex-shrink:0;
+}
+.tv-row:nth-child(1) .tv-rank{color:var(--signal)}
+.tv-name{flex:1;font-weight:700;font-size:clamp(16px,2.4vw,32px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tv-div{font-size:clamp(11px,1.3vw,17px);color:#6B7580;white-space:nowrap}
+.tv-time{
+  font-family:var(--font-mono);font-weight:600;font-size:clamp(16px,2.6vw,34px);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.tv-time.progress{color:#6B7580;font-size:clamp(12px,1.8vw,22px)}
+.tv-close{
+  position:absolute;top:14px;right:16px;color:#6B7580;font-size:14px;font-weight:700;
+  border:1px solid var(--tv-line);border-radius:8px;padding:8px 14px;
+}
+.tv-strip{display:flex;gap:.35vw;width:16vw;flex-shrink:0}
+.tv-strip .lane-seg{height:1.4vh;border-color:#333B44;background:transparent;border-radius:2px}
+.tv-strip .lane-seg.station{background:#252B32}
+.tv-strip .lane-seg.done{background:var(--signal);border-color:var(--signal)}
+.tv-strip .lane-seg.done.station{background:var(--signal-dark);border-color:var(--signal-dark)}
+
+/* ============ TOAST & MISC ============ */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:12px 20px;border-radius:10px;
+  font-size:14px;font-weight:600;opacity:0;pointer-events:none;
+  transition:opacity .25s, transform .25s;z-index:300;max-width:88vw;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.setup-footer{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+details.adv{margin-top:10px}
+details.adv summary{
+  font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;padding:6px 0;
+}
+.demo-link{font-size:12.5px;color:var(--muted);text-decoration:underline;background:none}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important}
+}
+@media print{.app-bar,.board-actions,.board-filters{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ============ APP BAR ============ -->
+<header class="app-bar">
+  <div class="app-bar-top">
+    <div class="brand">
+      <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
+      <span class="brand-tag">SIM v0.1</span>
+    </div>
+    <div class="event-name-display" id="eventNameDisplay"></div>
+    <div class="lang-toggle" role="group" aria-label="Taal / Language">
+      <button id="langNL" onclick="setLang('nl')">NL</button>
+      <button id="langEN" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" id="tab-setup" onclick="showView('setup')" data-i18n="tabSetup">Opzet</button>
+    <button class="tab" id="tab-athletes" onclick="showView('athletes')"><span data-i18n="tabAthletes">Atleten</span><span class="tab-count" id="athCount">0</span></button>
+    <button class="tab" id="tab-race" onclick="showView('race')" data-i18n="tabRace">Race</button>
+    <button class="tab" id="tab-board" onclick="showView('board')" data-i18n="tabBoard">Klassement</button>
+  </nav>
+</header>
+
+<!-- ============ SETUP VIEW ============ -->
+<section class="view active" id="view-setup">
+  <div class="card">
+    <div class="card-title" data-i18n="setupTitle">Simulatie opzetten</div>
+    <div class="card-sub" data-i18n="setupSub">Naam, format en divisies. Alles wordt automatisch lokaal opgeslagen op dit apparaat.</div>
+    <div class="field">
+      <label for="eventName" data-i18n="lblEventName">Naam van de simulatie</label>
+      <input type="text" id="eventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim — Gym Rotterdam" oninput="updateEventName(this.value)">
+    </div>
+    <div class="field">
+      <label data-i18n="lblFormat">Format</label>
+      <div class="format-grid">
+        <button class="format-opt" id="fmt-full" onclick="setFormat('full')">
+          <div class="fo-name" data-i18n="fmtFullName">Volledige sim</div>
+          <div class="fo-desc" data-i18n="fmtFullDesc">8× 1 km run + 8 stations, officiële volgorde</div>
+        </button>
+        <button class="format-opt" id="fmt-half" onclick="setFormat('half')">
+          <div class="fo-name" data-i18n="fmtHalfName">Halve sim</div>
+          <div class="fo-desc" data-i18n="fmtHalfDesc">4× run + 4 stations, ideaal voor een training</div>
+        </button>
+        <button class="format-opt" id="fmt-custom" onclick="setFormat('custom')">
+          <div class="fo-name" data-i18n="fmtCustomName">Eigen format</div>
+          <div class="fo-desc" data-i18n="fmtCustomDesc">Stel zelf de segmenten samen</div>
+        </button>
+      </div>
+      <div class="field" id="customSegField" style="display:none;margin-top:12px">
+        <label for="customSegs" data-i18n="lblCustomSegs">Segmenten (één per regel, R = run, S = station)</label>
+        <textarea id="customSegs" data-i18n-ph="phCustomSegs" placeholder="R Run 1 km&#10;S SkiErg 500 m&#10;R Run 1 km&#10;S Wall Balls 50" onchange="updateCustomSegs(this.value)"></textarea>
+        <div class="hint" data-i18n="hintCustomSegs">Begin een regel met R (run) of S (station), gevolgd door de naam.</div>
+      </div>
+      <div class="seg-preview" id="segPreview"></div>
+    </div>
+    <div class="field">
+      <label data-i18n="lblDivisions">Divisies</label>
+      <div class="chips" id="divisionChips"></div>
+      <div class="row" style="margin-top:10px">
+        <input type="text" id="newDivision" data-i18n-ph="phNewDivision" placeholder="Nieuwe divisie…" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px">
+        <button class="btn btn-ghost btn-sm" onclick="addDivision()" data-i18n="btnAddDivision" style="flex:0 0 auto">+ Toevoegen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="dataTitle">Gegevens</div>
+    <div class="card-sub" data-i18n="dataSub">Maak een back-up of zet de simulatie over naar een ander apparaat.</div>
+    <div class="setup-footer">
+      <button class="btn btn-ghost btn-sm" onclick="exportJSON()" data-i18n="btnBackup">Back-up downloaden</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" data-i18n="btnRestore">Back-up laden</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)">
+      <button class="btn btn-danger-ghost btn-sm" onclick="resetAll()" data-i18n="btnResetAll">Alles wissen</button>
+    </div>
+    <details class="adv">
+      <summary data-i18n="demoSummary">Even snel demonstreren?</summary>
+      <p class="hint" data-i18n="demoHint">Laad voorbeelddata met twee heats en uitslagen om de tool aan collega's of een gym te laten zien.</p>
+      <button class="demo-link" onclick="loadDemo()" data-i18n="btnDemo">Demo-data laden</button>
+    </details>
+  </div>
+</section>
+
+<!-- ============ ATHLETES VIEW ============ -->
+<section class="view" id="view-athletes">
+  <div class="card">
+    <div class="card-title" data-i18n="athTitle">Atleet toevoegen</div>
+    <div class="row">
+      <div class="field" style="flex:2;min-width:170px">
+        <label for="athName" data-i18n="lblAthName">Naam (of duo/team)</label>
+        <input type="text" id="athName" data-i18n-ph="phAthName" placeholder="Bijv. Lisa de Jong">
+      </div>
+      <div class="field">
+        <label for="athDivision" data-i18n="lblAthDivision">Divisie</label>
+        <select id="athDivision"></select>
+      </div>
+      <div class="field" style="max-width:110px">
+        <label for="athHeat" data-i18n="lblAthHeat">Heat</label>
+        <input type="number" id="athHeat" min="1" max="99" value="1" inputmode="numeric">
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="addAthlete()" data-i18n="btnAddAthlete">Atleet toevoegen</button>
+    <details class="adv">
+      <summary data-i18n="bulkSummary">Meerdere tegelijk plakken</summary>
+      <div class="field" style="margin-top:8px">
+        <textarea id="bulkPaste" data-i18n-ph="phBulk" placeholder="Naam; Divisie; Heat&#10;Lisa de Jong; Dames Open; 1&#10;Tom Bakker; Heren Open; 1"></textarea>
+        <div class="hint" data-i18n="hintBulk">Eén atleet per regel: Naam; Divisie; Heatnummer. Divisie en heat zijn optioneel.</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="bulkAdd()" data-i18n="btnBulk">Lijst toevoegen</button>
+    </details>
+  </div>
+  <div id="athleteList"></div>
+</section>
+
+<!-- ============ RACE VIEW ============ -->
+<section class="view" id="view-race">
+  <div class="heat-select-bar" id="heatSelectBar"></div>
+  <div class="race-clock-card">
+    <div class="race-heat-label" id="raceHeatLabel"></div>
+    <div class="race-clock" id="raceClock">00:00</div>
+    <div class="race-controls">
+      <button class="btn btn-primary" id="btnStartHeat" onclick="startHeat()" data-i18n="btnStartHeat">Start heat</button>
+      <button class="btn btn-ghost" id="btnResetHeat" onclick="resetHeat()" style="background:transparent;color:#B9C1C9;border-color:#3A424B" data-i18n="btnResetHeat">Reset heat</button>
+    </div>
+  </div>
+  <div id="raceAthletes"></div>
+</section>
+
+<!-- ============ BOARD VIEW ============ -->
+<section class="view" id="view-board">
+  <div class="board-filters">
+    <select id="filterDivision" onchange="renderBoard()"></select>
+    <select id="filterHeat" onchange="renderBoard()"></select>
+  </div>
+  <div class="board-actions">
+    <button class="btn btn-dark btn-sm" onclick="openTV()" data-i18n="btnTV">📺 TV-weergave</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportCSV()" data-i18n="btnCSV">CSV exporteren</button>
+  </div>
+  <div id="boardList"></div>
+</section>
+
+<!-- ============ TV OVERLAY ============ -->
+<div class="tv-overlay" id="tvOverlay">
+  <button class="tv-close" onclick="closeTV()" data-i18n="btnCloseTV">Sluiten ✕</button>
+  <div class="tv-head">
+    <div class="tv-title" id="tvTitle">HEAT<span class="hot">BOARD</span></div>
+    <div class="tv-clock" id="tvClock"></div>
+  </div>
+  <div class="tv-list" id="tvList"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="shareCanvas" width="1080" height="1350" style="display:none"></canvas>
+
+<script>
+/* ============================================================
+   HEATBOARD v0.1 — single-file fitness race simulator
+   Timing · heats · lane strips · leaderboard · TV mode
+   ============================================================ */
+
+/* ---------- i18n ---------- */
+const I18N = {
+  nl: {
+    tabSetup:'Opzet', tabAthletes:'Atleten', tabRace:'Race', tabBoard:'Klassement',
+    setupTitle:'Simulatie opzetten',
+    setupSub:'Naam, format en divisies. Alles wordt automatisch lokaal opgeslagen op dit apparaat.',
+    lblEventName:'Naam van de simulatie', phEventName:'Bijv. Winter Sim — Gym Rotterdam',
+    lblFormat:'Format',
+    fmtFullName:'Volledige sim', fmtFullDesc:'8× 1 km run + 8 stations, officiële volgorde',
+    fmtHalfName:'Halve sim', fmtHalfDesc:'4× run + 4 stations, ideaal voor een training',
+    fmtCustomName:'Eigen format', fmtCustomDesc:'Stel zelf de segmenten samen',
+    lblCustomSegs:'Segmenten (één per regel, R = run, S = station)',
+    phCustomSegs:'R Run 1 km\nS SkiErg 500 m\nR Run 1 km\nS Wall Balls 50',
+    hintCustomSegs:'Begin een regel met R (run) of S (station), gevolgd door de naam.',
+    lblDivisions:'Divisies', phNewDivision:'Nieuwe divisie…', btnAddDivision:'+ Toevoegen',
+    dataTitle:'Gegevens', dataSub:'Maak een back-up of zet de simulatie over naar een ander apparaat.',
+    btnBackup:'Back-up downloaden', btnRestore:'Back-up laden', btnResetAll:'Alles wissen',
+    demoSummary:'Even snel demonstreren?',
+    demoHint:'Laad voorbeelddata met twee heats en uitslagen om de tool aan collega\u2019s of een gym te laten zien.',
+    btnDemo:'Demo-data laden',
+    athTitle:'Atleet toevoegen', lblAthName:'Naam (of duo/team)', phAthName:'Bijv. Lisa de Jong',
+    lblAthDivision:'Divisie', lblAthHeat:'Heat', btnAddAthlete:'Atleet toevoegen',
+    bulkSummary:'Meerdere tegelijk plakken',
+    phBulk:'Naam; Divisie; Heat\nLisa de Jong; Dames Open; 1\nTom Bakker; Heren Open; 1',
+    hintBulk:'Eén atleet per regel: Naam; Divisie; Heatnummer. Divisie en heat zijn optioneel.',
+    btnBulk:'Lijst toevoegen',
+    heat:'Heat', athletes_one:'atleet', athletes_other:'atleten',
+    btnStartHeat:'Start heat', btnResetHeat:'Reset heat', btnCloseTV:'Sluiten ✕',
+    btnTV:'📺 TV-weergave', btnCSV:'CSV exporteren',
+    allDivisions:'Alle divisies', allHeats:'Alle heats',
+    statusFinished:'Finish', statusDNF:'DNF', statusBusy:'Onderweg', statusWaiting:'Nog niet gestart',
+    confirmChangeFormat:'Format wijzigen wist alle geregistreerde tijden. Doorgaan?',
+    confirmResetHeat:'Alle tijden van deze heat wissen en de klok terugzetten?',
+    confirmResetAll:'Weet je zeker dat je ALLES wilt wissen? Dit kan niet ongedaan worden gemaakt.',
+    confirmDeleteAth:'Deze atleet verwijderen?',
+    confirmImport:'Back-up laden overschrijft de huidige simulatie. Doorgaan?',
+    promptRename:'Nieuwe naam:', promptHeat:'Naar welke heat? (nummer)',
+    toastAdded:'toegevoegd', toastFinished:'FINISH', toastSaved:'Opgeslagen',
+    toastNeedName:'Vul eerst een naam in', toastNoAthletes:'Nog geen atleten in deze heat',
+    toastHeatStarted:'Heat gestart', toastImported:'Back-up geladen', toastDemo:'Demo-data geladen',
+    toastCardSaved:'Scorekaart gedownload', toastCSV:'CSV gedownload', toastNothingToExport:'Nog geen resultaten om te exporteren',
+    noAthletesYet:'Nog geen atleten. Voeg ze toe via het tabblad Atleten.',
+    noBoardYet:'Nog geen deelnemers of resultaten. Het klassement vult zich zodra de eerste splits binnenkomen.',
+    undo:'Splits terugdraaien', dnf:'DNF', dnfUndo:'DNF ongedaan maken', del:'Verwijderen', rename:'Naam wijzigen', moveHeat:'Andere heat',
+    finishAction:'Finish!', nextAction:'Volgende', shareCard:'Scorekaart (PNG)',
+    segTotal:'Totaal', segOf:'van', splitsTitle:'Splits (cumulatief)',
+    csvHeaders:'Positie;Naam;Divisie;Heat;Status;Totaal',
+    demoEventName:'Demo Sim — Rotterdam',
+  },
+  en: {
+    tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
+    setupTitle:'Set up your simulation',
+    setupSub:'Name, format and divisions. Everything is saved automatically on this device.',
+    lblEventName:'Simulation name', phEventName:'E.g. Winter Sim — Gym Rotterdam',
+    lblFormat:'Format',
+    fmtFullName:'Full sim', fmtFullDesc:'8× 1 km run + 8 stations, official order',
+    fmtHalfName:'Half sim', fmtHalfDesc:'4× run + 4 stations, perfect for a class',
+    fmtCustomName:'Custom format', fmtCustomDesc:'Build your own segment list',
+    lblCustomSegs:'Segments (one per line, R = run, S = station)',
+    phCustomSegs:'R Run 1 km\nS SkiErg 500 m\nR Run 1 km\nS Wall Balls 50',
+    hintCustomSegs:'Start a line with R (run) or S (station), followed by the name.',
+    lblDivisions:'Divisions', phNewDivision:'New division…', btnAddDivision:'+ Add',
+    dataTitle:'Data', dataSub:'Make a backup or move this simulation to another device.',
+    btnBackup:'Download backup', btnRestore:'Load backup', btnResetAll:'Erase everything',
+    demoSummary:'Need a quick demo?',
+    demoHint:'Load sample data with two heats and results to show the tool to colleagues or a gym.',
+    btnDemo:'Load demo data',
+    athTitle:'Add athlete', lblAthName:'Name (or duo/team)', phAthName:'E.g. Lisa Jones',
+    lblAthDivision:'Division', lblAthHeat:'Heat', btnAddAthlete:'Add athlete',
+    bulkSummary:'Paste multiple at once',
+    phBulk:'Name; Division; Heat\nLisa Jones; Women Open; 1\nTom Baker; Men Open; 1',
+    hintBulk:'One athlete per line: Name; Division; Heat number. Division and heat are optional.',
+    btnBulk:'Add list',
+    heat:'Heat', athletes_one:'athlete', athletes_other:'athletes',
+    btnStartHeat:'Start heat', btnResetHeat:'Reset heat', btnCloseTV:'Close ✕',
+    btnTV:'📺 TV display', btnCSV:'Export CSV',
+    allDivisions:'All divisions', allHeats:'All heats',
+    statusFinished:'Finish', statusDNF:'DNF', statusBusy:'On course', statusWaiting:'Not started',
+    confirmChangeFormat:'Changing the format erases all recorded times. Continue?',
+    confirmResetHeat:'Erase all times in this heat and reset the clock?',
+    confirmResetAll:'Are you sure you want to erase EVERYTHING? This cannot be undone.',
+    confirmDeleteAth:'Delete this athlete?',
+    confirmImport:'Loading a backup overwrites the current simulation. Continue?',
+    promptRename:'New name:', promptHeat:'Move to which heat? (number)',
+    toastAdded:'added', toastFinished:'FINISH', toastSaved:'Saved',
+    toastNeedName:'Enter a name first', toastNoAthletes:'No athletes in this heat yet',
+    toastHeatStarted:'Heat started', toastImported:'Backup loaded', toastDemo:'Demo data loaded',
+    toastCardSaved:'Score card downloaded', toastCSV:'CSV downloaded', toastNothingToExport:'No results to export yet',
+    noAthletesYet:'No athletes yet. Add them in the Athletes tab.',
+    noBoardYet:'No participants or results yet. The leaderboard fills up as soon as the first splits come in.',
+    undo:'Undo split', dnf:'DNF', dnfUndo:'Undo DNF', del:'Delete', rename:'Rename', moveHeat:'Move heat',
+    finishAction:'Finish!', nextAction:'Next up', shareCard:'Score card (PNG)',
+    segTotal:'Total', segOf:'of', splitsTitle:'Splits (cumulative)',
+    csvHeaders:'Rank;Name;Division;Heat;Status;Total',
+    demoEventName:'Demo Sim — Rotterdam',
+  }
+};
+function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
+
+/* ---------- Segment presets (language-neutral labels) ---------- */
+const FULL_SEGS = [
+  ['R','Run 1 km'],['S','SkiErg 1000 m'],
+  ['R','Run 1 km'],['S','Sled Push 50 m'],
+  ['R','Run 1 km'],['S','Sled Pull 50 m'],
+  ['R','Run 1 km'],['S','Burpee Broad Jump 80 m'],
+  ['R','Run 1 km'],['S','Row 1000 m'],
+  ['R','Run 1 km'],['S','Farmers Carry 200 m'],
+  ['R','Run 1 km'],['S','Sandbag Lunges 100 m'],
+  ['R','Run 1 km'],['S','Wall Balls']
+];
+const HALF_SEGS = [
+  ['R','Run 1 km'],['S','SkiErg 500 m'],
+  ['R','Run 1 km'],['S','Sled Push 25 m'],
+  ['R','Run 1 km'],['S','Row 500 m'],
+  ['R','Run 1 km'],['S','Wall Balls 50']
+];
+const DEFAULT_DIVISIONS_NL = ['Dames Open','Heren Open','Dames Pro','Heren Pro','Doubles'];
+const DEFAULT_DIVISIONS_EN = ['Women Open','Men Open','Women Pro','Men Pro','Doubles'];
+
+/* ---------- State ---------- */
+const LS_KEY = 'heatboard_v1';
+let state = defaultState();
+function defaultState(){
+  return {
+    lang:'nl',
+    event:{ name:'', format:'full', customSegs:[] },
+    divisions: DEFAULT_DIVISIONS_NL.slice(),
+    athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false}
+    heats: {},             // "1": {startedAt:null, running:false}
+    ui:{ currentHeat:1, view:'setup' }
+  };
+}
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ const s = JSON.parse(raw); state = Object.assign(defaultState(), s);
+      state.event = Object.assign(defaultState().event, s.event||{});
+      state.ui = Object.assign(defaultState().ui, s.ui||{});
+    }
+  }catch(e){ state = defaultState(); }
+}
+function uid(){ return 'a'+Math.random().toString(36).slice(2,9); }
+
+function getSegments(){
+  if(state.event.format==='half') return HALF_SEGS.map(s=>({type:s[0],label:s[1]}));
+  if(state.event.format==='custom'){
+    const c = state.event.customSegs;
+    if(c && c.length) return c.map(s=>({type:s[0],label:s[1]}));
+    return [];
+  }
+  return FULL_SEGS.map(s=>({type:s[0],label:s[1]}));
+}
+function heatOf(n){ if(!state.heats[n]) state.heats[n]={startedAt:null,running:false}; return state.heats[n]; }
+function heatNumbers(){
+  const set = new Set(state.athletes.map(a=>a.heat));
+  if(set.size===0) set.add(1);
+  return [...set].sort((a,b)=>a-b);
+}
+
+/* ---------- Time formatting ---------- */
+function fmtTime(ms){
+  if(ms==null || isNaN(ms)) return '–';
+  const s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
+  const p = n=>String(n).padStart(2,'0');
+  return h>0 ? h+':'+p(m)+':'+p(ss) : p(m)+':'+p(ss);
+}
+
+/* ---------- View & language ---------- */
+function showView(v){
+  state.ui.view = v; save();
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.getElementById('tab-'+v).classList.add('active');
+  if(v==='race') renderRace();
+  if(v==='board') renderBoard();
+  if(v==='athletes') renderAthletes();
+  if(v==='setup') renderSetup();
+}
+function setLang(l){
+  state.lang = l; save(); applyI18n(); renderAll();
+}
+function applyI18n(){
+  document.documentElement.lang = state.lang;
+  document.getElementById('langNL').classList.toggle('active', state.lang==='nl');
+  document.getElementById('langEN').classList.toggle('active', state.lang==='en');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-ph')); });
+}
+
+/* ---------- Setup ---------- */
+function updateEventName(v){ state.event.name = v; save(); renderHeader(); }
+function renderHeader(){
+  document.getElementById('eventNameDisplay').textContent = state.event.name || '';
+  document.getElementById('athCount').textContent = state.athletes.length;
+  const anyLive = Object.values(state.heats).some(h=>h.running);
+  document.getElementById('tab-race').classList.toggle('live-dot', anyLive);
+}
+function setFormat(f){
+  const hasTimes = state.athletes.some(a=>a.splits.length>0);
+  if(hasTimes && f!==state.event.format){
+    if(!confirm(t('confirmChangeFormat'))) return;
+    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; });
+    state.heats = {};
+  }
+  state.event.format = f; save(); renderSetup(); renderHeader();
+}
+function updateCustomSegs(text){
+  const segs = [];
+  text.split('\n').forEach(line=>{
+    line = line.trim(); if(!line) return;
+    let type='S', label=line;
+    const m = line.match(/^([RSrs])[\s:.\-]+(.+)$/);
+    if(m){ type = m[1].toUpperCase(); label = m[2].trim(); }
+    segs.push([type,label]);
+  });
+  const hasTimes = state.athletes.some(a=>a.splits.length>0);
+  if(hasTimes){ if(!confirm(t('confirmChangeFormat'))) { renderSetup(); return; }
+    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; }); state.heats={};
+  }
+  state.event.customSegs = segs; save(); renderSetup();
+}
+function renderSetup(){
+  document.getElementById('eventName').value = state.event.name;
+  ['full','half','custom'].forEach(f=>{
+    document.getElementById('fmt-'+f).classList.toggle('selected', state.event.format===f);
+  });
+  document.getElementById('customSegField').style.display = state.event.format==='custom' ? 'block' : 'none';
+  if(state.event.format==='custom' && state.event.customSegs.length){
+    document.getElementById('customSegs').value = state.event.customSegs.map(s=>s[0]+' '+s[1]).join('\n');
+  }
+  const prev = document.getElementById('segPreview');
+  prev.innerHTML = getSegments().map(s=>
+    '<span class="seg-chip'+(s.type==='S'?' station':'')+'">'+esc(s.label)+'</span>'
+  ).join('');
+  renderDivisions();
+}
+function renderDivisions(){
+  const wrap = document.getElementById('divisionChips');
+  wrap.innerHTML = state.divisions.map((d,i)=>
+    '<span class="chip">'+esc(d)+'<button class="x" onclick="removeDivision('+i+')" aria-label="remove">×</button></span>'
+  ).join('');
+  const sel = document.getElementById('athDivision');
+  if(sel) sel.innerHTML = state.divisions.map(d=>'<option>'+esc(d)+'</option>').join('');
+}
+function addDivision(){
+  const inp = document.getElementById('newDivision');
+  const v = inp.value.trim(); if(!v) return;
+  if(!state.divisions.includes(v)) state.divisions.push(v);
+  inp.value=''; save(); renderDivisions();
+}
+function removeDivision(i){ state.divisions.splice(i,1); save(); renderDivisions(); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- Athletes ---------- */
+function addAthlete(){
+  const name = document.getElementById('athName').value.trim();
+  if(!name){ toast(t('toastNeedName')); return; }
+  const division = document.getElementById('athDivision').value || state.divisions[0] || '';
+  const heat = Math.max(1, parseInt(document.getElementById('athHeat').value)||1);
+  state.athletes.push({id:uid(), name, division, heat, splits:[], dnf:false});
+  document.getElementById('athName').value='';
+  save(); renderAthletes(); renderHeader();
+  toast(name+' '+t('toastAdded'));
+}
+function bulkAdd(){
+  const lines = document.getElementById('bulkPaste').value.split('\n');
+  let n=0;
+  lines.forEach(line=>{
+    const parts = line.split(/[;\t]/).map(p=>p.trim());
+    if(!parts[0]) return;
+    const division = parts[1] && parts[1].length ? parts[1] : (state.divisions[0]||'');
+    if(division && !state.divisions.includes(division)) state.divisions.push(division);
+    const heat = Math.max(1, parseInt(parts[2])||1);
+    state.athletes.push({id:uid(), name:parts[0], division, heat, splits:[], dnf:false});
+    n++;
+  });
+  if(n){ document.getElementById('bulkPaste').value=''; save(); renderAthletes(); renderDivisions(); renderHeader(); toast(n+' '+t(n===1?'athletes_one':'athletes_other')+' '+t('toastAdded')); }
+}
+function deleteAthlete(id){
+  if(!confirm(t('confirmDeleteAth'))) return;
+  state.athletes = state.athletes.filter(a=>a.id!==id);
+  save(); renderAthletes(); renderHeader(); renderRace(); 
+}
+function renameAthlete(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const v = prompt(t('promptRename'), a.name);
+  if(v && v.trim()){ a.name = v.trim(); save(); renderAthletes(); }
+}
+function moveAthlete(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const v = prompt(t('promptHeat'), a.heat);
+  const h = parseInt(v);
+  if(h>=1){ a.heat = h; save(); renderAthletes(); }
+}
+function renderAthletes(){
+  const wrap = document.getElementById('athleteList');
+  if(state.athletes.length===0){
+    wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🏁</div>'+t('noAthletesYet')+'</div>';
+    return;
+  }
+  let html='';
+  heatNumbers().forEach(h=>{
+    const list = state.athletes.filter(a=>a.heat===h);
+    if(!list.length) return;
+    html += '<div class="heat-group"><div class="heat-group-head"><h3>'+t('heat')+' '+h+'</h3>'+
+      '<span class="hg-count">'+list.length+' '+t(list.length===1?'athletes_one':'athletes_other')+'</span></div>';
+    list.forEach((a,idx)=>{
+      html += '<div class="ath-row">'+
+        '<span class="ath-lane">L'+(idx+1)+'</span>'+
+        '<span class="ath-name">'+esc(a.name)+'</span>'+
+        '<span class="ath-div">'+esc(a.division)+'</span>'+
+        '<span class="ath-actions">'+
+        '<button class="icon-btn" title="'+t('rename')+'" onclick="renameAthlete(\''+a.id+'\')">✎</button>'+
+        '<button class="icon-btn" title="'+t('moveHeat')+'" onclick="moveAthlete(\''+a.id+'\')">⇄</button>'+
+        '<button class="icon-btn" title="'+t('del')+'" onclick="deleteAthlete(\''+a.id+'\')">🗑</button>'+
+        '</span></div>';
+    });
+    html += '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
+/* ---------- Race ---------- */
+let wakeLock = null;
+async function requestWake(){ try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } }catch(e){} }
+function releaseWake(){ try{ if(wakeLock){ wakeLock.release(); wakeLock=null; } }catch(e){} }
+
+function selectHeat(n){ state.ui.currentHeat = n; save(); renderRace(); }
+function startHeat(){
+  const n = state.ui.currentHeat;
+  const list = state.athletes.filter(a=>a.heat===n);
+  if(!list.length){ toast(t('toastNoAthletes')); return; }
+  const h = heatOf(n);
+  if(h.running) return;
+  if(!h.startedAt){ h.startedAt = Date.now(); }
+  h.running = true;
+  save(); renderRace(); renderHeader(); requestWake();
+  toast(t('toastHeatStarted')+' · '+t('heat')+' '+n);
+}
+function resetHeat(){
+  const n = state.ui.currentHeat;
+  if(!confirm(t('confirmResetHeat'))) return;
+  state.heats[n] = {startedAt:null, running:false};
+  state.athletes.filter(a=>a.heat===n).forEach(a=>{ a.splits=[]; a.dnf=false; });
+  save(); renderRace(); renderHeader(); releaseWake();
+}
+function heatElapsed(n){
+  const h = state.heats[n];
+  if(!h || !h.startedAt) return 0;
+  return Date.now() - h.startedAt;
+}
+function recordSplit(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const h = heatOf(a.heat);
+  if(!h.running) return;
+  const segs = getSegments();
+  if(a.splits.length >= segs.length) return;
+  a.splits.push(heatElapsed(a.heat));
+  if(a.splits.length === segs.length){
+    toast('🏁 '+a.name+' — '+t('toastFinished')+' '+fmtTime(a.splits[a.splits.length-1]));
+    const list = state.athletes.filter(x=>x.heat===a.heat);
+    const allDone = list.every(x=>x.dnf || x.splits.length===segs.length);
+    if(allDone){ h.running = false; releaseWake(); }
+  }
+  save(); renderRace(); renderHeader();
+}
+function undoSplit(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  if(a.splits.length){ a.splits.pop(); heatOf(a.heat).running = true; save(); renderRace(); renderHeader(); }
+}
+function toggleDNF(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  a.dnf = !a.dnf; save(); renderRace();
+}
+function laneStrip(a, segs, mini){
+  let html = '<div class="'+(mini?'tv-strip':'lane-strip')+'">';
+  segs.forEach((s,i)=>{
+    const done = i < a.splits.length;
+    const current = !a.dnf && i === a.splits.length;
+    html += '<span class="lane-seg'+(s.type==='S'?' station':'')+(done?' done':'')+(current&&!mini?' current':'')+'"></span>';
+  });
+  return html+'</div>';
+}
+function renderRace(){
+  const bar = document.getElementById('heatSelectBar');
+  const nums = heatNumbers();
+  if(!nums.includes(state.ui.currentHeat)) state.ui.currentHeat = nums[0];
+  bar.innerHTML = nums.map(n=>{
+    const h = state.heats[n];
+    const live = h && h.running;
+    return '<button class="chip selectable'+(state.ui.currentHeat===n?' active':'')+'" onclick="selectHeat('+n+')">'+
+      t('heat')+' '+n+(live?' ●':'')+'</button>';
+  }).join('');
+
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  document.getElementById('raceHeatLabel').textContent = (state.event.name? state.event.name+' · ':'') + t('heat')+' '+n;
+  const clockEl = document.getElementById('raceClock');
+  clockEl.textContent = fmtTime(heatElapsed(n));
+  clockEl.classList.toggle('live', !!(h && h.running));
+  document.getElementById('btnStartHeat').disabled = !!(h && h.running);
+
+  const segs = getSegments();
+  const wrap = document.getElementById('raceAthletes');
+  const list = state.athletes.filter(a=>a.heat===n);
+  if(!list.length){ wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🏃</div>'+t('noAthletesYet')+'</div>'; return; }
+  wrap.innerHTML = list.map((a,idx)=>{
+    const done = a.splits.length;
+    const finished = done===segs.length && segs.length>0;
+    const next = segs[done];
+    let timeLabel;
+    if(a.dnf) timeLabel = '<span style="color:var(--danger)">DNF</span>';
+    else if(finished) timeLabel = fmtTime(a.splits[done-1]);
+    else timeLabel = done+'/'+segs.length;
+    let bottom = '';
+    if(!finished && !a.dnf && next){
+      const isLast = done===segs.length-1;
+      bottom = '<button class="split-btn'+(isLast?' last-seg':'')+'" onclick="recordSplit(\''+a.id+'\')">'+
+        '<span class="sb-action">'+(isLast?t('finishAction'):t('nextAction'))+'</span>'+
+        '<span class="sb-seg">'+esc(next.label)+'</span></button>';
+    }
+    const undoBtn = done>0 ? '<button class="icon-btn" title="'+t('undo')+'" onclick="undoSplit(\''+a.id+'\')">↩</button>' : '';
+    const dnfBtn = !finished ? '<button class="icon-btn" title="'+(a.dnf?t('dnfUndo'):t('dnf'))+'" onclick="toggleDNF(\''+a.id+'\')">'+(a.dnf?'♻':'✕')+'</button>' : '';
+    return '<div class="race-ath'+(finished?' finished':'')+(a.dnf?' dnf':'')+'">'+
+      '<div class="race-ath-top"><span class="race-ath-name"><span class="lane-tag">L'+(idx+1)+'</span>'+esc(a.name)+'</span>'+
+      '<span class="race-ath-time">'+timeLabel+'</span></div>'+
+      laneStrip(a, segs, false)+
+      '<div class="race-ath-bottom">'+bottom+undoBtn+dnfBtn+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- Leaderboard ---------- */
+function ranking(divFilter, heatFilter){
+  const segs = getSegments();
+  let list = state.athletes.slice();
+  if(divFilter) list = list.filter(a=>a.division===divFilter);
+  if(heatFilter) list = list.filter(a=>a.heat===parseInt(heatFilter));
+  const score = a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(a.dnf) return [3,0,0];
+    if(finished) return [0, a.splits[a.splits.length-1], 0];
+    if(a.splits.length>0) return [1, -a.splits.length, a.splits[a.splits.length-1]];
+    return [2,0,0];
+  };
+  list.sort((x,y)=>{
+    const sx=score(x), sy=score(y);
+    for(let i=0;i<3;i++){ if(sx[i]!==sy[i]) return sx[i]-sy[i]; }
+    return x.name.localeCompare(y.name);
+  });
+  return list;
+}
+function boardFilters(){
+  return [document.getElementById('filterDivision').value, document.getElementById('filterHeat').value];
+}
+function renderBoard(){
+  const divSel = document.getElementById('filterDivision');
+  const heatSel = document.getElementById('filterHeat');
+  const prevDiv = divSel.value, prevHeat = heatSel.value;
+  divSel.innerHTML = '<option value="">'+t('allDivisions')+'</option>'+state.divisions.map(d=>'<option'+(prevDiv===d?' selected':'')+'>'+esc(d)+'</option>').join('');
+  heatSel.innerHTML = '<option value="">'+t('allHeats')+'</option>'+heatNumbers().map(n=>'<option value="'+n+'"'+(prevHeat==String(n)?' selected':'')+'>'+t('heat')+' '+n+'</option>').join('');
+
+  const segs = getSegments();
+  const [df,hf] = boardFilters();
+  const list = ranking(df,hf);
+  const wrap = document.getElementById('boardList');
+  if(!list.length){ wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🏆</div>'+t('noBoardYet')+'</div>'; return; }
+  let rank=0;
+  wrap.innerHTML = list.map(a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(finished && !a.dnf) rank++;
+    let timeHtml, meta = esc(a.division)+' · '+t('heat')+' '+a.heat;
+    if(a.dnf) timeHtml = '<span class="board-time dnf">DNF</span>';
+    else if(finished) timeHtml = '<span class="board-time">'+fmtTime(a.splits[a.splits.length-1])+'</span>';
+    else if(a.splits.length>0) timeHtml = '<span class="board-time progress">'+t('statusBusy')+' · '+a.splits.length+'/'+segs.length+'</span>';
+    else timeHtml = '<span class="board-time progress">'+t('statusWaiting')+'</span>';
+    let splits='';
+    if(a.splits.length){
+      splits = '<div class="splits-grid">'+a.splits.map((ms,i)=>{
+        const dur = i===0 ? ms : ms - a.splits[i-1];
+        return '<div class="split-line"><span class="sl-name">'+esc(segs[i]?segs[i].label:'#'+(i+1))+'</span>'+
+          '<span class="sl-time">'+fmtTime(ms)+' <span style="color:var(--muted)">(+'+fmtTime(dur)+')</span></span></div>';
+      }).join('')+'</div>';
+      if(finished && !a.dnf){
+        splits += '<button class="btn btn-dark btn-sm" onclick="event.stopPropagation();shareCard(\''+a.id+'\')">📸 '+t('shareCard')+'</button>';
+      }
+    }
+    return '<div class="board-row'+(finished&&!a.dnf&&rank===1?' podium-1':'')+'">'+
+      '<button class="board-row-main" onclick="this.parentElement.classList.toggle(\'open\')">'+
+      '<span class="board-rank">'+(finished&&!a.dnf?rank:'·')+'</span>'+
+      '<span class="board-info"><span class="board-name">'+esc(a.name)+'</span><br><span class="board-meta">'+meta+'</span></span>'+
+      timeHtml+'</button>'+
+      (splits?'<div class="board-splits"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">'+t('splitsTitle')+'</div>'+splits+'</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- TV mode ---------- */
+let tvOpen = false;
+function openTV(){
+  tvOpen = true;
+  document.getElementById('tvOverlay').classList.add('active');
+  document.getElementById('tvTitle').innerHTML = state.event.name ? esc(state.event.name) : 'HEAT<span class="hot">BOARD</span>';
+  try{ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }catch(e){}
+  renderTV();
+}
+function closeTV(){
+  tvOpen = false;
+  document.getElementById('tvOverlay').classList.remove('active');
+  try{ document.exitFullscreen && document.fullscreenElement && document.exitFullscreen(); }catch(e){}
+}
+function renderTV(){
+  const segs = getSegments();
+  const [df,hf] = boardFilters();
+  const list = ranking(df,hf).slice(0,10);
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  document.getElementById('tvClock').textContent = (h&&h.startedAt) ? fmtTime(heatElapsed(n)) : '';
+  let rank=0;
+  document.getElementById('tvList').innerHTML = list.map(a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(finished && !a.dnf) rank++;
+    let timeHtml;
+    if(a.dnf) timeHtml = '<span class="tv-time progress">DNF</span>';
+    else if(finished) timeHtml = '<span class="tv-time">'+fmtTime(a.splits[a.splits.length-1])+'</span>';
+    else if(a.splits.length>0) timeHtml = '<span class="tv-time progress">'+a.splits.length+'/'+segs.length+'</span>';
+    else timeHtml = '<span class="tv-time progress">–</span>';
+    return '<div class="tv-row">'+
+      '<span class="tv-rank">'+(finished&&!a.dnf?rank:'·')+'</span>'+
+      '<span class="tv-name">'+esc(a.name)+'</span>'+
+      '<span class="tv-div">'+esc(a.division)+'</span>'+
+      laneStrip(a, segs, true)+
+      timeHtml+
+    '</div>';
+  }).join('');
+}
+
+/* ---------- CSV export ---------- */
+function exportCSV(){
+  const segs = getSegments();
+  const list = ranking('','');
+  if(!list.length){ toast(t('toastNothingToExport')); return; }
+  let rank=0;
+  const rows = [t('csvHeaders')+';'+segs.map(s=>s.label).join(';')];
+  list.forEach(a=>{
+    const finished = a.splits.length===segs.length && segs.length>0;
+    if(finished && !a.dnf) rank++;
+    const status = a.dnf ? 'DNF' : finished ? t('statusFinished') : (a.splits.length>0? t('statusBusy') : t('statusWaiting'));
+    const total = finished && !a.dnf ? fmtTime(a.splits[a.splits.length-1]) : '';
+    const cells = [finished&&!a.dnf?rank:'', a.name, a.division, a.heat, status, total];
+    segs.forEach((s,i)=> cells.push(a.splits[i]!=null ? fmtTime(a.splits[i]) : ''));
+    rows.push(cells.map(c=>String(c).replace(/;/g,',')).join(';'));
+  });
+  const blob = new Blob(['\ufeff'+rows.join('\r\n')], {type:'text/csv;charset=utf-8'});
+  downloadBlob(blob, safeFile((state.event.name||'heatboard')+'-results')+'.csv');
+  toast(t('toastCSV'));
+}
+function safeFile(s){ return s.toLowerCase().replace(/[^a-z0-9\-_]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'heatboard'; }
+function downloadBlob(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ---------- Share card (canvas PNG) ---------- */
+function shareCard(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const segs = getSegments();
+  const total = a.splits[a.splits.length-1];
+  const cv = document.getElementById('shareCanvas');
+  const ctx = cv.getContext('2d');
+  const W=1080,H=1350;
+  // background
+  ctx.fillStyle = '#0B0E11'; ctx.fillRect(0,0,W,H);
+  // diagonal texture
+  ctx.save(); ctx.globalAlpha = .05; ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 26;
+  for(let x=-H; x<W+H; x+=104){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x+H,H); ctx.stroke(); }
+  ctx.restore();
+  // top brand
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = '700 34px "Archivo Black", Archivo, sans-serif';
+  ctx.fillStyle = '#FFFFFF'; ctx.fillText('HEAT', 72, 108);
+  const w1 = ctx.measureText('HEAT').width;
+  ctx.fillStyle = '#FF4D00'; ctx.fillText('BOARD', 72+w1, 108);
+  ctx.font = '400 24px "Chivo Mono", monospace'; ctx.fillStyle = '#6B7580';
+  const dateStr = new Date().toLocaleDateString(state.lang==='nl'?'nl-NL':'en-GB');
+  ctx.textAlign = 'right'; ctx.fillText(dateStr, W-72, 104); ctx.textAlign = 'left';
+  // event name
+  ctx.font = '600 30px Archivo, sans-serif'; ctx.fillStyle = '#9AA4AE';
+  ctx.fillText(clip(ctx, state.event.name || (state.lang==='nl'?'Fitness race simulatie':'Fitness race simulation'), W-144), 72, 220);
+  // athlete name
+  ctx.font = '700 76px "Archivo Black", Archivo, sans-serif'; ctx.fillStyle = '#FFFFFF';
+  ctx.fillText(clip(ctx, a.name.toUpperCase(), W-144), 72, 312);
+  // division
+  ctx.font = '600 28px Archivo, sans-serif'; ctx.fillStyle = '#6B7580';
+  ctx.fillText(a.division+'  ·  '+t('heat')+' '+a.heat, 72, 362);
+  // big time
+  ctx.font = '600 170px "Chivo Mono", monospace'; ctx.fillStyle = '#FF4D00';
+  ctx.fillText(fmtTime(total), 66, 560);
+  ctx.font = '700 24px Archivo, sans-serif'; ctx.fillStyle = '#9AA4AE';
+  ctx.fillText((t('segTotal')).toUpperCase(), 72, 606);
+  // lane strip
+  const stripY = 660, stripW = W-144, gap = 8;
+  const segW = (stripW - gap*(segs.length-1)) / segs.length;
+  segs.forEach((s,i)=>{
+    ctx.fillStyle = s.type==='S' ? '#C93D00' : '#FF4D00';
+    roundRect(ctx, 72 + i*(segW+gap), stripY, segW, 26, 6); ctx.fill();
+  });
+  // splits two columns
+  ctx.font = '400 27px "Chivo Mono", monospace';
+  const colX = [72, 72 + (W-144)/2 + 24];
+  const rowH = 56; const startY = 770;
+  const half = Math.ceil(segs.length/2);
+  segs.forEach((s,i)=>{
+    const col = i < half ? 0 : 1;
+    const y = startY + (i - col*half)*rowH;
+    ctx.fillStyle = '#6B7580';
+    ctx.fillText(clip(ctx, s.label, (W-144)/2 - 170), colX[col], y);
+    ctx.fillStyle = '#FFFFFF'; ctx.textAlign='right';
+    ctx.fillText(fmtTime(a.splits[i]), colX[col] + (W-144)/2 - 24, y);
+    ctx.textAlign='left';
+  });
+  // footer
+  ctx.fillStyle = '#252B32'; ctx.fillRect(72, H-120, W-144, 2);
+  ctx.font = '400 22px "Chivo Mono", monospace'; ctx.fillStyle = '#6B7580';
+  ctx.fillText('heatboard · fitness race sim', 72, H-70);
+  cv.toBlob(blob=>{
+    downloadBlob(blob, safeFile(a.name)+'-'+safeFile(state.event.name||'sim')+'.png');
+    toast(t('toastCardSaved'));
+  }, 'image/png');
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function clip(ctx, text, maxW){
+  if(ctx.measureText(text).width <= maxW) return text;
+  while(text.length>1 && ctx.measureText(text+'…').width > maxW){ text = text.slice(0,-1); }
+  return text+'…';
+}
+
+/* ---------- Backup / restore / demo ---------- */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  downloadBlob(blob, safeFile((state.event.name||'heatboard'))+'-backup.json');
+  toast(t('toastSaved'));
+}
+function importJSON(input){
+  const file = input.files[0]; if(!file) return;
+  if(!confirm(t('confirmImport'))){ input.value=''; return; }
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const s = JSON.parse(r.result);
+      state = Object.assign(defaultState(), s);
+      save(); applyI18n(); renderAll(); toast(t('toastImported'));
+    }catch(e){ alert('Invalid file'); }
+    input.value='';
+  };
+  r.readAsText(file);
+}
+function resetAll(){
+  if(!confirm(t('confirmResetAll'))) return;
+  const lang = state.lang;
+  state = defaultState(); state.lang = lang;
+  save(); applyI18n(); renderAll();
+}
+function loadDemo(){
+  const lang = state.lang;
+  state = defaultState(); state.lang = lang;
+  state.event.name = t('demoEventName');
+  state.event.format = 'full';
+  if(lang==='en') state.divisions = DEFAULT_DIVISIONS_EN.slice();
+  const segs = FULL_SEGS;
+  const names1 = lang==='nl'
+    ? [['Lisa de Jong','Dames Open'],['Tom Bakker','Heren Open'],['Sanne Visser','Dames Open'],['Mike van Dijk','Heren Pro']]
+    : [['Lisa Jones','Women Open'],['Tom Baker','Men Open'],['Sanne Fisher','Women Open'],['Mike Dixon','Men Pro']];
+  const names2 = lang==='nl'
+    ? [['Kim & Roos','Doubles'],['Daan Smit','Heren Open'],['Femke Mulder','Dames Pro']]
+    : [['Kim & Rose','Doubles'],['Dan Smith','Men Open'],['Femke Miller','Women Pro']];
+  const now = Date.now();
+  const mkSplits = (base)=>{ // base = avg seconds per segment pair, add noise
+    const arr=[]; let tms=0;
+    segs.forEach((s,i)=>{
+      const runS = base + (Math.random()*60-30);
+      const statS = base*0.9 + (Math.random()*80-40);
+      tms += (s[0]==='R'? runS : statS)*1000;
+      arr.push(Math.round(tms));
+    });
+    return arr;
+  };
+  names1.forEach((nd,i)=>{
+    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:1, splits:mkSplits(230+i*12), dnf:false});
+  });
+  names2.forEach(nd=>{
+    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:2, splits:[], dnf:false});
+  });
+  const dur = Math.max(...state.athletes.filter(a=>a.heat===1).map(a=>a.splits[a.splits.length-1]));
+  state.heats = { '1':{startedAt: now - dur - 60000, running:false}, '2':{startedAt:null, running:false} };
+  state.ui.currentHeat = 1;
+  save(); applyI18n(); renderAll(); showView('board');
+  toast(t('toastDemo'));
+}
+
+/* ---------- Toast, tick, init ---------- */
+let toastTimer=null;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2600);
+}
+function renderAll(){
+  renderHeader(); renderSetup(); renderAthletes(); renderRace(); renderBoard();
+  showView(state.ui.view || 'setup');
+}
+setInterval(()=>{
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  if(h && h.running && document.getElementById('view-race').classList.contains('active')){
+    document.getElementById('raceClock').textContent = fmtTime(heatElapsed(n));
+  }
+  if(tvOpen) renderTV();
+}, 250);
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible'){
+    const anyLive = Object.values(state.heats).some(h=>h.running);
+    if(anyLive) requestWake();
+  }
+});
+
+load();
+applyI18n();
+renderAll();
+</script>
+</body>
+</html>
