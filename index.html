@@ -418,6 +418,22 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
 .tv-strip .lane-seg{height:1.5vh;border-radius:2px}
 .tv-strip .lane-seg::after{display:none}
 
+/* ============ FASE 3: gewichten + roxzone ============ */
+.split-btn .sb-hint{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:.3px}
+.split-btn.last-seg .sb-hint{color:rgba(15,13,12,.6)}
+.div-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.div-row .div-name{flex:1;min-width:0;font-family:var(--font-cond);font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.div-row select{flex:1;min-height:48px;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--ink);max-width:200px}
+.div-row .x-btn{width:48px;min-height:48px;flex:0 0 auto;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--muted);font-size:18px}
+.std-table{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:0;font-size:12px;margin-top:10px}
+.std-table>div{padding:6px 4px;border-bottom:1px solid var(--line-soft)}
+.std-table .std-head{font-weight:700;color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.6px}
+.std-table .std-val{font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:11.5px}
+.toggle-row{display:flex;align-items:center;gap:10px;min-height:48px;cursor:pointer;font-size:14px}
+.toggle-row input{width:22px;height:22px;accent-color:var(--h-white);flex:0 0 auto}
+.split-rox{font-size:11px;color:var(--muted);font-family:var(--font-mono);padding:0 0 3px}
+.split-line.rox-total .sl-name{color:var(--ink);font-weight:700}
+
 /* ============ START WIZARD ============ */
 .wizard-overlay{
   position:fixed;inset:0;z-index:250;display:none;overflow-y:auto;
@@ -477,7 +493,7 @@ body.role-judge #tab-athletes{display:none}
   <div class="app-bar-top">
     <div class="brand">
       <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
-      <span class="brand-tag">SIM v0.1</span>
+      <span class="brand-tag">SIM v0.3</span>
     </div>
     <div class="event-name-display" id="eventNameDisplay"></div>
     <span class="live-ind" id="liveDot"></span>
@@ -528,11 +544,25 @@ body.role-judge #tab-athletes{display:none}
     </div>
     <div class="field">
       <label data-i18n="lblDivisions">Divisies</label>
-      <div class="chips" id="divisionChips"></div>
+      <div id="divisionChips"></div>
       <div class="row" style="margin-top:10px">
         <input type="text" id="newDivision" data-i18n-ph="phNewDivision" placeholder="Nieuwe divisie…" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px">
         <button class="btn btn-ghost btn-sm" onclick="addDivision()" data-i18n="btnAddDivision" style="flex:0 0 auto">+ Toevoegen</button>
       </div>
+      <details class="adv">
+        <summary data-i18n="stdSummary">Stationsstandaarden</summary>
+        <p class="hint" data-i18n="stdIntro">Officiële HYROX-gewichten seizoen 2025/26 per divisie. Sled-gewichten zijn inclusief de slee.</p>
+        <div class="std-table" id="stdTable"></div>
+        <p class="hint" data-i18n="stdAliases">Doubles: Dames Doubles = Dames Open, Heren Doubles = Heren Open, Mixed Doubles = Heren Open, Pro Doubles = Pro per geslacht. Relay = Open per geslacht.</p>
+      </details>
+    </div>
+    <div class="field">
+      <label data-i18n="lblRoxzone">Roxzone</label>
+      <label class="toggle-row">
+        <input type="checkbox" id="roxToggle" onchange="setRoxzone(this.checked)">
+        <span data-i18n="roxToggleText">Roxzone meten: per station eerst IN tikken, daarna Klaar</span>
+      </label>
+      <div class="hint" data-i18n="roxHint">Meet de transitietijd (roxzone) en werktijd per station. Standaard uit.</div>
     </div>
   </div>
 
@@ -785,6 +815,19 @@ const I18N = {
     wizBack:'Terug', wizNext:'Volgende', wizStart:'Start →',
     btnNewEvent:'Nieuw event',
     confirmNewEvent:'Een nieuw event starten wist alle huidige gegevens (atleten, heats en tijden). Doorgaan?',
+    lblProfile:'Gewichtsprofiel', profileNone:'Geen',
+    profile_dames_open:'Dames Open', profile_heren_open:'Heren Open',
+    profile_dames_pro:'Dames Pro', profile_heren_pro:'Heren Pro',
+    stdSummary:'Stationsstandaarden',
+    stdIntro:'Officiële HYROX-gewichten seizoen 2025/26 per divisie. Sled-gewichten zijn inclusief de slee.',
+    stdAliases:'Doubles: Dames Doubles = Dames Open, Heren Doubles = Heren Open, Mixed Doubles = Heren Open, Pro Doubles = Pro per geslacht. Relay = Open per geslacht.',
+    stdNoWeight:'Geen gewicht, alle divisies gelijk',
+    hintInclSled:'kg incl. slee', hintReps:'reps',
+    lblRoxzone:'Roxzone',
+    roxToggleText:'Roxzone meten: per station eerst IN tikken, daarna Klaar',
+    roxHint:'Meet de transitietijd (roxzone) en werktijd per station. Standaard uit.',
+    inAction:'In', doneAction:'Klaar',
+    roxLabel:'Rox', workLabel:'Werk', roxTotal:'Roxzone totaal',
   },
   en: {
     tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
@@ -855,6 +898,19 @@ const I18N = {
     wizBack:'Back', wizNext:'Next', wizStart:'Start →',
     btnNewEvent:'New event',
     confirmNewEvent:'Starting a new event erases all current data (athletes, heats and times). Continue?',
+    lblProfile:'Weight profile', profileNone:'None',
+    profile_dames_open:'Women Open', profile_heren_open:'Men Open',
+    profile_dames_pro:'Women Pro', profile_heren_pro:'Men Pro',
+    stdSummary:'Station standards',
+    stdIntro:'Official HYROX weights season 2025/26 per division. Sled weights include the sled.',
+    stdAliases:'Doubles: Women Doubles = Women Open, Men Doubles = Men Open, Mixed Doubles = Men Open, Pro Doubles = Pro per gender. Relay = Open per gender.',
+    stdNoWeight:'No weight, same for all divisions',
+    hintInclSled:'kg incl. sled', hintReps:'reps',
+    lblRoxzone:'Roxzone',
+    roxToggleText:'Measure roxzone: tap IN first per station, then Done',
+    roxHint:'Measures transition time (roxzone) and work time per station. Off by default.',
+    inAction:'In', doneAction:'Done',
+    roxLabel:'Rox', workLabel:'Work', roxTotal:'Roxzone total',
   }
 };
 function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
@@ -879,15 +935,53 @@ const HALF_SEGS = [
 const DEFAULT_DIVISIONS_NL = ['Dames Open','Heren Open','Dames Pro','Heren Pro','Doubles'];
 const DEFAULT_DIVISIONS_EN = ['Women Open','Men Open','Women Pro','Men Pro','Doubles'];
 
+/* ---------- HYROX stationsstandaarden (seizoen 2025/26, sled-gewichten incl. slee) ---------- */
+const PROFILE_KEYS = ['dames_open','heren_open','dames_pro','heren_pro'];
+const HYROX_STANDARDS = [
+  { match:'sled push', name:'Sled Push 50 m',       kind:'sled',  w:{dames_open:102, heren_open:152, dames_pro:152, heren_pro:202} },
+  { match:'sled pull', name:'Sled Pull 50 m',       kind:'sled',  w:{dames_open:78,  heren_open:103, dames_pro:103, heren_pro:153} },
+  { match:'farmers',   name:'Farmers Carry 200 m',  kind:'pair',  w:{dames_open:16,  heren_open:24,  dames_pro:24,  heren_pro:32} },
+  { match:'sandbag',   name:'Sandbag Lunges 100 m', kind:'plain', w:{dames_open:10,  heren_open:20,  dames_pro:20,  heren_pro:30} },
+  { match:'wall ball', name:'Wall Balls',           kind:'reps',  reps:100, w:{dames_open:4, heren_open:6, dames_pro:6, heren_pro:9} }
+];
+const PROFILE_AUTO = {
+  'dames open':'dames_open','heren open':'heren_open','dames pro':'dames_pro','heren pro':'heren_pro',
+  'women open':'dames_open','men open':'heren_open','women pro':'dames_pro','men pro':'heren_pro'
+};
+function autoProfile(name){ return PROFILE_AUTO[String(name).trim().toLowerCase()] || null; }
+function defaultProfilesFor(divs){
+  const m = {};
+  (divs||[]).forEach(d=>{ const p = autoProfile(d); if(p) m[d]=p; });
+  return m;
+}
+function stationStandard(label){
+  const l = String(label).toLowerCase();
+  return HYROX_STANDARDS.find(s=>l.startsWith(s.match)) || null;
+}
+function stdValue(st, profileKey){
+  const w = st.w[profileKey];
+  if(w==null) return null;
+  if(st.kind==='sled') return w+' '+t('hintInclSled');
+  if(st.kind==='pair') return '2x'+w+' kg';
+  if(st.kind==='reps') return st.reps+' '+t('hintReps')+' · '+w+' kg';
+  return w+' kg';
+}
+function weightHint(label, division){
+  const st = stationStandard(label); if(!st) return null;
+  const pk = (state.divisionProfiles||{})[division]; if(!pk) return null;
+  return stdValue(st, pk);
+}
+
 /* ---------- State ---------- */
 const LS_KEY = 'heatboard_v1';
 let state = defaultState();
 function defaultState(){
   return {
     lang:'nl',
-    event:{ name:'', format:'full', customSegs:[] },
+    event:{ name:'', format:'full', customSegs:[], roxzone:false },
     divisions: DEFAULT_DIVISIONS_NL.slice(),
-    athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false}
+    divisionProfiles: defaultProfilesFor(DEFAULT_DIVISIONS_NL), // { divisienaam: profielkey }
+    athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false,workStarts:{segIndex:ms}}
     heats: {},             // "1": {startedAt:null, running:false}
     ui:{ currentHeat:1, view:'setup', setupDone:false }
   };
@@ -907,6 +1001,8 @@ function load(){
           (s.heats && Object.values(s.heats).some(h => h && h.startedAt))
         );
       }
+      // saves van vóór fase 3: profielen afleiden uit de divisienamen
+      if(!s.divisionProfiles) state.divisionProfiles = defaultProfilesFor(state.divisions);
     }
   }catch(e){ state = defaultState(); }
 }
@@ -972,7 +1068,7 @@ function setFormat(f){
   const hasTimes = state.athletes.some(a=>a.splits.length>0);
   if(hasTimes && f!==state.event.format){
     if(!confirm(t('confirmChangeFormat'))) return;
-    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; });
+    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; a.workStarts={}; });
     state.heats = {};
   }
   state.event.format = f; save(); renderSetup(); renderHeader(); liveStructural();
@@ -988,7 +1084,7 @@ function updateCustomSegs(text){
   });
   const hasTimes = state.athletes.some(a=>a.splits.length>0);
   if(hasTimes){ if(!confirm(t('confirmChangeFormat'))) { renderSetup(); return; }
-    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; }); state.heats={};
+    state.athletes.forEach(a=>{ a.splits=[]; a.dnf=false; a.workStarts={}; }); state.heats={};
   }
   state.event.customSegs = segs; save(); renderSetup(); liveStructural();
 }
@@ -1005,23 +1101,56 @@ function renderSetup(){
   prev.innerHTML = getSegments().map(s=>
     '<span class="seg-chip'+(s.type==='S'?' station':'')+'">'+esc(s.label)+'</span>'
   ).join('');
+  document.getElementById('roxToggle').checked = !!state.event.roxzone;
   renderDivisions();
+  renderStandardsTable();
+}
+function setRoxzone(v){ state.event.roxzone = !!v; save(); liveStructural(); }
+function renderStandardsTable(){
+  const wrap = document.getElementById('stdTable');
+  if(!wrap) return;
+  let html = '<div></div>'+PROFILE_KEYS.map(k=>'<div class="std-head">'+t('profile_'+k)+'</div>').join('');
+  HYROX_STANDARDS.forEach(st=>{
+    html += '<div>'+esc(st.name)+'</div>'+PROFILE_KEYS.map(k=>'<div class="std-val">'+esc(stdValue(st,k))+'</div>').join('');
+  });
+  html += '<div>SkiErg 1000 m · Row 1000 m · Burpee Broad Jump 80 m</div>'+
+    '<div class="std-val" style="grid-column:2/-1">'+t('stdNoWeight')+'</div>';
+  wrap.innerHTML = html;
 }
 function renderDivisions(){
   const wrap = document.getElementById('divisionChips');
-  wrap.innerHTML = state.divisions.map((d,i)=>
-    '<span class="chip">'+esc(d)+'<button class="x" onclick="removeDivision('+i+')" aria-label="remove">×</button></span>'
-  ).join('');
+  wrap.innerHTML = state.divisions.map((d,i)=>{
+    const cur = (state.divisionProfiles||{})[d] || '';
+    const opts = '<option value="">'+t('profileNone')+'</option>'+PROFILE_KEYS.map(k=>
+      '<option value="'+k+'"'+(cur===k?' selected':'')+'>'+t('profile_'+k)+'</option>').join('');
+    return '<div class="div-row"><span class="div-name">'+esc(d)+'</span>'+
+      '<select onchange="setDivisionProfile('+i+',this.value)" aria-label="'+t('lblProfile')+'">'+opts+'</select>'+
+      '<button class="x-btn" onclick="removeDivision('+i+')" aria-label="remove">×</button></div>';
+  }).join('');
   const sel = document.getElementById('athDivision');
   if(sel) sel.innerHTML = state.divisions.map(d=>'<option>'+esc(d)+'</option>').join('');
+}
+function setDivisionProfile(i, v){
+  const d = state.divisions[i]; if(d==null) return;
+  if(!state.divisionProfiles) state.divisionProfiles = {};
+  if(v) state.divisionProfiles[d] = v; else delete state.divisionProfiles[d];
+  save(); renderDivisions(); liveStructural();
 }
 function addDivision(){
   const inp = document.getElementById('newDivision');
   const v = inp.value.trim(); if(!v) return;
-  if(!state.divisions.includes(v)) state.divisions.push(v);
+  if(!state.divisions.includes(v)){
+    state.divisions.push(v);
+    const p = autoProfile(v); if(p) state.divisionProfiles[v] = p;
+  }
   inp.value=''; save(); renderDivisions(); liveStructural();
 }
-function removeDivision(i){ state.divisions.splice(i,1); save(); renderDivisions(); liveStructural(); }
+function removeDivision(i){
+  const d = state.divisions[i];
+  state.divisions.splice(i,1);
+  if(d!=null && state.divisionProfiles) delete state.divisionProfiles[d];
+  save(); renderDivisions(); liveStructural();
+}
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ---------- Start wizard ---------- */
@@ -1076,7 +1205,7 @@ function addAthlete(){
   if(!name){ toast(t('toastNeedName')); return; }
   const division = document.getElementById('athDivision').value || state.divisions[0] || '';
   const heat = Math.max(1, parseInt(document.getElementById('athHeat').value)||1);
-  state.athletes.push({id:uid(), name, division, heat, splits:[], dnf:false});
+  state.athletes.push({id:uid(), name, division, heat, splits:[], dnf:false, workStarts:{}});
   document.getElementById('athName').value='';
   save(); renderAthletes(); renderHeader(); liveStructural();
   toast(name+' '+t('toastAdded'));
@@ -1088,9 +1217,12 @@ function bulkAdd(){
     const parts = line.split(/[;\t]/).map(p=>p.trim());
     if(!parts[0]) return;
     const division = parts[1] && parts[1].length ? parts[1] : (state.divisions[0]||'');
-    if(division && !state.divisions.includes(division)) state.divisions.push(division);
+    if(division && !state.divisions.includes(division)){
+      state.divisions.push(division);
+      const p = autoProfile(division); if(p) state.divisionProfiles[division] = p;
+    }
     const heat = Math.max(1, parseInt(parts[2])||1);
-    state.athletes.push({id:uid(), name:parts[0], division, heat, splits:[], dnf:false});
+    state.athletes.push({id:uid(), name:parts[0], division, heat, splits:[], dnf:false, workStarts:{}});
     n++;
   });
   if(n){ document.getElementById('bulkPaste').value=''; save(); renderAthletes(); renderDivisions(); renderHeader(); liveStructural(); toast(n+' '+t(n===1?'athletes_one':'athletes_other')+' '+t('toastAdded')); }
@@ -1161,7 +1293,7 @@ function resetHeat(){
   const n = state.ui.currentHeat;
   if(!confirm(t('confirmResetHeat'))) return;
   state.heats[n] = {startedAt:null, running:false};
-  state.athletes.filter(a=>a.heat===n).forEach(a=>{ a.splits=[]; a.dnf=false; });
+  state.athletes.filter(a=>a.heat===n).forEach(a=>{ a.splits=[]; a.dnf=false; a.workStarts={}; });
   save(); renderRace(); renderHeader(); releaseWake();
   liveEmit('reset_heat',{heat:n});
 }
@@ -1181,7 +1313,15 @@ function recordSplit(id){
   lastTapAt[id] = nowT;
   const segs = getSegments();
   if(a.splits.length >= segs.length) return;
+  const done = a.splits.length;
   const ms = heatElapsed(a.heat);
+  // roxzone: eerste tik op een station is de IN-tik (start van het werk)
+  if(state.event.roxzone && segs[done].type==='S' && (a.workStarts||{})[done]==null){
+    (a.workStarts = a.workStarts||{})[done] = ms;
+    liveEmit('work_start',{id:a.id, seg:done, ms:ms});
+    save(); renderRace(); renderHeader();
+    return;
+  }
   _applySplit(a, ms, true);
   liveEmit('split',{id:a.id, ms:ms});
   save(); renderRace(); renderHeader();
@@ -1197,9 +1337,17 @@ function _applySplit(a, ms, showToast){
     if(allDone){ heatOf(a.heat).running = false; releaseWake(); }
   }
 }
+function _applyUndo(a){
+  // in omgekeerde volgorde: staat er voor het volgende segment een IN-tik zonder split,
+  // draai dan eerst die terug; anders de laatste split
+  const i = a.splits.length;
+  if(a.workStarts && a.workStarts[i]!=null){ delete a.workStarts[i]; return true; }
+  if(a.splits.length){ a.splits.pop(); heatOf(a.heat).running = true; return true; }
+  return false;
+}
 function undoSplit(id){
   const a = state.athletes.find(x=>x.id===id); if(!a) return;
-  if(a.splits.length){ a.splits.pop(); heatOf(a.heat).running = true; save(); renderRace(); renderHeader(); liveEmit('undo',{id:a.id}); }
+  if(_applyUndo(a)){ save(); renderRace(); renderHeader(); liveEmit('undo',{id:a.id}); }
 }
 function toggleDNF(id){
   const a = state.athletes.find(x=>x.id===id); if(!a) return;
@@ -1279,11 +1427,17 @@ function renderRace(){
     let bottom = '';
     if(!finished && !a.dnf && next){
       const isLast = done===segs.length-1;
-      bottom = '<button class="split-btn'+(isLast?' last-seg':'')+'" onclick="recordSplit(\''+a.id+'\')">'+
-        '<span class="sb-action">'+(isLast?t('finishAction'):t('nextAction'))+'</span>'+
-        '<span class="sb-seg">'+esc(next.label)+'</span></button>';
+      const pendingIn = state.event.roxzone && next.type==='S' && (a.workStarts||{})[done]==null;
+      const action = pendingIn ? t('inAction')
+        : (state.event.roxzone && next.type==='S') ? (isLast ? t('finishAction') : t('doneAction'))
+        : (isLast ? t('finishAction') : t('nextAction'));
+      const hint = next.type==='S' ? weightHint(next.label, a.division) : null;
+      bottom = '<button class="split-btn'+(isLast && !pendingIn ?' last-seg':'')+'" onclick="recordSplit(\''+a.id+'\')">'+
+        '<span class="sb-action">'+action+'</span>'+
+        '<span class="sb-seg">'+esc(next.label)+'</span>'+
+        (hint ? '<span class="sb-hint">'+esc(hint)+'</span>' : '')+'</button>';
     }
-    const undoBtn = done>0 ? '<button class="icon-btn" title="'+t('undo')+'" onclick="undoSplit(\''+a.id+'\')">↩</button>' : '';
+    const undoBtn = (done>0 || (a.workStarts||{})[done]!=null) ? '<button class="icon-btn" title="'+t('undo')+'" onclick="undoSplit(\''+a.id+'\')">↩</button>' : '';
     const dnfBtn = !finished ? '<button class="icon-btn" title="'+(a.dnf?t('dnfUndo'):t('dnf'))+'" onclick="toggleDNF(\''+a.id+'\')">'+(a.dnf?'♻':'✕')+'</button>' : '';
     const bottomRow = (bottom||undoBtn||dnfBtn) ? '<div class="race-ath-bottom">'+bottom+undoBtn+dnfBtn+'</div>' : '';
     return '<div class="race-ath'+(finished?' finished':'')+(a.dnf?' dnf':'')+'">'+
@@ -1300,6 +1454,14 @@ function renderRace(){
 }
 
 /* ---------- Leaderboard ---------- */
+function roxTotalOf(a, segs){
+  const ws = a.workStarts||{};
+  let total = 0, any = false;
+  segs.forEach((s,i)=>{
+    if(s.type==='S' && ws[i]!=null){ total += ws[i] - (i>0 ? (a.splits[i-1]||0) : 0); any = true; }
+  });
+  return any ? total : null;
+}
 function ranking(divFilter, heatFilter){
   const segs = getSegments();
   let list = state.athletes.slice();
@@ -1345,11 +1507,22 @@ function renderBoard(){
     else timeHtml = '<span class="board-time progress">'+t('statusWaiting')+'</span>';
     let splits='';
     if(a.splits.length){
+      const ws = a.workStarts||{};
       splits = '<div class="splits-grid">'+a.splits.map((ms,i)=>{
         const dur = i===0 ? ms : ms - a.splits[i-1];
-        return '<div class="split-line"><span class="sl-name">'+esc(segs[i]?segs[i].label:'#'+(i+1))+'</span>'+
+        let line = '<div class="split-line"><span class="sl-name">'+esc(segs[i]?segs[i].label:'#'+(i+1))+'</span>'+
           '<span class="sl-time">'+fmtTime(ms)+' <span style="color:var(--muted)">(+'+fmtTime(dur)+')</span></span></div>';
+        if(segs[i] && segs[i].type==='S' && ws[i]!=null){
+          const rox = ws[i] - (i>0 ? a.splits[i-1] : 0), work = ms - ws[i];
+          line += '<div class="split-rox">'+t('roxLabel')+' '+fmtTime(rox)+' · '+t('workLabel')+' '+fmtTime(work)+'</div>';
+        }
+        return '<div>'+line+'</div>';
       }).join('')+'</div>';
+      const rt = roxTotalOf(a, segs);
+      if(rt!=null){
+        splits += '<div class="split-line rox-total"><span class="sl-name">'+t('roxTotal')+'</span>'+
+          '<span class="sl-time">'+fmtTime(rt)+'</span></div>';
+      }
       if(finished && !a.dnf){
         splits += '<button class="btn btn-dark btn-sm" onclick="event.stopPropagation();shareCard(\''+a.id+'\')">📸 '+t('shareCard')+'</button>';
       }
@@ -1410,7 +1583,11 @@ function exportCSV(){
   const list = ranking('','');
   if(!list.length){ toast(t('toastNothingToExport')); return; }
   let rank=0;
-  const rows = [t('csvHeaders')+';'+segs.map(s=>s.label).join(';')];
+  let head = t('csvHeaders')+';'+segs.map(s=>s.label).join(';');
+  if(state.event.roxzone){
+    head += ';'+segs.filter(s=>s.type==='S').map(s=>'Rox '+s.label).join(';')+';'+t('roxTotal');
+  }
+  const rows = [head];
   list.forEach(a=>{
     const finished = a.splits.length===segs.length && segs.length>0;
     if(finished && !a.dnf) rank++;
@@ -1418,6 +1595,15 @@ function exportCSV(){
     const total = finished && !a.dnf ? fmtTime(a.splits[a.splits.length-1]) : '';
     const cells = [finished&&!a.dnf?rank:'', a.name, a.division, a.heat, status, total];
     segs.forEach((s,i)=> cells.push(a.splits[i]!=null ? fmtTime(a.splits[i]) : ''));
+    if(state.event.roxzone){
+      const ws = a.workStarts||{};
+      segs.forEach((s,i)=>{
+        if(s.type!=='S') return;
+        cells.push(ws[i]!=null ? fmtTime(ws[i] - (i>0 ? (a.splits[i-1]||0) : 0)) : '');
+      });
+      const rt = roxTotalOf(a, segs);
+      cells.push(rt!=null ? fmtTime(rt) : '');
+    }
     rows.push(cells.map(c=>String(c).replace(/;/g,',')).join(';'));
   });
   const blob = new Blob(['\ufeff'+rows.join('\r\n')], {type:'text/csv;charset=utf-8'});
@@ -1475,6 +1661,13 @@ function shareCard(id){
   ctx.restore();
   ctx.font = '700 24px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle = MUT;
   ctx.fillText((t('segTotal')).toUpperCase()+'  ·  '+t('statusFinished').toUpperCase(), 72, 616);
+  if(state.event.roxzone){
+    const rt = roxTotalOf(a, segs);
+    if(rt!=null){
+      ctx.font = '500 24px "Chivo Mono", monospace'; ctx.fillStyle = MUT;
+      ctx.fillText(t('roxTotal')+': '+fmtTime(rt), 72, 652);
+    }
+  }
   // THE HERO: glowing lane strip, each segment a colour along the heat scale
   const stripY = 672, stripW = W-144, gap = 8;
   const segW = (stripW - gap*(segs.length-1)) / segs.length;
@@ -1536,6 +1729,7 @@ function importJSON(input){
       const s = JSON.parse(r.result);
       state = Object.assign(defaultState(), s);
       state.ui.setupDone = true;
+      if(!s.divisionProfiles) state.divisionProfiles = defaultProfilesFor(state.divisions);
       save(); applyI18n(); renderAll(); toast(t('toastImported'));
     }catch(e){ alert('Invalid file'); }
     input.value='';
@@ -1554,6 +1748,7 @@ function loadDemo(){
   state.event.name = t('demoEventName');
   state.event.format = 'full';
   if(lang==='en') state.divisions = DEFAULT_DIVISIONS_EN.slice();
+  state.divisionProfiles = defaultProfilesFor(state.divisions);
   const segs = FULL_SEGS;
   const names1 = lang==='nl'
     ? [['Lisa de Jong','Dames Open'],['Tom Bakker','Heren Open'],['Sanne Visser','Dames Open'],['Mike van Dijk','Heren Pro']]
@@ -1573,10 +1768,10 @@ function loadDemo(){
     return arr;
   };
   names1.forEach((nd,i)=>{
-    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:1, splits:mkSplits(230+i*12), dnf:false});
+    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:1, splits:mkSplits(230+i*12), dnf:false, workStarts:{}});
   });
   names2.forEach(nd=>{
-    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:2, splits:[], dnf:false});
+    state.athletes.push({id:uid(), name:nd[0], division:nd[1], heat:2, splits:[], dnf:false, workStarts:{}});
   });
   const dur = Math.max(...state.athletes.filter(a=>a.heat===1).map(a=>a.splits[a.splits.length-1]));
   state.heats = { '1':{startedAt: now - dur - 60000, running:false}, '2':{startedAt:null, running:false} };
@@ -1708,7 +1903,7 @@ function liveStructural(){
 }
 async function pushSnapshot(showToast){
   if(!live.enabled || live.role!=='host') return;
-  liveEmit('snapshot',{event:state.event, divisions:state.divisions, athletes:state.athletes, heats:state.heats});
+  liveEmit('snapshot',{event:state.event, divisions:state.divisions, divisionProfiles:state.divisionProfiles, athletes:state.athletes, heats:state.heats});
   if(showToast) toast(t('toastSetupSent'));
 }
 
@@ -1717,14 +1912,18 @@ function applyEvent(type,p,rerender){
   if(type==='snapshot'){
     if(p.event) state.event=p.event;
     if(p.divisions) state.divisions=p.divisions;
+    if(p.divisionProfiles) state.divisionProfiles=p.divisionProfiles;
     if(p.athletes) state.athletes=p.athletes;
     if(p.heats) state.heats=p.heats;
   } else if(type==='split'){
     const a=state.athletes.find(x=>x.id===p.id);
     if(a) _applySplit(a, p.ms, false);
+  } else if(type==='work_start'){
+    const a=state.athletes.find(x=>x.id===p.id);
+    if(a) (a.workStarts = a.workStarts||{})[p.seg]=p.ms;
   } else if(type==='undo'){
     const a=state.athletes.find(x=>x.id===p.id);
-    if(a && a.splits.length){ a.splits.pop(); heatOf(a.heat).running=true; }
+    if(a) _applyUndo(a);
   } else if(type==='dnf'){
     const a=state.athletes.find(x=>x.id===p.id);
     if(a) a.dnf=!!p.dnf;
@@ -1732,7 +1931,7 @@ function applyEvent(type,p,rerender){
     const hh=heatOf(p.heat); hh.startedAt=p.startedAt; hh.running=true;
   } else if(type==='reset_heat'){
     state.heats[p.heat]={startedAt:null,running:false};
-    state.athletes.filter(a=>a.heat===p.heat).forEach(a=>{a.splits=[];a.dnf=false;});
+    state.athletes.filter(a=>a.heat===p.heat).forEach(a=>{a.splits=[];a.dnf=false;a.workStarts={};});
   }
   save();
   if(rerender){ renderHeader(); renderRace(); if(document.getElementById('view-board').classList.contains('active')) renderBoard(); }
