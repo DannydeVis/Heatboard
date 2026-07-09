@@ -899,8 +899,14 @@ function load(){
     if(raw){ const s = JSON.parse(raw); state = Object.assign(defaultState(), s);
       state.event = Object.assign(defaultState().event, s.event||{});
       state.ui = Object.assign(defaultState().ui, s.ui||{});
-      // saves van vóór de wizard hebben geen setupDone-vlag: behandel ze als afgerond
-      if(!s.ui || s.ui.setupDone === undefined) state.ui.setupDone = true;
+      // saves van vóór de wizard hebben geen setupDone-vlag: alleen overslaan bij echte data
+      if(!s.ui || s.ui.setupDone === undefined){
+        state.ui.setupDone = !!(
+          (s.athletes && s.athletes.length) ||
+          (s.event && (s.event.name || (s.event.customSegs && s.event.customSegs.length))) ||
+          (s.heats && Object.values(s.heats).some(h => h && h.startedAt))
+        );
+      }
     }
   }catch(e){ state = defaultState(); }
 }
