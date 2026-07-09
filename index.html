@@ -434,6 +434,33 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
 .split-rox{font-size:11px;color:var(--muted);font-family:var(--font-mono);padding:0 0 3px}
 .split-line.rox-total .sl-name{color:var(--ink);font-weight:700}
 
+/* ============ FASE 4: registratie, atleet-view, QR ============ */
+.tv-qr{position:absolute;bottom:3vh;right:4vw;z-index:2;text-align:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+.tv-qr img{width:clamp(96px,11vw,150px);height:auto;display:block;border-radius:6px;background:#fff;padding:5px}
+.tv-qr-label{font-family:var(--font-cond);font-weight:700;text-transform:uppercase;letter-spacing:1px;font-size:clamp(11px,1.2vw,16px);color:var(--h-warm);margin-top:6px;max-width:150px}
+.waitlist-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--h-cold);border:1px solid var(--line);border-radius:8px;padding:1px 7px;margin-left:8px}
+.heat-group.lobby .heat-group-head h3{color:var(--h-warm)}
+.reg-link-box{margin-top:6px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;overflow:hidden}
+.reg-link{font-family:var(--font-mono);font-size:12px;color:var(--muted);word-break:break-all}
+.pick-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.pick-btn{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:48px;text-align:left}
+.pick-div{color:var(--muted);font-size:12px;font-weight:500}
+.av-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.av-code{font-family:var(--font-mono);font-weight:700;letter-spacing:3px;color:var(--h-warm);font-size:18px}
+.av-card{text-align:center}
+.av-name{font-family:var(--font-cond);font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:.5px}
+.av-sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+.av-status{color:var(--h-cold);font-weight:700;font-size:14px;margin:10px 0}
+.av-time{font-family:var(--font-mono);font-weight:600;font-size:40px;color:var(--h-warm);margin:12px 0;font-variant-numeric:tabular-nums}
+.av-positions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.av-pos{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.av-pos strong{display:block;color:var(--ink);font-size:15px;margin-top:3px;text-transform:none;letter-spacing:0}
+.av-brow{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line-soft)}
+.av-brow.me{background:rgba(255,122,26,.10);border-radius:8px;padding:7px 8px}
+.av-brank{font-family:var(--font-mono);width:1.8em;color:var(--muted);font-weight:700;text-align:center}
+.av-bname{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av-btime{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+
 /* ============ START WIZARD ============ */
 .wizard-overlay{
   position:fixed;inset:0;z-index:250;display:none;overflow-y:auto;
@@ -493,7 +520,7 @@ body.role-judge #tab-athletes{display:none}
   <div class="app-bar-top">
     <div class="brand">
       <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
-      <span class="brand-tag">SIM v0.3</span>
+      <span class="brand-tag">SIM v0.4</span>
     </div>
     <div class="event-name-display" id="eventNameDisplay"></div>
     <span class="live-ind" id="liveDot"></span>
@@ -587,7 +614,7 @@ body.role-judge #tab-athletes{display:none}
     <div class="card-title" data-i18n="liveTitle">Live sessie (bèta)</div>
     <div class="card-sub" data-i18n="liveSub">Judges tikken splits op hun eigen telefoon en alles komt live samen op de TV. Eenmalig een Supabase-koppeling instellen.</div>
     <div id="liveOff">
-      <details class="adv">
+      <details class="adv" id="connDetails">
         <summary data-i18n="advConn">Verbinding instellen</summary>
         <div class="field" style="margin-top:8px">
           <label for="sbUrl" data-i18n="lblSbUrl">Supabase URL</label>
@@ -604,6 +631,7 @@ body.role-judge #tab-athletes{display:none}
         <select id="joinRole" style="padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--ink);max-width:130px">
           <option value="judge" data-i18n="roleJudge">Judge</option>
           <option value="tv" data-i18n="roleTV">TV / kijker</option>
+          <option value="athlete" data-i18n="roleAthlete">Atleet</option>
         </select>
         <button class="btn btn-ghost" onclick="joinLiveSession()" data-i18n="btnJoin" style="flex:0 0 auto">Deelnemen</button>
       </div>
@@ -611,6 +639,7 @@ body.role-judge #tab-athletes{display:none}
     <div id="liveOn" style="display:none">
       <div class="live-code-big" id="liveCodeShow"></div>
       <div class="live-status-line" id="liveStatusLine"></div>
+      <div id="hostReg"></div>
       <div class="setup-footer">
         <button class="btn btn-ghost btn-sm" id="btnPushSetup" onclick="pushSnapshot(true)" data-i18n="btnPushSetup">Setup opnieuw sturen</button>
         <button class="btn btn-danger-ghost btn-sm" onclick="leaveLiveSession()" data-i18n="btnLeaveLive">Sessie verlaten</button>
@@ -672,6 +701,7 @@ body.role-judge #tab-athletes{display:none}
   </div>
   <div class="board-actions">
     <button class="btn btn-dark btn-sm" onclick="openTV()" data-i18n="btnTV">📺 TV-weergave</button>
+    <button class="btn btn-ghost btn-sm" onclick="heatCard()" data-i18n="btnHeatCard">🖼 Deel heat-kaartje</button>
     <button class="btn btn-ghost btn-sm" onclick="exportCSV()" data-i18n="btnCSV">CSV exporteren</button>
   </div>
   <div id="boardList"></div>
@@ -680,6 +710,7 @@ body.role-judge #tab-athletes{display:none}
 <!-- ============ TV OVERLAY ============ -->
 <div class="tv-overlay" id="tvOverlay">
   <button class="tv-close" onclick="closeTV()" data-i18n="btnCloseTV">Sluiten ✕</button>
+  <div class="tv-qr" id="tvQr" style="display:none"></div>
   <div class="tv-head">
     <div class="tv-title" id="tvTitle">HEAT<span class="hot">BOARD</span></div>
     <div class="tv-clock" id="tvClock"></div>
@@ -734,6 +765,10 @@ body.role-judge #tab-athletes{display:none}
     </div>
   </div>
 </div>
+
+<!-- ============ FASE 4: registratie- en atleet-overlay ============ -->
+<div class="wizard-overlay" id="regOverlay"><div class="wizard-inner" id="regInner"></div></div>
+<div class="wizard-overlay" id="athleteOverlay"><div class="wizard-inner" id="athleteInner"></div></div>
 
 <div class="toast" id="toast"></div>
 <canvas id="shareCanvas" width="1080" height="1350" style="display:none"></canvas>
@@ -828,6 +863,20 @@ const I18N = {
     roxHint:'Meet de transitietijd (roxzone) en werktijd per station. Standaard uit.',
     inAction:'In', doneAction:'Klaar',
     roxLabel:'Rox', workLabel:'Werk', roxTotal:'Roxzone totaal',
+    regTitle:'Schrijf je in', regSub:'Vul je naam en divisie in.',
+    regNameLabel:'Naam', regDivisionLabel:'Divisie', btnRegister:'Inschrijven',
+    regClosed:'Inschrijving gesloten', regClosedSub:'De organisator heeft de inschrijving nog niet geopend.',
+    lblRegOpen:'Inschrijving', regOpenText:'Inschrijving open',
+    lblCapacity:'Capaciteit (leeg = geen limiet)', capacityHint:'Maximaal aantal deelnemers voordat de wachtlijst begint.',
+    regLinkLabel:'Inschrijflink', btnCopyLink:'Link kopiëren', btnShareLink:'Delen',
+    toastLinkCopied:'Link gekopieerd', toastRegistered:'Je bent ingeschreven', toastPromoted:'doorgeschoven naar de indeling',
+    groupLobby:'Nog indelen', groupWaitlist:'Wachtlijst', btnAssign:'Indelen',
+    roleAthlete:'Atleet', liveAsAthlete:'Jouw weergave',
+    athPickTitle:'Kies je naam', athPickSub:'Tik op je naam in de deelnemerslijst.',
+    athNotPlaced:'Je wordt nog ingedeeld in een heat.', athWaitlisted:'Je staat op de wachtlijst.',
+    posOverall:'Overall', posDivision:'In divisie', lblPlace:'Plek', lblOf:'van',
+    qrRegister:'Scan om mee te doen', qrWatch:'Scan voor live standen',
+    btnHeatCard:'🖼 Deel heat-kaartje', toastHeatCard:'Heat-kaartje gedownload',
   },
   en: {
     tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
@@ -911,6 +960,20 @@ const I18N = {
     roxHint:'Measures transition time (roxzone) and work time per station. Off by default.',
     inAction:'In', doneAction:'Done',
     roxLabel:'Rox', workLabel:'Work', roxTotal:'Roxzone total',
+    regTitle:'Register', regSub:'Enter your name and division.',
+    regNameLabel:'Name', regDivisionLabel:'Division', btnRegister:'Register',
+    regClosed:'Registration closed', regClosedSub:'The organiser has not opened registration yet.',
+    lblRegOpen:'Registration', regOpenText:'Registration open',
+    lblCapacity:'Capacity (empty = no limit)', capacityHint:'Maximum participants before the waitlist starts.',
+    regLinkLabel:'Registration link', btnCopyLink:'Copy link', btnShareLink:'Share',
+    toastLinkCopied:'Link copied', toastRegistered:'You are registered', toastPromoted:'moved into the line-up',
+    groupLobby:'To be assigned', groupWaitlist:'Waitlist', btnAssign:'Assign',
+    roleAthlete:'Athlete', liveAsAthlete:'Your view',
+    athPickTitle:'Pick your name', athPickSub:'Tap your name in the participant list.',
+    athNotPlaced:'You will be assigned to a heat soon.', athWaitlisted:'You are on the waitlist.',
+    posOverall:'Overall', posDivision:'In division', lblPlace:'Place', lblOf:'of',
+    qrRegister:'Scan to join', qrWatch:'Scan for live standings',
+    btnHeatCard:'🖼 Share heat card', toastHeatCard:'Heat card downloaded',
   }
 };
 function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
@@ -978,7 +1041,7 @@ let state = defaultState();
 function defaultState(){
   return {
     lang:'nl',
-    event:{ name:'', format:'full', customSegs:[], roxzone:false },
+    event:{ name:'', format:'full', customSegs:[], roxzone:false, registrationOpen:false, capacity:null },
     divisions: DEFAULT_DIVISIONS_NL.slice(),
     divisionProfiles: defaultProfilesFor(DEFAULT_DIVISIONS_NL), // { divisienaam: profielkey }
     athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false,workStarts:{segIndex:ms}}
@@ -1229,7 +1292,13 @@ function bulkAdd(){
 }
 function deleteAthlete(id){
   if(!confirm(t('confirmDeleteAth'))) return;
+  const victim = state.athletes.find(a=>a.id===id);
+  const wasPlaced = victim && !victim.waitlist; // een niet-waitlist atleet bezet een capaciteitsplek
   state.athletes = state.athletes.filter(a=>a.id!==id);
+  if(wasPlaced){
+    const nextWl = state.athletes.find(a=>a.waitlist);
+    if(nextWl){ nextWl.waitlist=false; nextWl.heat=0; toast(nextWl.name+' '+t('toastPromoted')); }
+  }
   save(); renderAthletes(); renderHeader(); renderRace(); liveStructural();
 }
 function renameAthlete(id){
@@ -1239,9 +1308,20 @@ function renameAthlete(id){
 }
 function moveAthlete(id){
   const a = state.athletes.find(x=>x.id===id); if(!a) return;
-  const v = prompt(t('promptHeat'), a.heat);
+  const v = prompt(t('promptHeat'), a.heat||'');
   const h = parseInt(v);
-  if(h>=1){ a.heat = h; save(); renderAthletes(); liveStructural(); }
+  if(h>=1){ a.heat = h; a.waitlist=false; save(); renderAthletes(); renderHeader(); renderRace(); liveStructural(); }
+}
+function athRowHtml(a, laneLabel){
+  return '<div class="ath-row">'+
+    '<span class="ath-lane">'+laneLabel+'</span>'+
+    '<span class="ath-name">'+esc(a.name)+'</span>'+
+    '<span class="ath-div">'+esc(a.division)+'</span>'+
+    '<span class="ath-actions">'+
+    '<button class="icon-btn" title="'+t('rename')+'" onclick="renameAthlete(\''+a.id+'\')">✎</button>'+
+    '<button class="icon-btn" title="'+t(a.heat>0?'moveHeat':'btnAssign')+'" onclick="moveAthlete(\''+a.id+'\')">⇄</button>'+
+    '<button class="icon-btn" title="'+t('del')+'" onclick="deleteAthlete(\''+a.id+'\')">🗑</button>'+
+    '</span></div>';
 }
 function renderAthletes(){
   const wrap = document.getElementById('athleteList');
@@ -1250,24 +1330,31 @@ function renderAthletes(){
     return;
   }
   let html='';
-  heatNumbers().forEach(h=>{
-    const list = state.athletes.filter(a=>a.heat===h);
+  // Lobby: ingeschreven maar nog niet ingedeeld (heat 0, niet op de wachtlijst)
+  const lobby = state.athletes.filter(a=>a.heat===0 && !a.waitlist);
+  if(lobby.length){
+    html += '<div class="heat-group lobby"><div class="heat-group-head"><h3>'+t('groupLobby')+'</h3>'+
+      '<span class="hg-count">'+lobby.length+'</span></div>';
+    lobby.forEach(a=> html += athRowHtml(a,'—'));
+    html += '</div>';
+  }
+  // Heats
+  heatNumbers().filter(h=>h>0).forEach(h=>{
+    const list = state.athletes.filter(a=>a.heat===h && !a.waitlist);
     if(!list.length) return;
     html += '<div class="heat-group"><div class="heat-group-head"><h3>'+t('heat')+' '+h+'</h3>'+
       '<span class="hg-count">'+list.length+' '+t(list.length===1?'athletes_one':'athletes_other')+'</span></div>';
-    list.forEach((a,idx)=>{
-      html += '<div class="ath-row">'+
-        '<span class="ath-lane">L'+(idx+1)+'</span>'+
-        '<span class="ath-name">'+esc(a.name)+'</span>'+
-        '<span class="ath-div">'+esc(a.division)+'</span>'+
-        '<span class="ath-actions">'+
-        '<button class="icon-btn" title="'+t('rename')+'" onclick="renameAthlete(\''+a.id+'\')">✎</button>'+
-        '<button class="icon-btn" title="'+t('moveHeat')+'" onclick="moveAthlete(\''+a.id+'\')">⇄</button>'+
-        '<button class="icon-btn" title="'+t('del')+'" onclick="deleteAthlete(\''+a.id+'\')">🗑</button>'+
-        '</span></div>';
-    });
+    list.forEach((a,idx)=> html += athRowHtml(a,'L'+(idx+1)));
     html += '</div>';
   });
+  // Wachtlijst
+  const wl = state.athletes.filter(a=>a.waitlist);
+  if(wl.length){
+    html += '<div class="heat-group"><div class="heat-group-head"><h3>'+t('groupWaitlist')+
+      '<span class="waitlist-badge">'+wl.length+'</span></h3></div>';
+    wl.forEach(a=> html += athRowHtml(a,'—'));
+    html += '</div>';
+  }
   wrap.innerHTML = html;
 }
 
@@ -1378,7 +1465,8 @@ function laneStrip(a, segs, mini){
 }
 function renderRace(){
   const bar = document.getElementById('heatSelectBar');
-  const nums = heatNumbers();
+  let nums = heatNumbers().filter(n=>n>0); // lobby (heat 0) is geen race-heat
+  if(!nums.length) nums=[1];
   if(!nums.includes(state.ui.currentHeat)) state.ui.currentHeat = nums[0];
   bar.innerHTML = nums.map(n=>{
     const h = state.heats[n];
@@ -1464,7 +1552,7 @@ function roxTotalOf(a, segs){
 }
 function ranking(divFilter, heatFilter){
   const segs = getSegments();
-  let list = state.athletes.slice();
+  let list = state.athletes.filter(a=>!a.waitlist && a.heat>0); // wachtlijst + lobby tellen niet mee
   if(divFilter) list = list.filter(a=>a.division===divFilter);
   if(heatFilter) list = list.filter(a=>a.heat===parseInt(heatFilter));
   const score = a=>{
@@ -1489,7 +1577,7 @@ function renderBoard(){
   const heatSel = document.getElementById('filterHeat');
   const prevDiv = divSel.value, prevHeat = heatSel.value;
   divSel.innerHTML = '<option value="">'+t('allDivisions')+'</option>'+state.divisions.map(d=>'<option'+(prevDiv===d?' selected':'')+'>'+esc(d)+'</option>').join('');
-  heatSel.innerHTML = '<option value="">'+t('allHeats')+'</option>'+heatNumbers().map(n=>'<option value="'+n+'"'+(prevHeat==String(n)?' selected':'')+'>'+t('heat')+' '+n+'</option>').join('');
+  heatSel.innerHTML = '<option value="">'+t('allHeats')+'</option>'+heatNumbers().filter(n=>n>0).map(n=>'<option value="'+n+'"'+(prevHeat==String(n)?' selected':'')+'>'+t('heat')+' '+n+'</option>').join('');
 
   const segs = getSegments();
   const [df,hf] = boardFilters();
@@ -1543,13 +1631,13 @@ function openTV(){
   tvOpen = true;
   document.getElementById('tvOverlay').classList.add('active');
   document.getElementById('tvTitle').innerHTML = state.event.name ? esc(state.event.name) : 'HEAT<span class="hot">BOARD</span>';
-  try{ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }catch(e){}
+  try{ const p=document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if(p&&p.catch) p.catch(()=>{}); }catch(e){}
   renderTV();
 }
 function closeTV(){
   tvOpen = false;
   document.getElementById('tvOverlay').classList.remove('active');
-  try{ document.exitFullscreen && document.fullscreenElement && document.exitFullscreen(); }catch(e){}
+  try{ const p=(document.exitFullscreen && document.fullscreenElement) ? document.exitFullscreen() : null; if(p&&p.catch) p.catch(()=>{}); }catch(e){}
 }
 function renderTV(){
   const segs = getSegments();
@@ -1575,6 +1663,7 @@ function renderTV(){
       timeHtml+
     '</div>';
   }).join('');
+  renderTvQr();
 }
 
 /* ---------- CSV export ---------- */
@@ -1789,12 +1878,15 @@ function loadDemo(){
    Werkt volledig optioneel: zonder configuratie blijft alles lokaal.
    ============================================================ */
 const LIVE_CFG_LS='heatboard_live_cfg', LIVE_SESS_LS='heatboard_live_sess';
+// Ingebakken Supabase-config (leeg = alleen via de instellingenvelden/localStorage).
+const DEFAULT_SB = { url:'', key:'' };
+function sbConfigured(){ return !!(DEFAULT_SB.url && DEFAULT_SB.key); }
 let live={enabled:false, role:null, code:null, sb:null, channel:null,
-  clientId:uid()+uid(), applied:new Set(), queue:[], connected:false, judgeAthletes:[]};
+  clientId:uid()+uid(), applied:new Set(), queue:[], connected:false, judgeAthletes:[], athleteId:null, athletePending:null};
 
 function liveCfg(){ try{return JSON.parse(localStorage.getItem(LIVE_CFG_LS))||{}}catch(e){return{}} }
 function saveLiveCfg(url,key){ localStorage.setItem(LIVE_CFG_LS, JSON.stringify({url:url,key:key})); }
-function saveLiveSess(){ if(live.enabled) localStorage.setItem(LIVE_SESS_LS, JSON.stringify({code:live.code, role:live.role, judgeAthletes:live.judgeAthletes})); else localStorage.removeItem(LIVE_SESS_LS); }
+function saveLiveSess(){ if(live.enabled) localStorage.setItem(LIVE_SESS_LS, JSON.stringify({code:live.code, role:live.role, judgeAthletes:live.judgeAthletes, athleteId:live.athleteId})); else localStorage.removeItem(LIVE_SESS_LS); }
 
 function loadSbLib(){
   return new Promise((res,rej)=>{
@@ -1806,8 +1898,9 @@ function loadSbLib(){
   });
 }
 async function liveConnect(){
-  const url=(document.getElementById('sbUrl').value||liveCfg().url||'').trim();
-  const key=(document.getElementById('sbKey').value||liveCfg().key||'').trim();
+  const el=id=>document.getElementById(id);
+  const url=(((el('sbUrl')&&el('sbUrl').value)||liveCfg().url||DEFAULT_SB.url||'')+'').trim();
+  const key=(((el('sbKey')&&el('sbKey').value)||liveCfg().key||DEFAULT_SB.key||'')+'').trim();
   if(!url||!key){ toast(t('toastCfgMissing')); return null; }
   saveLiveCfg(url,key);
   await loadSbLib();
@@ -1848,6 +1941,7 @@ async function joinLiveSession(codeArg, roleArg){
     subscribeLive();
     saveLiveSess(); applyRoleUI(); renderLiveUI(); renderAll();
     if(role==='tv') openTV();
+    if(role==='athlete'){ if(live.athleteId) showAthleteView(); else showAthleteOnboard(live.athletePending||'pick'); }
     toast(t('toastJoined')+' · '+code);
   }catch(e){ toast(t('toastSbFail')); liveTeardown(); }
 }
@@ -1864,8 +1958,9 @@ function subscribeLive(){
 function liveTeardown(){
   try{ if(live.channel) live.sb.removeChannel(live.channel); }catch(e){}
   live={enabled:false, role:null, code:null, sb:null, channel:null,
-    clientId:live.clientId, applied:new Set(), queue:[], connected:false, judgeAthletes:[]};
-  document.body.classList.remove('role-judge','role-tv');
+    clientId:live.clientId, applied:new Set(), queue:[], connected:false, judgeAthletes:[], athleteId:null, athletePending:null};
+  document.body.classList.remove('role-judge','role-tv','role-athlete');
+  closeAthleteView(); closeRegOverlay();
   saveLiveSess(); renderLiveUI(); renderLiveDot();
 }
 function leaveLiveSession(){ liveTeardown(); toast(t('toastLeft')); }
@@ -1932,15 +2027,23 @@ function applyEvent(type,p,rerender){
   } else if(type==='reset_heat'){
     state.heats[p.heat]={startedAt:null,running:false};
     state.athletes.filter(a=>a.heat===p.heat).forEach(a=>{a.splits=[];a.dnf=false;a.workStarts={};});
+  } else if(type==='register'){
+    if(!state.athletes.some(a=>a.id===p.id)){
+      const cap=state.event.capacity;
+      const accepted=state.athletes.filter(a=>!a.waitlist).length;
+      state.athletes.push({id:p.id, name:p.name, division:p.division, heat:0, splits:[], dnf:false, workStarts:{}, waitlist:(cap!=null && accepted>=cap)});
+    }
+    if(live.role==='host') liveStructural(); // host is autoritatief en her-broadcast de roster
   }
   save();
-  if(rerender){ renderHeader(); renderRace(); if(document.getElementById('view-board').classList.contains('active')) renderBoard(); }
+  if(rerender){ renderHeader(); renderAthletes(); renderRace(); if(document.getElementById('view-board').classList.contains('active')) renderBoard(); if(athleteViewOpen()) renderAthleteView(); }
 }
 
 /* ---- role UI ---- */
 function applyRoleUI(){
   document.body.classList.toggle('role-judge', live.role==='judge');
   document.body.classList.toggle('role-tv', live.role==='tv');
+  document.body.classList.toggle('role-athlete', live.role==='athlete');
   if(live.role==='judge') showView('race');
 }
 function renderLiveUI(){
@@ -1950,7 +2053,7 @@ function renderLiveUI(){
   on.style.display=live.enabled?'block':'none';
   if(live.enabled){
     document.getElementById('liveCodeShow').textContent=live.code;
-    const roleTxt=live.role==='host'?t('liveAsHost'):live.role==='judge'?t('liveAsJudge'):t('liveAsTV');
+    const roleTxt=live.role==='host'?t('liveAsHost'):live.role==='judge'?t('liveAsJudge'):live.role==='athlete'?t('liveAsAthlete'):t('liveAsTV');
     document.getElementById('liveStatusLine').textContent=roleTxt;
     document.getElementById('btnPushSetup').style.display=(live.role==='host')?'inline-flex':'none';
   }
@@ -1958,6 +2061,9 @@ function renderLiveUI(){
   const u=document.getElementById('sbUrl'), k=document.getElementById('sbKey');
   if(u && !u.value && cfg.url) u.value=cfg.url;
   if(k && !k.value && cfg.key) k.value=cfg.key;
+  const cd=document.getElementById('connDetails');
+  if(cd) cd.style.display = sbConfigured() ? 'none' : '';
+  renderHostReg();
 }
 function renderLiveDot(){
   const d=document.getElementById('liveDot'); if(!d) return;
@@ -1978,6 +2084,234 @@ function judgePickerHtml(list){
     html+='<button class="chip selectable'+(live.judgeAthletes.includes(a.id)?' active':'')+'" onclick="toggleJudgeAthlete(\''+a.id+'\')">'+esc(a.name)+'</button>';
   });
   return html+'</div>';
+}
+
+/* ============================================================
+   FASE 4 — self-registration, atleet-view, QR, heat-kaartje
+   ============================================================ */
+function regLinkFor(code){ return location.href.split('#')[0]+'#reg='+code; }
+function joinLinkFor(code){ return location.href.split('#')[0]+'#join='+code; }
+
+/* ---- host: inschrijving beheren ---- */
+function setRegistrationOpen(v){ state.event.registrationOpen=!!v; save(); liveStructural(); renderLiveUI(); if(tvOpen) renderTvQr(); }
+function setCapacity(v){ const n=parseInt(v); state.event.capacity=(v===''||isNaN(n))?null:Math.max(0,n); save(); liveStructural(); }
+function copyRegLink(){
+  const link=regLinkFor(live.code);
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(link).then(()=>toast(t('toastLinkCopied'))).catch(()=>toast(link)); }
+  else toast(link);
+}
+function shareRegLink(){
+  const link=regLinkFor(live.code);
+  if(navigator.share){ navigator.share({title:'HeatBoard', text:t('regTitle'), url:link}).catch(()=>{}); }
+  else copyRegLink();
+}
+function renderHostReg(){
+  const box=document.getElementById('hostReg'); if(!box) return;
+  if(!(live.enabled && live.role==='host')){ box.innerHTML=''; return; }
+  const link=regLinkFor(live.code);
+  box.innerHTML=
+    '<label class="toggle-row"><input type="checkbox" id="regOpenToggle"'+(state.event.registrationOpen?' checked':'')+' onchange="setRegistrationOpen(this.checked)"><span>'+t('regOpenText')+'</span></label>'+
+    '<div class="field" style="margin-top:6px"><label for="capInput">'+t('lblCapacity')+'</label>'+
+      '<input type="number" id="capInput" min="0" inputmode="numeric" value="'+(state.event.capacity!=null?state.event.capacity:'')+'" oninput="setCapacity(this.value)" style="max-width:150px"></div>'+
+    '<div class="field" style="margin-bottom:8px"><label>'+t('regLinkLabel')+'</label>'+
+      '<div class="reg-link-box"><span class="reg-link">'+esc(link)+'</span></div></div>'+
+    '<div class="setup-footer">'+
+      '<button class="btn btn-ghost btn-sm" onclick="copyRegLink()">'+t('btnCopyLink')+'</button>'+
+      '<button class="btn btn-ghost btn-sm" onclick="shareRegLink()">'+t('btnShareLink')+'</button></div>';
+}
+
+/* ---- atleet-onboarding overlay (inschrijven of naam kiezen) ---- */
+let onboardMode=null;
+function showAthleteOnboard(mode){ onboardMode=mode; renderRegOverlay(); document.getElementById('regOverlay').classList.add('active'); }
+function closeRegOverlay(){ const e=document.getElementById('regOverlay'); if(e) e.classList.remove('active'); }
+function regBrand(){ return '<div class="wizard-brand"><span class="brand-name">HEAT<span class="hot">BOARD</span></span></div>'; }
+function renderRegOverlay(){
+  const inner=document.getElementById('regInner'); if(!inner) return;
+  if(onboardMode==='pick'){
+    const list=state.athletes.filter(a=>!a.waitlist).slice().sort((a,b)=>a.name.localeCompare(b.name));
+    inner.innerHTML=regBrand()+'<div class="card"><div class="card-title">'+t('athPickTitle')+'</div>'+
+      '<div class="card-sub">'+t('athPickSub')+'</div>'+
+      '<div class="pick-list">'+(list.length?list.map(a=>'<button class="btn btn-ghost btn-block pick-btn" onclick="pickAthlete(\''+a.id+'\')"><span>'+esc(a.name)+'</span><span class="pick-div">'+esc(a.division)+'</span></button>').join(''):'<div class="empty-state">'+t('noAthletesYet')+'</div>')+'</div>'+
+      '<button class="btn btn-ghost btn-block" style="margin-top:12px" onclick="leaveLiveSession()">'+t('btnLeaveLive')+'</button></div>';
+    return;
+  }
+  if(!state.event.registrationOpen){
+    inner.innerHTML=regBrand()+'<div class="card"><div class="card-title">'+t('regClosed')+'</div>'+
+      '<div class="card-sub">'+t('regClosedSub')+'</div>'+
+      '<button class="btn btn-ghost btn-block" onclick="leaveLiveSession()">'+t('btnLeaveLive')+'</button></div>';
+    return;
+  }
+  const divs=state.divisions.map(d=>'<option>'+esc(d)+'</option>').join('');
+  inner.innerHTML=regBrand()+'<div class="card"><div class="card-title">'+t('regTitle')+'</div>'+
+    '<div class="card-sub">'+(state.event.name?esc(state.event.name):t('regSub'))+'</div>'+
+    '<div class="field"><label for="regName">'+t('regNameLabel')+'</label><input type="text" id="regName" autocomplete="name"></div>'+
+    '<div class="field"><label for="regDivision">'+t('regDivisionLabel')+'</label><select id="regDivision">'+divs+'</select></div>'+
+    '<button class="btn btn-primary btn-block" onclick="registerSelf()">'+t('btnRegister')+'</button></div>';
+}
+function registerSelf(){
+  const name=(document.getElementById('regName').value||'').trim();
+  if(!name){ toast(t('toastNeedName')); return; }
+  const division=document.getElementById('regDivision').value||state.divisions[0]||'';
+  const id=uid();
+  applyEvent('register',{id,name,division},false);
+  liveEmit('register',{id,name,division});
+  live.athleteId=id; saveLiveSess();
+  closeRegOverlay(); showAthleteView();
+  toast(t('toastRegistered'));
+}
+function pickAthlete(id){ live.athleteId=id; saveLiveSess(); closeRegOverlay(); showAthleteView(); }
+
+/* ---- persoonlijke atleet-weergave ---- */
+function athleteViewOpen(){ const e=document.getElementById('athleteOverlay'); return !!(e && e.classList.contains('active')); }
+function showAthleteView(){ renderAthleteView(); document.getElementById('athleteOverlay').classList.add('active'); }
+function closeAthleteView(){ const e=document.getElementById('athleteOverlay'); if(e) e.classList.remove('active'); }
+function positionOf(id, divFilter){
+  const list=ranking(divFilter||'','');
+  const idx=list.findIndex(a=>a.id===id);
+  return idx>=0 ? {pos:idx+1, total:list.length} : null;
+}
+function renderAthleteView(){
+  const inner=document.getElementById('athleteInner'); if(!inner) return;
+  const a=state.athletes.find(x=>x.id===live.athleteId);
+  const header='<div class="av-head"><span class="av-code">'+(live.code||'')+'</span>'+
+    '<button class="btn btn-ghost btn-sm" onclick="leaveLiveSession()">'+t('btnLeaveLive')+'</button></div>';
+  if(!a){ inner.innerHTML=header+'<div class="card"><div class="empty-state">'+t('athNotPlaced')+'</div></div>'; return; }
+  const segs=getSegments();
+  const done=a.splits.length;
+  const finished=done===segs.length && segs.length>0;
+  let statusHtml='';
+  if(a.waitlist) statusHtml='<div class="av-status">'+t('athWaitlisted')+'</div>';
+  else if(a.heat===0) statusHtml='<div class="av-status">'+t('athNotPlaced')+'</div>';
+  let splitsHtml='';
+  if(a.splits.length){
+    const ws=a.workStarts||{};
+    splitsHtml='<div class="splits-grid">'+a.splits.map((ms,i)=>{
+      const dur=i===0?ms:ms-a.splits[i-1];
+      let line='<div class="split-line"><span class="sl-name">'+esc(segs[i]?segs[i].label:'#'+(i+1))+'</span>'+
+        '<span class="sl-time">'+fmtTime(ms)+' <span style="color:var(--muted)">(+'+fmtTime(dur)+')</span></span></div>';
+      if(state.event.roxzone && segs[i] && segs[i].type==='S' && ws[i]!=null){
+        const rox=ws[i]-(i>0?a.splits[i-1]:0), work=ms-ws[i];
+        line+='<div class="split-rox">'+t('roxLabel')+' '+fmtTime(rox)+' · '+t('workLabel')+' '+fmtTime(work)+'</div>';
+      }
+      return '<div>'+line+'</div>';
+    }).join('')+'</div>';
+    const rt=state.event.roxzone?roxTotalOf(a,segs):null;
+    if(rt!=null) splitsHtml+='<div class="split-line rox-total"><span class="sl-name">'+t('roxTotal')+'</span><span class="sl-time">'+fmtTime(rt)+'</span></div>';
+  }
+  let posHtml='';
+  if(a.heat>0 && !a.waitlist){
+    const line=(lbl,p)=> p?'<div class="av-pos"><span>'+lbl+'</span><strong>'+t('lblPlace')+' '+p.pos+' '+t('lblOf')+' '+p.total+'</strong></div>':'';
+    posHtml='<div class="av-positions">'+line(t('posOverall'),positionOf(a.id,''))+line(t('posDivision'),positionOf(a.id,a.division))+'</div>';
+  }
+  const timeLabel = finished? fmtTime(a.splits[done-1]) : (a.heat>0 && done>0? fmtTime(heatElapsed(a.heat)) : '');
+  const card='<div class="card av-card">'+
+    '<div class="av-name">'+esc(a.name)+'</div>'+
+    '<div class="av-sub">'+esc(a.division)+(a.heat>0?' · '+t('heat')+' '+a.heat:'')+'</div>'+
+    statusHtml+
+    (a.heat>0? laneStrip(a, segs, false):'')+
+    (timeLabel?'<div class="av-time">'+timeLabel+'</div>':'')+
+    posHtml+
+    (splitsHtml?'<div class="board-splits" style="display:block;margin-top:12px">'+splitsHtml+'</div>':'')+
+    (finished && !a.dnf?'<button class="btn btn-primary btn-block" style="margin-top:14px" onclick="shareCard(\''+a.id+'\')">📸 '+t('shareCard')+'</button>':'')+
+  '</div>';
+  let bhtml='';
+  const board=ranking('','').slice(0,8);
+  if(board.length){
+    let rank=0;
+    bhtml='<div class="card"><div class="card-title">'+t('tabBoard')+'</div>'+board.map(x=>{
+      const fin=x.splits.length===segs.length && segs.length>0;
+      if(fin && !x.dnf) rank++;
+      const tm=x.dnf?'DNF':fin?fmtTime(x.splits[x.splits.length-1]):(x.splits.length>0?x.splits.length+'/'+segs.length:'–');
+      return '<div class="av-brow'+(x.id===a.id?' me':'')+'"><span class="av-brank">'+(fin&&!x.dnf?rank:'·')+'</span><span class="av-bname">'+esc(x.name)+'</span><span class="av-btime">'+tm+'</span></div>';
+    }).join('')+'</div>';
+  }
+  inner.innerHTML=header+card+bhtml;
+}
+
+/* ---- QR (lazy via CDN) ---- */
+function loadQrLib(){
+  return new Promise((res,rej)=>{
+    if(window.qrcode) return res();
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
+    s.onload=()=>res(); s.onerror=()=>rej(new Error('qr cdn'));
+    document.head.appendChild(s);
+  });
+}
+function renderTvQr(){
+  const box=document.getElementById('tvQr'); if(!box) return;
+  if(!live.enabled || !live.code){ box.style.display='none'; box._url=null; return; }
+  const open=!!state.event.registrationOpen;
+  const url=(open?regLinkFor(live.code):joinLinkFor(live.code));
+  const label=open?t('qrRegister'):t('qrWatch');
+  box.style.display='';
+  if(box._url===url){ const l=box.querySelector('.tv-qr-label'); if(l) l.textContent=label; return; }
+  box._url=url;
+  loadQrLib().then(()=>{
+    try{
+      const qr=window.qrcode(0,'M'); qr.addData(url); qr.make();
+      box.innerHTML='<img alt="QR" src="'+qr.createDataURL(6,2)+'"><div class="tv-qr-label">'+label+'</div>';
+    }catch(e){ box.style.display='none'; box._url=null; }
+  }).catch(()=>{ box.style.display='none'; box._url=null; });
+}
+
+/* ---- heat-kaartje (PNG, top 8) ---- */
+function heatCard(){
+  const segs=getSegments();
+  const [df,hf]=boardFilters();
+  const list=ranking(df,hf).slice(0,8);
+  if(!list.length){ toast(t('toastNothingToExport')); return; }
+  const cv=document.getElementById('shareCanvas');
+  const W=1080,H=1350; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  const HOT='#FF2E63', WARM='#FF7A1A', TXT='#F5EFEA', MUT='#9C8F86', DIM='#6E635C', LINE='#332B27';
+  ctx.fillStyle='#0F0D0C'; ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W/2,-120,60,W/2,-120,720);
+  glow.addColorStop(0,'rgba(255,122,26,0.16)'); glow.addColorStop(1,'rgba(255,122,26,0)');
+  ctx.fillStyle=glow; ctx.fillRect(0,0,W,320);
+  const topbar=ctx.createLinearGradient(0,0,W,0);
+  topbar.addColorStop(0,'#FFC24B'); topbar.addColorStop(.45,'#FF7A1A'); topbar.addColorStop(.78,'#FF3B1F'); topbar.addColorStop(1,'#FF2E63');
+  ctx.fillStyle=topbar; ctx.fillRect(0,0,W,8);
+  ctx.textBaseline='alphabetic';
+  ctx.font='800 34px "Saira Condensed", Saira, sans-serif';
+  ctx.fillStyle=TXT; ctx.fillText('HEAT',72,112);
+  const w1=ctx.measureText('HEAT').width; ctx.fillStyle=WARM; ctx.fillText('BOARD',72+w1+4,112);
+  ctx.font='500 24px "Chivo Mono", monospace'; ctx.fillStyle=DIM;
+  const dateStr=new Date().toLocaleDateString(state.lang==='nl'?'nl-NL':'en-GB');
+  ctx.textAlign='right'; ctx.fillText(dateStr,W-72,108); ctx.textAlign='left';
+  ctx.font='600 34px Saira, sans-serif'; ctx.fillStyle=TXT;
+  ctx.fillText(clip(ctx, state.event.name||(state.lang==='nl'?'Fitness race simulatie':'Fitness race simulation'), W-144), 72, 214);
+  ctx.font='700 22px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle=MUT;
+  ctx.fillText(t('tabBoard').toUpperCase()+'  ·  TOP '+list.length, 72, 252);
+  const startY=312, rowH=122, n=Math.max(1,segs.length-1);
+  let rank=0;
+  list.forEach((a,i)=>{
+    const y=startY+i*rowH;
+    const fin=a.splits.length===segs.length && segs.length>0;
+    if(fin && !a.dnf) rank++;
+    ctx.font='700 44px "Chivo Mono", monospace'; ctx.fillStyle=(i===0?HOT:MUT);
+    ctx.fillText(fin&&!a.dnf?String(rank):'·', 72, y+42);
+    ctx.font='800 40px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle=TXT;
+    ctx.fillText(clip(ctx, a.name, 540), 156, y+34);
+    ctx.font='500 22px Saira, sans-serif'; ctx.fillStyle=DIM;
+    ctx.fillText(clip(ctx, a.division, 420), 156, y+68);
+    ctx.font='600 40px "Chivo Mono", monospace'; ctx.fillStyle=(i===0?HOT:TXT); ctx.textAlign='right';
+    const tm=a.dnf?'DNF':(fin?fmtTime(a.splits[a.splits.length-1]):(a.splits.length>0?a.splits.length+'/'+segs.length:'–'));
+    ctx.fillText(tm, W-72, y+34); ctx.textAlign='left';
+    const stripY=y+84, stripW=W-228, gap=5, segW=(stripW-gap*(segs.length-1))/segs.length;
+    segs.forEach((s,si)=>{
+      ctx.fillStyle=(si<a.splits.length)?heatColor(si/n):'#2A2320';
+      roundRect(ctx, 156+si*(segW+gap), stripY, Math.max(2,segW), 12, 3); ctx.fill();
+    });
+    if(i<list.length-1){ ctx.fillStyle=LINE; ctx.fillRect(72,y+rowH-16,W-144,1); }
+  });
+  ctx.fillStyle=LINE; ctx.fillRect(72,H-120,W-144,1);
+  ctx.font='500 22px "Chivo Mono", monospace'; ctx.fillStyle=DIM;
+  ctx.fillText('heatboard · fitness race sim', 72, H-68);
+  cv.toBlob(blob=>{
+    downloadBlob(blob, safeFile((state.event.name||'heatboard')+'-heat')+'.png');
+    toast(t('toastHeatCard'));
+  }, 'image/png');
 }
 
 /* ---------- Toast, tick, init ---------- */
@@ -2014,6 +2348,10 @@ setInterval(()=>{
     });
   }
   if(tvOpen) renderTV();
+  if(athleteViewOpen()){
+    const a=state.athletes.find(x=>x.id===live.athleteId);
+    if(a && a.heat>0 && state.heats[a.heat] && state.heats[a.heat].running) renderAthleteView();
+  }
 }, 250);
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState==='visible'){
@@ -2040,16 +2378,31 @@ load();
 applyI18n();
 renderAll();
 renderLiveUI();
-if(!state.ui.setupDone && !localStorage.getItem(LIVE_SESS_LS)) openWizard();
+// Hash-router: inschrijf- en kijk-links (#reg=CODE / #join=CODE)
+let hashHandled=false;
 (function(){
+  const m=(location.hash||'').match(/^#(reg|join)=([A-Za-z0-9]+)/);
+  if(!m) return;
+  hashHandled=true;
+  history.replaceState(null,'',location.pathname+location.search);
+  state.ui.setupDone=true;
+  const code=m[2].toUpperCase();
+  if(m[1]==='reg'){ live.athletePending='register'; joinLiveSession(code,'athlete'); }
+  else { joinLiveSession(code,'tv'); }
+})();
+if(!hashHandled && !state.ui.setupDone && !localStorage.getItem(LIVE_SESS_LS)) openWizard();
+(function(){
+  if(hashHandled) return;
   try{
     const s=JSON.parse(localStorage.getItem(LIVE_SESS_LS));
     if(s && s.code){
+      live.athleteId=s.athleteId||null;
       if(s.role==='host'){
         // host resumes: reconnect and re-announce
         liveConnect().then(sb=>{ if(!sb) return; live.sb=sb; live.role='host'; live.code=s.code; live.enabled=true; subscribeLive(); renderLiveUI(); });
       } else {
         live.judgeAthletes=s.judgeAthletes||[];
+        live.athletePending='pick';
         joinLiveSession(s.code, s.role);
       }
     }
