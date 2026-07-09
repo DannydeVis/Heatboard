@@ -418,6 +418,25 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
 .tv-strip .lane-seg{height:1.5vh;border-radius:2px}
 .tv-strip .lane-seg::after{display:none}
 
+/* ============ START WIZARD ============ */
+.wizard-overlay{
+  position:fixed;inset:0;z-index:250;display:none;overflow-y:auto;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255,122,26,.06), transparent 60%),
+    var(--void);
+  padding:calc(env(safe-area-inset-top, 0px) + 6vh) 16px 40px;
+}
+.wizard-overlay.active{display:block}
+.wizard-inner{max-width:560px;margin:0 auto;animation:fade .25s ease}
+.wizard-brand{text-align:center;margin-bottom:16px}
+.wizard-step-label{
+  font-family:var(--font-mono);font-size:12px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:2px;text-align:center;margin-bottom:14px;
+}
+.wizard-nav{display:flex;gap:10px}
+.wizard-nav .btn{flex:1}
+.wizard-overlay .format-grid{grid-template-columns:1fr}
+
 /* ============ TOAST & MISC ============ */
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
@@ -524,6 +543,7 @@ body.role-judge #tab-athletes{display:none}
       <button class="btn btn-ghost btn-sm" onclick="exportJSON()" data-i18n="btnBackup">Back-up downloaden</button>
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" data-i18n="btnRestore">Back-up laden</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)">
+      <button class="btn btn-ghost btn-sm" onclick="newEvent()" data-i18n="btnNewEvent">Nieuw event</button>
       <button class="btn btn-danger-ghost btn-sm" onclick="resetAll()" data-i18n="btnResetAll">Alles wissen</button>
     </div>
     <details class="adv">
@@ -637,6 +657,54 @@ body.role-judge #tab-athletes{display:none}
   <div class="tv-list" id="tvList"></div>
 </div>
 
+<!-- ============ START WIZARD ============ -->
+<div class="wizard-overlay" id="wizardOverlay">
+  <div class="wizard-inner">
+    <div class="wizard-brand"><span class="brand-name">HEAT<span class="hot">BOARD</span></span></div>
+    <div class="wizard-step-label" id="wizStepLabel"></div>
+
+    <div class="card" id="wizStep1">
+      <div class="card-title" data-i18n="wizNameTitle">Welkom bij HeatBoard</div>
+      <div class="card-sub" data-i18n="wizNameSub">Geef je simulatie een naam. Je kunt dit later altijd aanpassen bij Opzet.</div>
+      <div class="field">
+        <label for="wizEventName" data-i18n="lblEventName">Naam van de simulatie</label>
+        <input type="text" id="wizEventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim — Gym Rotterdam" oninput="updateEventName(this.value)">
+      </div>
+    </div>
+
+    <div class="card" id="wizStep2" style="display:none">
+      <div class="card-title" data-i18n="wizFormatTitle">Kies je format</div>
+      <div class="card-sub" data-i18n="wizFormatSub">Volledig, half of stel zelf de segmenten samen.</div>
+      <div class="format-grid">
+        <button class="format-opt" id="wizFmt-full" onclick="wizSetFormat('full')">
+          <div class="fo-name" data-i18n="fmtFullName">Volledige sim</div>
+          <div class="fo-desc" data-i18n="fmtFullDesc">8× 1 km run + 8 stations, officiële volgorde</div>
+        </button>
+        <button class="format-opt" id="wizFmt-half" onclick="wizSetFormat('half')">
+          <div class="fo-name" data-i18n="fmtHalfName">Halve sim</div>
+          <div class="fo-desc" data-i18n="fmtHalfDesc">4× run + 4 stations, ideaal voor een training</div>
+        </button>
+        <button class="format-opt" id="wizFmt-custom" onclick="wizSetFormat('custom')">
+          <div class="fo-name" data-i18n="fmtCustomName">Eigen format</div>
+          <div class="fo-desc" data-i18n="fmtCustomDesc">Stel zelf de segmenten samen</div>
+        </button>
+      </div>
+      <div class="field" id="wizCustomSegField" style="display:none;margin-top:12px">
+        <label for="wizCustomSegs" data-i18n="lblCustomSegs">Segmenten (één per regel, R = run, S = station)</label>
+        <textarea id="wizCustomSegs" data-i18n-ph="phCustomSegs" placeholder="R Run 1 km&#10;S SkiErg 500 m&#10;R Run 1 km&#10;S Wall Balls 50" oninput="wizCustomSegsInput(this.value)"></textarea>
+        <div class="hint" data-i18n="hintCustomSegs">Begin een regel met R (run) of S (station), gevolgd door de naam.</div>
+      </div>
+      <div class="seg-preview" id="wizSegPreview"></div>
+    </div>
+
+    <div class="wizard-nav">
+      <button class="btn btn-ghost" id="wizBtnBack" onclick="wizardBack()" style="display:none" data-i18n="wizBack">Terug</button>
+      <button class="btn btn-primary" id="wizBtnNext" onclick="wizardNext()" data-i18n="wizNext">Volgende</button>
+      <button class="btn btn-primary" id="wizBtnStart" onclick="wizardStart()" style="display:none" data-i18n="wizStart">Start →</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <canvas id="shareCanvas" width="1080" height="1350" style="display:none"></canvas>
 
@@ -709,6 +777,14 @@ const I18N = {
     segTotal:'Totaal', segOf:'van', splitsTitle:'Splits (cumulatief)',
     csvHeaders:'Positie;Naam;Divisie;Heat;Status;Totaal',
     demoEventName:'Demo Sim — Rotterdam',
+    wizStep:'Stap {n} van {total}',
+    wizNameTitle:'Welkom bij HeatBoard',
+    wizNameSub:'Geef je simulatie een naam. Je kunt dit later altijd aanpassen bij Opzet.',
+    wizFormatTitle:'Kies je format',
+    wizFormatSub:'Volledig, half of stel zelf de segmenten samen.',
+    wizBack:'Terug', wizNext:'Volgende', wizStart:'Start →',
+    btnNewEvent:'Nieuw event',
+    confirmNewEvent:'Een nieuw event starten wist alle huidige gegevens (atleten, heats en tijden). Doorgaan?',
   },
   en: {
     tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
@@ -771,6 +847,14 @@ const I18N = {
     segTotal:'Total', segOf:'of', splitsTitle:'Splits (cumulative)',
     csvHeaders:'Rank;Name;Division;Heat;Status;Total',
     demoEventName:'Demo Sim — Rotterdam',
+    wizStep:'Step {n} of {total}',
+    wizNameTitle:'Welcome to HeatBoard',
+    wizNameSub:'Give your simulation a name. You can change this later under Setup.',
+    wizFormatTitle:'Choose your format',
+    wizFormatSub:'Full, half, or build your own segment list.',
+    wizBack:'Back', wizNext:'Next', wizStart:'Start →',
+    btnNewEvent:'New event',
+    confirmNewEvent:'Starting a new event erases all current data (athletes, heats and times). Continue?',
   }
 };
 function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
@@ -805,7 +889,7 @@ function defaultState(){
     divisions: DEFAULT_DIVISIONS_NL.slice(),
     athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false}
     heats: {},             // "1": {startedAt:null, running:false}
-    ui:{ currentHeat:1, view:'setup' }
+    ui:{ currentHeat:1, view:'setup', setupDone:false }
   };
 }
 function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
@@ -815,6 +899,8 @@ function load(){
     if(raw){ const s = JSON.parse(raw); state = Object.assign(defaultState(), s);
       state.event = Object.assign(defaultState().event, s.event||{});
       state.ui = Object.assign(defaultState().ui, s.ui||{});
+      // saves van vóór de wizard hebben geen setupDone-vlag: behandel ze als afgerond
+      if(!s.ui || s.ui.setupDone === undefined) state.ui.setupDone = true;
     }
   }catch(e){ state = defaultState(); }
 }
@@ -931,6 +1017,52 @@ function addDivision(){
 }
 function removeDivision(i){ state.divisions.splice(i,1); save(); renderDivisions(); liveStructural(); }
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- Start wizard ---------- */
+let wizStep = 1;
+function openWizard(){
+  wizStep = 1; renderWizard();
+  document.getElementById('wizardOverlay').classList.add('active');
+}
+function closeWizard(){ document.getElementById('wizardOverlay').classList.remove('active'); }
+function renderWizard(){
+  document.getElementById('wizStepLabel').textContent =
+    t('wizStep').replace('{n}', wizStep).replace('{total}', 2);
+  document.getElementById('wizStep1').style.display = wizStep===1 ? 'block' : 'none';
+  document.getElementById('wizStep2').style.display = wizStep===2 ? 'block' : 'none';
+  document.getElementById('wizBtnBack').style.display = wizStep===1 ? 'none' : '';
+  document.getElementById('wizBtnNext').style.display = wizStep===1 ? '' : 'none';
+  document.getElementById('wizBtnStart').style.display = wizStep===2 ? '' : 'none';
+  const nameInp = document.getElementById('wizEventName');
+  if(document.activeElement !== nameInp) nameInp.value = state.event.name;
+  ['full','half','custom'].forEach(f=>{
+    document.getElementById('wizFmt-'+f).classList.toggle('selected', state.event.format===f);
+  });
+  document.getElementById('wizCustomSegField').style.display = state.event.format==='custom' ? 'block' : 'none';
+  const segInp = document.getElementById('wizCustomSegs');
+  if(state.event.format==='custom' && state.event.customSegs.length && document.activeElement !== segInp){
+    segInp.value = state.event.customSegs.map(s=>s[0]+' '+s[1]).join('\n');
+  }
+  document.getElementById('wizSegPreview').innerHTML = getSegments().map(s=>
+    '<span class="seg-chip'+(s.type==='S'?' station':'')+'">'+esc(s.label)+'</span>'
+  ).join('');
+  document.getElementById('wizBtnStart').disabled =
+    state.event.format==='custom' && getSegments().length===0;
+}
+function wizSetFormat(f){ setFormat(f); renderWizard(); }
+function wizCustomSegsInput(text){ updateCustomSegs(text); renderWizard(); }
+function wizardNext(){ wizStep = 2; renderWizard(); }
+function wizardBack(){ wizStep = 1; renderWizard(); }
+function wizardStart(){
+  state.ui.setupDone = true; save();
+  closeWizard(); renderAll(); showView('race');
+}
+function newEvent(){
+  if(!confirm(t('confirmNewEvent'))) return;
+  const lang = state.lang;
+  state = defaultState(); state.lang = lang;
+  save(); applyI18n(); renderAll(); openWizard();
+}
 
 /* ---------- Athletes ---------- */
 function addAthlete(){
@@ -1397,6 +1529,7 @@ function importJSON(input){
     try{
       const s = JSON.parse(r.result);
       state = Object.assign(defaultState(), s);
+      state.ui.setupDone = true;
       save(); applyI18n(); renderAll(); toast(t('toastImported'));
     }catch(e){ alert('Invalid file'); }
     input.value='';
@@ -1407,7 +1540,7 @@ function resetAll(){
   if(!confirm(t('confirmResetAll'))) return;
   const lang = state.lang;
   state = defaultState(); state.lang = lang;
-  save(); applyI18n(); renderAll();
+  save(); applyI18n(); renderAll(); openWizard();
 }
 function loadDemo(){
   const lang = state.lang;
@@ -1442,6 +1575,7 @@ function loadDemo(){
   const dur = Math.max(...state.athletes.filter(a=>a.heat===1).map(a=>a.splits[a.splits.length-1]));
   state.heats = { '1':{startedAt: now - dur - 60000, running:false}, '2':{startedAt:null, running:false} };
   state.ui.currentHeat = 1;
+  state.ui.setupDone = true;
   save(); applyI18n(); renderAll(); showView('board');
   toast(t('toastDemo'));
 }
@@ -1652,6 +1786,7 @@ function toast(msg){
 function renderAll(){
   renderHeader(); renderSetup(); renderAthletes(); renderRace(); renderBoard();
   showView(state.ui.view || 'setup');
+  if(document.getElementById('wizardOverlay').classList.contains('active')) renderWizard();
 }
 setInterval(()=>{
   const n = state.ui.currentHeat;
@@ -1700,6 +1835,7 @@ load();
 applyI18n();
 renderAll();
 renderLiveUI();
+if(!state.ui.setupDone && !localStorage.getItem(LIVE_SESS_LS)) openWizard();
 (function(){
   try{
     const s=JSON.parse(localStorage.getItem(LIVE_SESS_LS));
