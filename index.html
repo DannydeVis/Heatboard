@@ -1879,7 +1879,10 @@ function loadDemo(){
    ============================================================ */
 const LIVE_CFG_LS='heatboard_live_cfg', LIVE_SESS_LS='heatboard_live_sess';
 // Ingebakken Supabase-config (leeg = alleen via de instellingenvelden/localStorage).
-const DEFAULT_SB = { url:'', key:'' };
+const DEFAULT_SB = {
+  url:'https://jnraykaanqeylfqrmltn.supabase.co',
+  key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpucmF5a2FhbnFleWxmcXJtbHRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2NjQxNjQsImV4cCI6MjA5OTI0MDE2NH0.WvUIZSTgLl4gx-7SJJm5VSW82veO5BViqvDu9rLcEU4'
+};
 function sbConfigured(){ return !!(DEFAULT_SB.url && DEFAULT_SB.key); }
 let live={enabled:false, role:null, code:null, sb:null, channel:null,
   clientId:uid()+uid(), applied:new Set(), queue:[], connected:false, judgeAthletes:[], athleteId:null, athletePending:null};
