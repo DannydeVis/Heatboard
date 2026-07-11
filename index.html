@@ -495,6 +495,19 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
   text-shadow:0 0 80px rgba(255,122,26,.25);font-variant-numeric:tabular-nums;
 }
 
+/* ============ FASE 7: seizoenen en progressie ============ */
+.board-mode{display:flex;gap:8px;margin-bottom:12px}
+.board-mode .chip{min-height:48px;display:inline-flex;align-items:center}
+.season-points{font-family:var(--font-mono);font-weight:700;color:var(--h-warm);white-space:nowrap}
+.season-manage{margin-top:0}
+.prog-chart{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:16px;padding-top:10px}
+.prog-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;min-width:0}
+.prog-bar{width:100%;max-width:44px;border-radius:5px 5px 2px 2px;min-height:6px}
+.prog-bar.pr{box-shadow:0 0 14px rgba(255,46,99,.55);outline:2px solid var(--h-white);outline-offset:1px}
+.prog-time{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:5px;white-space:nowrap}
+.prog-pr{font-size:9px;font-weight:800;color:var(--h-white);letter-spacing:.5px;height:12px}
+.tv-points{color:var(--h-warm)}
+
 /* ============ START WIZARD ============ */
 .wizard-overlay{
   position:fixed;inset:0;z-index:250;display:none;overflow-y:auto;
@@ -554,7 +567,7 @@ body.role-judge #tab-athletes{display:none}
   <div class="app-bar-top">
     <div class="brand">
       <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
-      <span class="brand-tag">SIM v0.6</span>
+      <span class="brand-tag">SIM v0.7</span>
     </div>
     <div class="event-name-display" id="eventNameDisplay"></div>
     <span class="live-ind" id="liveDot"></span>
@@ -744,6 +757,7 @@ body.role-judge #tab-athletes{display:none}
 
 <!-- ============ BOARD VIEW ============ -->
 <section class="view" id="view-board">
+  <div class="board-mode" id="boardModeBar"></div>
   <div class="board-filters">
     <select id="filterDivision" onchange="renderBoard()"></select>
     <select id="filterHeat" onchange="renderBoard()"></select>
@@ -752,7 +766,9 @@ body.role-judge #tab-athletes{display:none}
     <button class="btn btn-dark btn-sm" onclick="openTV()" data-i18n="btnTV">📺 TV-weergave</button>
     <button class="btn btn-ghost btn-sm" onclick="heatCard()" data-i18n="btnHeatCard">🖼 Deel heat-kaartje</button>
     <button class="btn btn-ghost btn-sm" onclick="exportCSV()" data-i18n="btnCSV">CSV exporteren</button>
+    <button class="btn btn-primary btn-sm" id="btnFinishSim" onclick="openFinishSim()" data-i18n="btnFinishSim">🏆 Sim afronden en opslaan</button>
   </div>
+  <input type="file" id="seasonImportFile" accept=".json" style="display:none" onchange="importSeasonFile(this)">
   <div id="boardList"></div>
 </section>
 
@@ -950,6 +966,23 @@ const I18N = {
     confirmTemplate:'De huidige simulatie wordt vervangen; atleten en tijden worden gewist. Doorgaan?',
     toastTplSaved:'Sjabloon opgeslagen', toastTplLoaded:'Sjabloon geladen',
     lblOrgName:'Gym of organisatie (optioneel)', phOrgName:'Bijv. CrossFit Rotterdam',
+    btnFinishSim:'🏆 Sim afronden en opslaan',
+    finishTitle:'Sim afronden', finishPickSeason:'Kies een seizoen of maak een nieuw seizoen aan. Alleen finishers worden opgeslagen.',
+    phNewSeason:'Nieuw seizoen, bijv. Winterleague 2026', btnNewSeason:'+ Aanmaken',
+    toastSimSaved:'Sim opgeslagen in seizoen', noFinishers:'Nog geen finishers om op te slaan',
+    confirmResave:'Deze sim is al opgeslagen in een seizoen. Opnieuw opslaan? De eerder opgeslagen resultaten van deze sim worden dan eerst verwijderd.',
+    boardModeSim:'Deze sim', boardModeSeason:'Seizoen',
+    seasonEmpty:'Nog geen seizoensresultaten. Rond een sim af en sla hem op in een seizoen.',
+    colPoints:'Punten', colSims:'sims', colBest:'Beste tijd',
+    btnSeasonTV:'Toon seizoen op TV', btnSeasonCard:'🖼 Deel seizoenskaartje', toastSeasonCard:'Seizoenskaartje gedownload',
+    btnSeasonCSV:'CSV stand', csvSeasonHeaders:'Positie;Naam;Divisie;Punten;Sims;Beste tijd',
+    btnRenameSeason:'Hernoemen', promptRenameSeason:'Nieuwe naam voor dit seizoen:',
+    btnDeleteSeason:'Seizoen verwijderen', confirmDeleteSeason:'Dit seizoen en alle resultaten verwijderen? Dit kan niet ongedaan worden gemaakt.',
+    btnExportSeason:'Exporteer JSON', btnImportSeason:'Importeer JSON',
+    importMergeAsk:'Samenvoegen met de bestaande seizoenen? OK = samenvoegen, Annuleren = alles vervangen.',
+    btnManageRows:'Resultaten beheren', confirmDeleteRow:'Dit resultaat verwijderen?',
+    sheetPR:'PR', sheetBestRox:'Beste roxzone', sheetSims:'Sims', sheetAvg:'Gemiddelde',
+    yourPR:'Jouw PR',
   },
   en: {
     tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
@@ -1064,6 +1097,23 @@ const I18N = {
     confirmTemplate:'The current simulation will be replaced; athletes and times are erased. Continue?',
     toastTplSaved:'Template saved', toastTplLoaded:'Template loaded',
     lblOrgName:'Gym or organisation (optional)', phOrgName:'E.g. CrossFit Rotterdam',
+    btnFinishSim:'🏆 Finish sim and save',
+    finishTitle:'Finish sim', finishPickSeason:'Pick a season or create a new one. Only finishers are saved.',
+    phNewSeason:'New season, e.g. Winter League 2026', btnNewSeason:'+ Create',
+    toastSimSaved:'Sim saved to season', noFinishers:'No finishers to save yet',
+    confirmResave:'This sim was already saved to a season. Save again? The previously saved results of this sim will be removed first.',
+    boardModeSim:'This sim', boardModeSeason:'Season',
+    seasonEmpty:'No season results yet. Finish a sim and save it to a season.',
+    colPoints:'Points', colSims:'sims', colBest:'Best time',
+    btnSeasonTV:'Show season on TV', btnSeasonCard:'🖼 Share season card', toastSeasonCard:'Season card downloaded',
+    btnSeasonCSV:'CSV standings', csvSeasonHeaders:'Rank;Name;Division;Points;Sims;Best time',
+    btnRenameSeason:'Rename', promptRenameSeason:'New name for this season:',
+    btnDeleteSeason:'Delete season', confirmDeleteSeason:'Delete this season and all results? This cannot be undone.',
+    btnExportSeason:'Export JSON', btnImportSeason:'Import JSON',
+    importMergeAsk:'Merge with existing seasons? OK = merge, Cancel = replace everything.',
+    btnManageRows:'Manage results', confirmDeleteRow:'Delete this result?',
+    sheetPR:'PR', sheetBestRox:'Best roxzone', sheetSims:'Sims', sheetAvg:'Average',
+    yourPR:'Your PR',
   }
 };
 function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
@@ -1131,7 +1181,7 @@ let state = defaultState();
 function defaultState(){
   return {
     lang:'nl',
-    event:{ name:'', orgName:'', format:'full', customSegs:[], roxzone:false, registrationOpen:false, capacity:null },
+    event:{ name:'', orgName:'', format:'full', customSegs:[], roxzone:false, registrationOpen:false, capacity:null, savedToSeason:null },
     judges: [],            // {name, athleteIds:[]}
     divisions: DEFAULT_DIVISIONS_NL.slice(),
     divisionProfiles: defaultProfilesFor(DEFAULT_DIVISIONS_NL), // { divisienaam: profielkey }
@@ -1806,6 +1856,22 @@ function renderBoard(){
   const divSel = document.getElementById('filterDivision');
   const heatSel = document.getElementById('filterHeat');
   const prevDiv = divSel.value, prevHeat = heatSel.value;
+  // schakelaar Deze sim / Seizoen
+  document.getElementById('boardModeBar').innerHTML =
+    '<button class="chip selectable'+(boardMode==='sim'?' active':'')+'" onclick="setBoardMode(\'sim\')">'+t('boardModeSim')+'</button>'+
+    '<button class="chip selectable'+(boardMode==='season'?' active':'')+'" onclick="setBoardMode(\'season\')">'+t('boardModeSeason')+'</button>';
+  const canManage = !live.enabled || live.role==='host';
+  document.getElementById('btnFinishSim').style.display = (boardMode==='sim' && canManage) ? '' : 'none';
+  heatSel.style.display = boardMode==='season' ? 'none' : '';
+  document.querySelector('.board-actions').style.display = boardMode==='season' ? 'none' : '';
+  if(boardMode==='season'){
+    // divisiefilter vullen vanuit de seizoensdata
+    const seasons=loadSeasons(); const s=seasons[boardSeasonId]||Object.values(seasons)[0];
+    const divs=s?[...new Set(s.results.map(r=>r.division))]:[];
+    divSel.innerHTML='<option value="">'+t('allDivisions')+'</option>'+divs.map(d=>'<option'+(prevDiv===d?' selected':'')+'>'+esc(d)+'</option>').join('');
+    renderSeasonBoard();
+    return;
+  }
   divSel.innerHTML = '<option value="">'+t('allDivisions')+'</option>'+state.divisions.map(d=>'<option'+(prevDiv===d?' selected':'')+'>'+esc(d)+'</option>').join('');
   heatSel.innerHTML = '<option value="">'+t('allHeats')+'</option>'+heatNumbers().filter(n=>n>0).map(n=>'<option value="'+n+'"'+(prevHeat==String(n)?' selected':'')+'>'+t('heat')+' '+n+'</option>').join('');
 
@@ -1873,6 +1939,25 @@ function closeTV(){
   try{ const p=(document.exitFullscreen && document.fullscreenElement) ? document.exitFullscreen() : null; if(p&&p.catch) p.catch(()=>{}); }catch(e){}
 }
 function renderTV(){
+  // seizoensstand-takeover (season_board): 30 seconden, daarna terug naar live
+  if(tvSeason){
+    if(Date.now() > tvSeason.until){ tvSeason=null; }
+    else {
+      const p=tvSeason.p;
+      document.getElementById('tvClock').textContent='';
+      document.getElementById('tvTitle').textContent=p.title || t('boardModeSeason');
+      document.getElementById('tvList').innerHTML=p.rows.map((r,i)=>
+        '<div class="tv-row">'+
+        '<span class="tv-rank">'+(i+1)+'</span>'+
+        '<span class="tv-name">'+esc(r.name)+'</span>'+
+        '<span class="tv-div">'+esc(r.division||'')+(r.sims?' · '+r.sims+' '+t('colSims').toLowerCase():'')+'</span>'+
+        '<span class="tv-time tv-points">'+esc(String(r.points))+' '+t('colPoints').toLowerCase()+'</span>'+
+        '</div>').join('');
+      return;
+    }
+    // takeover net afgelopen: titel terugzetten
+    document.getElementById('tvTitle').innerHTML = state.event.name ? esc(state.event.name) : 'HEAT<span class="hot">BOARD</span>';
+  }
   const segs = getSegments();
   const [df,hf] = boardFilters();
   const list = ranking(df,hf).slice(0,10);
@@ -2279,6 +2364,8 @@ function applyEvent(type,p,rerender){
     if(live.role==='host') liveStructural(); // host is autoritatief en her-broadcast de roster
   } else if(type==='announce'){
     if(p.text) showAnnounce(String(p.text));
+  } else if(type==='season_board'){
+    if(p && Array.isArray(p.rows)) showSeasonBoard(p, true);
   }
   save();
   if(rerender){ renderHeader(); renderAthletes(); renderRace(); if(document.getElementById('view-board').classList.contains('active')) renderBoard(); if(athleteViewOpen()) renderAthleteView(); }
@@ -2469,6 +2556,18 @@ function renderAthleteView(){
     (splitsHtml?'<div class="board-splits" style="display:block;margin-top:12px">'+splitsHtml+'</div>':'')+
     (finished && !a.dnf?'<button class="btn btn-primary btn-block" style="margin-top:14px" onclick="shareCard(\''+a.id+'\')">📸 '+t('shareCard')+'</button>':'')+
   '</div>';
+  // seizoensdata op dit toestel: toon PR + progressie onder de eigen kaart
+  let prHtml='';
+  try{
+    const myRows = personalSeasonRows(a.name);
+    if(myRows.length){
+      const best=Math.min(...myRows.map(r=>r.totalMs));
+      prHtml='<div class="card"><div class="card-title">'+t('yourPR')+'</div>'+
+        '<div class="av-positions" style="margin-top:0"><div class="av-pos"><span>'+t('sheetPR')+' 🏆</span><strong>'+fmtTime(best)+'</strong></div>'+
+        '<div class="av-pos"><span>'+t('sheetSims')+'</span><strong>'+myRows.length+'</strong></div></div>'+
+        progressChartHtml(myRows)+'</div>';
+    }
+  }catch(e){}
   let bhtml='';
   const board=ranking('','').slice(0,8);
   if(board.length){
@@ -2480,7 +2579,7 @@ function renderAthleteView(){
       return '<div class="av-brow'+(x.id===a.id?' me':'')+'"><span class="av-brank">'+(fin&&!x.dnf?rank:'·')+'</span><span class="av-bname">'+esc(x.name)+'</span><span class="av-btime">'+tm+'</span></div>';
     }).join('')+'</div>';
   }
-  inner.innerHTML=header+card+bhtml;
+  inner.innerHTML=header+card+prHtml+bhtml;
 }
 
 /* ---- QR (lazy via CDN) ---- */
@@ -2643,6 +2742,308 @@ function applyTemplate(id){
 
 /* ---- organisatienaam ---- */
 function updateOrgName(v){ state.event.orgName = v; save(); liveStructural(); }
+
+/* ============================================================
+   FASE 7 — seizoenen, punten, progressie
+   ============================================================ */
+const SEASONS_LS='heatboard_seasons';
+const SEASON_POINTS=[25,20,16,13,11,10,8,6,4,2];
+function pointsFor(pos){ return SEASON_POINTS[pos-1]||1; }
+function loadSeasons(){ try{ return JSON.parse(localStorage.getItem(SEASONS_LS))||{}; }catch(e){ return {}; } }
+function saveSeasons(obj){ try{ localStorage.setItem(SEASONS_LS, JSON.stringify(obj)); }catch(e){} }
+function nameKey(n){ return String(n||'').trim().toLowerCase(); }
+
+let boardMode='sim', boardSeasonId=null;
+function setBoardMode(m){ boardMode=m; renderBoard(); }
+
+/* ---- sim afronden en opslaan ---- */
+function simFinishers(){
+  const segs=getSegments();
+  return state.athletes.filter(a=>!a.waitlist && !a.dnf && segs.length>0 && a.splits.length===segs.length);
+}
+function openFinishSim(){
+  if(!simFinishers().length){ toast(t('noFinishers')); return; }
+  const seasons=loadSeasons();
+  const inner=document.getElementById('seedInner');
+  inner.innerHTML='<div class="card"><div class="card-title">'+t('finishTitle')+'</div>'+
+    '<div class="card-sub">'+t('finishPickSeason')+'</div>'+
+    '<div class="pick-list">'+Object.values(seasons).map(s=>
+      '<button class="btn btn-ghost btn-block pick-btn" onclick="finishSimToSeason(\''+s.id+'\')"><span>'+esc(s.name)+'</span><span class="pick-div">'+s.results.length+'</span></button>'
+    ).join('')+'</div>'+
+    '<div class="row" style="margin-top:12px">'+
+      '<input type="text" id="newSeasonName" placeholder="'+t('phNewSeason')+'" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px">'+
+      '<button class="btn btn-primary" onclick="createSeasonAndSave()" style="flex:0 0 auto">'+t('btnNewSeason')+'</button></div>'+
+    '<button class="btn btn-ghost btn-block" style="margin-top:12px" onclick="closeSeed()">'+t('wizBack')+'</button></div>';
+  document.getElementById('seedOverlay').classList.add('active');
+}
+function createSeasonAndSave(){
+  const name=(document.getElementById('newSeasonName').value||'').trim();
+  if(!name){ toast(t('toastNeedName')); return; }
+  const seasons=loadSeasons();
+  const s={id:uid(), name, createdAt:new Date().toISOString(), results:[]};
+  seasons[s.id]=s; saveSeasons(seasons);
+  finishSimToSeason(s.id);
+}
+function finishSimToSeason(seasonId){
+  const seasons=loadSeasons();
+  const season=seasons[seasonId]; if(!season) return;
+  const prev=state.event.savedToSeason;
+  if(prev){
+    if(!confirm(t('confirmResave'))){ closeSeed(); return; }
+    if(seasons[prev.seasonId]) seasons[prev.seasonId].results = seasons[prev.seasonId].results.filter(r=>r.simId!==prev.simId);
+  }
+  const segs=getSegments();
+  const simId=(prev && prev.simId) || uid();
+  const date=new Date().toISOString();
+  const fin=simFinishers();
+  // positie = rang op totaltijd binnen de eigen divisie in deze sim
+  const byDiv={};
+  fin.forEach(a=>{ (byDiv[a.division]=byDiv[a.division]||[]).push(a); });
+  Object.values(byDiv).forEach(list=>{
+    list.sort((x,y)=>x.splits[x.splits.length-1]-y.splits[y.splits.length-1]);
+    list.forEach((a,i)=>{
+      season.results.push({ simId, simName:state.event.name||'', orgName:state.event.orgName||'', date,
+        athleteName:a.name, division:a.division,
+        totalMs:a.splits[a.splits.length-1], roxzoneMs:roxTotalOf(a,segs), position:i+1 });
+    });
+  });
+  saveSeasons(seasons);
+  state.event.savedToSeason={seasonId, simId, at:date};
+  save(); closeSeed();
+  boardMode='season'; boardSeasonId=seasonId; renderBoard();
+  toast(t('toastSimSaved')+' · '+season.name);
+}
+
+/* ---- seizoensklassement ---- */
+function seasonStandings(season, divFilter){
+  let rows=season.results.slice();
+  if(divFilter) rows=rows.filter(r=>r.division===divFilter);
+  const map={};
+  rows.forEach(r=>{
+    const k=nameKey(r.athleteName);
+    if(!map[k]) map[k]={name:r.athleteName, division:r.division, points:0, sims:0, best:Infinity, bestRox:null, rows:[]};
+    const e=map[k];
+    e.division=r.division; // laatste rij wint
+    e.points+=pointsFor(r.position);
+    e.sims++;
+    if(r.totalMs<e.best) e.best=r.totalMs;
+    if(r.roxzoneMs!=null && (e.bestRox==null || r.roxzoneMs<e.bestRox)) e.bestRox=r.roxzoneMs;
+    e.rows.push(r);
+  });
+  return Object.values(map).sort((x,y)=> y.points-x.points || x.best-y.best || x.name.localeCompare(y.name));
+}
+function renderSeasonBoard(){
+  const wrap=document.getElementById('boardList');
+  const seasons=loadSeasons();
+  const list=Object.values(seasons).sort((a,b)=>a.createdAt<b.createdAt?1:-1);
+  if(!list.length){ wrap.innerHTML='<div class="empty-state"><div class="es-icon">🏆</div>'+t('seasonEmpty')+'</div>'; return; }
+  if(!boardSeasonId || !seasons[boardSeasonId]) boardSeasonId=list[0].id;
+  const season=seasons[boardSeasonId];
+  const df=document.getElementById('filterDivision').value;
+  const standings=seasonStandings(season, df);
+  let html='<div class="row" style="margin-bottom:10px">'+
+    '<select onchange="boardSeasonId=this.value;renderBoard()" style="flex:1;min-height:48px;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--ink)">'+
+      list.map(s=>'<option value="'+s.id+'"'+(s.id===boardSeasonId?' selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select></div>';
+  html+='<div class="setup-footer season-manage" style="margin-bottom:12px">'+
+    (live.enabled && live.role==='host' ? '<button class="btn btn-dark btn-sm" onclick="seasonToTV()">📺 '+t('btnSeasonTV')+'</button>' : (!live.enabled ? '<button class="btn btn-dark btn-sm" onclick="seasonToTV()">📺 '+t('btnSeasonTV')+'</button>' : ''))+
+    '<button class="btn btn-ghost btn-sm" onclick="seasonCard()">'+t('btnSeasonCard')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="seasonCSV()">'+t('btnSeasonCSV')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="manageRows()">'+t('btnManageRows')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="renameSeason()">'+t('btnRenameSeason')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="exportSeason()">'+t('btnExportSeason')+'</button>'+
+    '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'seasonImportFile\').click()">'+t('btnImportSeason')+'</button>'+
+    '<button class="btn btn-danger-ghost btn-sm" onclick="deleteSeason()">'+t('btnDeleteSeason')+'</button></div>';
+  if(!standings.length){ wrap.innerHTML=html+'<div class="empty-state">'+t('seasonEmpty')+'</div>'; return; }
+  _sheetKeys = standings.map(e=>nameKey(e.name)); // index-gebaseerd: namen met quotes breken de onclick niet
+  html+=standings.map((e,i)=>
+    '<div class="board-row"><button class="board-row-main" onclick="openAthleteSheet('+i+')">'+
+    '<span class="board-rank">'+(i+1)+'</span>'+
+    '<span class="board-info"><span class="board-name">'+esc(e.name)+'</span><br><span class="board-meta">'+esc(e.division)+' · '+e.sims+' '+t('colSims')+' · '+t('colBest')+' '+fmtTime(e.best)+'</span></span>'+
+    '<span class="board-time season-points">'+e.points+' '+t('colPoints').toLowerCase()+'</span></button></div>'
+  ).join('');
+  wrap.innerHTML=html;
+}
+
+/* ---- seizoensbeheer ---- */
+function renameSeason(){
+  const seasons=loadSeasons(); const s=seasons[boardSeasonId]; if(!s) return;
+  const v=prompt(t('promptRenameSeason'), s.name);
+  if(v && v.trim()){ s.name=v.trim(); saveSeasons(seasons); renderBoard(); }
+}
+function deleteSeason(){
+  const seasons=loadSeasons(); const s=seasons[boardSeasonId]; if(!s) return;
+  if(!confirm(t('confirmDeleteSeason'))) return;
+  delete seasons[boardSeasonId]; saveSeasons(seasons); boardSeasonId=null; renderBoard();
+}
+function exportSeason(){
+  const s=loadSeasons()[boardSeasonId]; if(!s) return;
+  const blob=new Blob([JSON.stringify(s,null,2)],{type:'application/json'});
+  downloadBlob(blob, safeFile(s.name)+'-seizoen.json');
+  toast(t('toastSaved'));
+}
+function importSeasonFile(input){
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);
+      // accepteer een los seizoen {id,name,results} of een hele seasons-map
+      const incoming={};
+      if(data && data.id && Array.isArray(data.results)) incoming[data.id]=data;
+      else if(data && typeof data==='object') Object.values(data).forEach(s=>{ if(s && s.id && Array.isArray(s.results)) incoming[s.id]=s; });
+      if(!Object.keys(incoming).length){ alert('Invalid file'); input.value=''; return; }
+      const merge=confirm(t('importMergeAsk'));
+      const seasons=merge?loadSeasons():{};
+      Object.values(incoming).forEach(s=>{
+        if(merge && seasons[s.id]){
+          const have=new Set(seasons[s.id].results.map(r0=>r0.simId+'|'+nameKey(r0.athleteName)));
+          s.results.forEach(r0=>{ if(!have.has(r0.simId+'|'+nameKey(r0.athleteName))) seasons[s.id].results.push(r0); });
+        } else seasons[s.id]=s;
+      });
+      saveSeasons(seasons); boardSeasonId=null; renderBoard(); toast(t('toastImported'));
+    }catch(e){ alert('Invalid file'); }
+    input.value='';
+  };
+  r.readAsText(f);
+}
+function seasonCSV(){
+  const s=loadSeasons()[boardSeasonId]; if(!s) return;
+  const df=document.getElementById('filterDivision').value;
+  const standings=seasonStandings(s, df);
+  if(!standings.length){ toast(t('toastNothingToExport')); return; }
+  const rows=[t('csvSeasonHeaders')];
+  standings.forEach((e,i)=> rows.push([i+1, e.name, e.division, e.points, e.sims, fmtTime(e.best)].map(c=>String(c).replace(/;/g,',')).join(';')));
+  const blob=new Blob(['\ufeff'+rows.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  downloadBlob(blob, safeFile(s.name)+'-stand.csv');
+  toast(t('toastCSV'));
+}
+function manageRows(){
+  const s=loadSeasons()[boardSeasonId]; if(!s) return;
+  const inner=document.getElementById('seedInner');
+  const rows=s.results.slice().sort((a,b)=>a.date<b.date?1:-1);
+  inner.innerHTML='<div class="card"><div class="card-title">'+t('btnManageRows')+'</div>'+
+    (rows.length?rows.map((r,i)=>{
+      const idx=s.results.indexOf(r);
+      return '<div class="av-brow"><span class="av-bname">'+esc(r.athleteName)+' <span style="color:var(--muted);font-size:11px">'+esc(r.simName||'')+' · '+r.date.slice(0,10)+' · P'+r.position+'</span></span>'+
+      '<span class="av-btime">'+fmtTime(r.totalMs)+'</span>'+
+      '<button class="x-btn" onclick="deleteResultRow('+idx+')" aria-label="remove">×</button></div>';
+    }).join(''):'<div class="empty-state">'+t('seasonEmpty')+'</div>')+
+    '<button class="btn btn-ghost btn-block" style="margin-top:12px" onclick="closeSeed()">'+t('wizBack')+'</button></div>';
+  document.getElementById('seedOverlay').classList.add('active');
+}
+function deleteResultRow(idx){
+  if(!confirm(t('confirmDeleteRow'))) return;
+  const seasons=loadSeasons(); const s=seasons[boardSeasonId]; if(!s) return;
+  s.results.splice(idx,1); saveSeasons(seasons);
+  manageRows(); renderBoard();
+}
+
+/* ---- atleet-sheet met PR en progressie ---- */
+function progressChartHtml(rows){
+  const last=rows.slice().sort((a,b)=>a.date<b.date?-1:1).slice(-8);
+  if(!last.length) return '';
+  const fastest=Math.min(...last.map(r=>r.totalMs));
+  const n=Math.max(1,last.length-1);
+  return '<div class="prog-chart">'+last.map((r,i)=>{
+    const h=Math.max(8, Math.round(fastest/r.totalMs*100));
+    const pr=r.totalMs===fastest;
+    return '<div class="prog-col"><div class="prog-bar'+(pr?' pr':'')+'" style="height:'+h+'%;background:'+heatColor(i/n)+'"></div>'+
+      '<div class="prog-time">'+fmtTime(r.totalMs)+'</div>'+(pr?'<div class="prog-pr">PR</div>':'<div class="prog-pr"></div>')+'</div>';
+  }).join('')+'</div>';
+}
+let _sheetKeys=[];
+function openAthleteSheet(i){
+  const key=_sheetKeys[i]; if(key==null) return;
+  const s=loadSeasons()[boardSeasonId]; if(!s) return;
+  const rows=s.results.filter(r=>nameKey(r.athleteName)===key);
+  if(!rows.length) return;
+  const name=rows[0].athleteName;
+  const best=Math.min(...rows.map(r=>r.totalMs));
+  const avg=Math.round(rows.reduce((sum,r)=>sum+r.totalMs,0)/rows.length);
+  const roxes=rows.filter(r=>r.roxzoneMs!=null).map(r=>r.roxzoneMs);
+  const inner=document.getElementById('seedInner');
+  inner.innerHTML='<div class="card av-card"><div class="av-name">'+esc(name)+'</div>'+
+    '<div class="av-sub">'+esc(s.name)+'</div>'+
+    '<div class="av-positions">'+
+      '<div class="av-pos"><span>'+t('sheetPR')+' 🏆</span><strong>'+fmtTime(best)+'</strong></div>'+
+      (roxes.length?'<div class="av-pos"><span>'+t('sheetBestRox')+'</span><strong>'+fmtTime(Math.min(...roxes))+'</strong></div>':'')+
+      '<div class="av-pos"><span>'+t('sheetSims')+'</span><strong>'+rows.length+'</strong></div>'+
+      '<div class="av-pos"><span>'+t('sheetAvg')+'</span><strong>'+fmtTime(avg)+'</strong></div></div>'+
+    progressChartHtml(rows)+
+    '<button class="btn btn-ghost btn-block" style="margin-top:14px" onclick="closeSeed()">'+t('wizBack')+'</button></div>';
+  document.getElementById('seedOverlay').classList.add('active');
+}
+function personalSeasonRows(name){
+  const key=nameKey(name); if(!key) return [];
+  let out=[];
+  Object.values(loadSeasons()).forEach(s=>{ out=out.concat(s.results.filter(r=>nameKey(r.athleteName)===key)); });
+  return out;
+}
+
+/* ---- seizoen op de TV + kaartje ---- */
+let tvSeason=null;
+function showSeasonBoard(p, remote){
+  if(!p || !Array.isArray(p.rows)) return;
+  tvSeason={p:{title:String(p.title||''), rows:p.rows.slice(0,10)}, until:Date.now()+30000};
+  if(!remote && !tvOpen) openTV();
+  if(tvOpen) renderTV();
+}
+function seasonToTV(){
+  const s=loadSeasons()[boardSeasonId]; if(!s) return;
+  const standings=seasonStandings(s,'').slice(0,10);
+  if(!standings.length){ toast(t('seasonEmpty')); return; }
+  const p={title:s.name, rows:standings.map(e=>({name:e.name, division:e.division, points:e.points, sims:e.sims}))};
+  showSeasonBoard(p, false);
+  liveEmit('season_board', p);
+}
+function seasonCard(){
+  const s=loadSeasons()[boardSeasonId]; if(!s) return;
+  const standings=seasonStandings(s,'').slice(0,8);
+  if(!standings.length){ toast(t('toastNothingToExport')); return; }
+  const cv=document.getElementById('shareCanvas');
+  const W=1080,H=1350; cv.width=W; cv.height=H;
+  const ctx=cv.getContext('2d');
+  const HOT='#FF2E63', WARM='#FF7A1A', TXT='#F5EFEA', MUT='#9C8F86', DIM='#6E635C', LINE='#332B27';
+  ctx.fillStyle='#0F0D0C'; ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W/2,-120,60,W/2,-120,720);
+  glow.addColorStop(0,'rgba(255,122,26,0.16)'); glow.addColorStop(1,'rgba(255,122,26,0)');
+  ctx.fillStyle=glow; ctx.fillRect(0,0,W,320);
+  const topbar=ctx.createLinearGradient(0,0,W,0);
+  topbar.addColorStop(0,'#FFC24B'); topbar.addColorStop(.45,'#FF7A1A'); topbar.addColorStop(.78,'#FF3B1F'); topbar.addColorStop(1,'#FF2E63');
+  ctx.fillStyle=topbar; ctx.fillRect(0,0,W,8);
+  ctx.textBaseline='alphabetic';
+  ctx.font='800 34px "Saira Condensed", Saira, sans-serif';
+  ctx.fillStyle=TXT; ctx.fillText('HEAT',72,112);
+  const w1=ctx.measureText('HEAT').width; ctx.fillStyle=WARM; ctx.fillText('BOARD',72+w1+4,112);
+  ctx.font='500 24px "Chivo Mono", monospace'; ctx.fillStyle=DIM;
+  ctx.textAlign='right'; ctx.fillText(new Date().toLocaleDateString(state.lang==='nl'?'nl-NL':'en-GB'), W-72, 108); ctx.textAlign='left';
+  ctx.font='600 34px Saira, sans-serif'; ctx.fillStyle=TXT;
+  ctx.fillText(clip(ctx, s.name, W-144), 72, 214);
+  ctx.font='700 22px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle=MUT;
+  ctx.fillText((state.event.orgName? clip(ctx, state.event.orgName.toUpperCase(), 500)+'  ·  ':'')+t('boardModeSeason').toUpperCase()+'  ·  TOP '+standings.length, 72, 252);
+  const startY=312, rowH=122;
+  standings.forEach((e,i)=>{
+    const y=startY+i*rowH;
+    ctx.font='700 44px "Chivo Mono", monospace'; ctx.fillStyle=(i===0?HOT:MUT);
+    ctx.fillText(String(i+1), 72, y+42);
+    ctx.font='800 40px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle=TXT;
+    ctx.fillText(clip(ctx, e.name, 480), 156, y+34);
+    ctx.font='500 22px Saira, sans-serif'; ctx.fillStyle=DIM;
+    ctx.fillText(clip(ctx, e.division+'  ·  '+e.sims+' '+t('colSims').toLowerCase()+'  ·  '+t('colBest')+' '+fmtTime(e.best), 620), 156, y+68);
+    ctx.font='600 44px "Chivo Mono", monospace'; ctx.fillStyle=(i===0?HOT:TXT); ctx.textAlign='right';
+    ctx.fillText(String(e.points), W-72, y+40); ctx.textAlign='left';
+    ctx.font='500 18px Saira, sans-serif'; ctx.fillStyle=DIM; ctx.textAlign='right';
+    ctx.fillText(t('colPoints').toLowerCase(), W-72, y+66); ctx.textAlign='left';
+    if(i<standings.length-1){ ctx.fillStyle=LINE; ctx.fillRect(72,y+rowH-16,W-144,1); }
+  });
+  ctx.fillStyle=LINE; ctx.fillRect(72,H-120,W-144,1);
+  ctx.font='500 22px "Chivo Mono", monospace'; ctx.fillStyle=DIM;
+  ctx.fillText('heatboard · fitness race sim', 72, H-68);
+  cv.toBlob(blob=>{
+    downloadBlob(blob, safeFile(s.name)+'-seizoen.png');
+    toast(t('toastSeasonCard'));
+  }, 'image/png');
+}
 
 /* ---- heat-kaartje (PNG, top 8) ---- */
 function heatCard(){
