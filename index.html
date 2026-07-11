@@ -461,6 +461,40 @@ input,select,textarea{font-family:inherit;font-size:16px;color:var(--ink)}
 .av-bname{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .av-btime{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 
+/* ============ FASE 6: indeling, judges, aankondiging, countdown ============ */
+.ath-exp{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-left:6px}
+.heat-group.drag-over{outline:2px dashed var(--h-warm);outline-offset:3px;border-radius:10px}
+.ath-row[draggable=true]{cursor:grab}
+.judge-row{border:1px solid var(--line-soft);border-radius:10px;padding:10px;margin-bottom:10px}
+.judge-row-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.announce-banner{
+  position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;transform:translateX(-50%) translateY(-16px);
+  max-width:92vw;background:var(--panel-2);color:var(--ink);border:1px solid var(--line);
+  padding:18px 24px 16px;border-radius:12px;box-shadow:var(--shadow);overflow:hidden;
+  font-family:var(--font-cond);font-weight:700;font-size:clamp(18px,4.5vw,26px);letter-spacing:.4px;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:320;
+}
+.announce-banner::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--heat-grad)}
+.announce-banner.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tv-announce{
+  position:absolute;left:0;right:0;bottom:0;background:var(--panel);
+  padding:2.4vh 4vw 2vh;font-family:var(--font-cond);font-weight:800;font-size:clamp(22px,3.4vw,46px);
+  text-transform:uppercase;letter-spacing:1px;text-align:center;display:none;z-index:3;
+}
+.tv-announce::before{content:'';position:absolute;left:0;right:0;top:0;height:4px;background:var(--heat-grad)}
+.tv-announce.show{display:block}
+.tv-org{font-family:var(--font-mono);font-size:clamp(11px,1.2vw,16px);color:var(--h-warm);text-transform:uppercase;letter-spacing:2px;margin-bottom:2px}
+.countdown-overlay{
+  position:fixed;inset:0;z-index:240;display:none;align-items:center;justify-content:center;
+  background:rgba(15,13,12,.92);
+}
+.countdown-overlay.active{display:flex}
+.countdown-overlay .cd-num{
+  font-family:var(--font-mono);font-weight:700;font-size:clamp(120px,40vw,420px);line-height:1;
+  background:var(--heat-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 0 80px rgba(255,122,26,.25);font-variant-numeric:tabular-nums;
+}
+
 /* ============ START WIZARD ============ */
 .wizard-overlay{
   position:fixed;inset:0;z-index:250;display:none;overflow-y:auto;
@@ -520,7 +554,7 @@ body.role-judge #tab-athletes{display:none}
   <div class="app-bar-top">
     <div class="brand">
       <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
-      <span class="brand-tag">SIM v0.4</span>
+      <span class="brand-tag">SIM v0.6</span>
     </div>
     <div class="event-name-display" id="eventNameDisplay"></div>
     <span class="live-ind" id="liveDot"></span>
@@ -545,6 +579,10 @@ body.role-judge #tab-athletes{display:none}
     <div class="field">
       <label for="eventName" data-i18n="lblEventName">Naam van de simulatie</label>
       <input type="text" id="eventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim — Gym Rotterdam" oninput="updateEventName(this.value)">
+    </div>
+    <div class="field">
+      <label for="orgName" data-i18n="lblOrgName">Gym of organisatie (optioneel)</label>
+      <input type="text" id="orgName" data-i18n-ph="phOrgName" placeholder="Bijv. CrossFit Rotterdam" oninput="updateOrgName(this.value)">
     </div>
     <div class="field">
       <label data-i18n="lblFormat">Format</label>
@@ -601,6 +639,8 @@ body.role-judge #tab-athletes{display:none}
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" data-i18n="btnRestore">Back-up laden</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(this)">
       <button class="btn btn-ghost btn-sm" onclick="newEvent()" data-i18n="btnNewEvent">Nieuw event</button>
+      <button class="btn btn-ghost btn-sm" onclick="saveTemplate()" data-i18n="btnSaveTemplate">Opslaan als sjabloon</button>
+      <button class="btn btn-ghost btn-sm" onclick="openTemplates()" data-i18n="btnFromTemplate">Nieuw van sjabloon</button>
       <button class="btn btn-danger-ghost btn-sm" onclick="resetAll()" data-i18n="btnResetAll">Alles wissen</button>
     </div>
     <details class="adv">
@@ -665,6 +705,10 @@ body.role-judge #tab-athletes{display:none}
         <label for="athHeat" data-i18n="lblAthHeat">Heat</label>
         <input type="number" id="athHeat" min="1" max="99" value="1" inputmode="numeric">
       </div>
+      <div class="field" style="max-width:150px">
+        <label for="athExpected" data-i18n="lblExpected">Verwachte tijd</label>
+        <input type="text" id="athExpected" data-i18n-ph="phExpected" placeholder="mm:ss (optioneel)" inputmode="numeric">
+      </div>
     </div>
     <button class="btn btn-primary btn-block" onclick="addAthlete()" data-i18n="btnAddAthlete">Atleet toevoegen</button>
     <details class="adv">
@@ -687,7 +731,12 @@ body.role-judge #tab-athletes{display:none}
     <div class="race-clock" id="raceClock">00:00</div>
     <div class="race-controls">
       <button class="btn btn-primary hide-judge" id="btnStartHeat" onclick="startHeat()" data-i18n="btnStartHeat">Start heat</button>
+      <button class="btn btn-dark hide-judge" id="btnStartCountdown" onclick="startHeatCountdown()" data-i18n="btnStartCountdown">Start met countdown (10s)</button>
       <button class="btn btn-ghost hide-judge" id="btnResetHeat" onclick="resetHeat()" style="background:transparent;color:#B9C1C9;border-color:#3A42AB;border-color:#3A424B" data-i18n="btnResetHeat">Reset heat</button>
+    </div>
+    <div class="row" id="announceBox" style="display:none;margin-top:12px">
+      <input type="text" id="announceText" data-i18n-ph="phAnnounce" placeholder="Bijv. Heat 2 opstellen bij de start" style="padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:var(--panel-2)">
+      <button class="btn btn-ghost" onclick="sendAnnounce()" data-i18n="btnAnnounce" style="flex:0 0 auto">📣 Stuur</button>
     </div>
   </div>
   <div id="raceAthletes"></div>
@@ -712,10 +761,12 @@ body.role-judge #tab-athletes{display:none}
   <button class="tv-close" onclick="closeTV()" data-i18n="btnCloseTV">Sluiten ✕</button>
   <div class="tv-qr" id="tvQr" style="display:none"></div>
   <div class="tv-head">
-    <div class="tv-title" id="tvTitle">HEAT<span class="hot">BOARD</span></div>
+    <div><div class="tv-org" id="tvOrg" style="display:none"></div>
+    <div class="tv-title" id="tvTitle">HEAT<span class="hot">BOARD</span></div></div>
     <div class="tv-clock" id="tvClock"></div>
   </div>
   <div class="tv-list" id="tvList"></div>
+  <div class="tv-announce" id="tvAnnounce"></div>
 </div>
 
 <!-- ============ START WIZARD ============ -->
@@ -769,6 +820,11 @@ body.role-judge #tab-athletes{display:none}
 <!-- ============ FASE 4: registratie- en atleet-overlay ============ -->
 <div class="wizard-overlay" id="regOverlay"><div class="wizard-inner" id="regInner"></div></div>
 <div class="wizard-overlay" id="athleteOverlay"><div class="wizard-inner" id="athleteInner"></div></div>
+
+<!-- ============ FASE 6: seed/sjabloon-overlay, countdown, aankondiging ============ -->
+<div class="wizard-overlay" id="seedOverlay"><div class="wizard-inner" id="seedInner"></div></div>
+<div class="countdown-overlay" id="countdownOverlay"><div class="cd-num">10</div></div>
+<div class="announce-banner" id="announceBanner"></div>
 
 <div class="toast" id="toast"></div>
 <canvas id="shareCanvas" width="1080" height="1350" style="display:none"></canvas>
@@ -877,6 +933,23 @@ const I18N = {
     posOverall:'Overall', posDivision:'In divisie', lblPlace:'Plek', lblOf:'van',
     qrRegister:'Scan om mee te doen', qrWatch:'Scan voor live standen',
     btnHeatCard:'🖼 Deel heat-kaartje', toastHeatCard:'Heat-kaartje gedownload',
+    lblExpected:'Verwachte tijd', phExpected:'mm:ss (optioneel)',
+    promptExpected:'Verwachte finishtijd (mm:ss, leeg = geen):',
+    btnAutoSeed:'Automatisch indelen', seedTitle:'Automatisch indelen',
+    seedHint:'Vul het aantal heats of het maximum per heat in. Vergelijkbare verwachte tijden komen bij elkaar; de wachtlijst blijft staan.',
+    seedHeatsLabel:'Aantal heats', seedMaxLabel:'Max per heat', seedOrderLabel:'Volgorde',
+    seedFastFirst:'Snelste heats eerst', seedSlowFirst:'Langzaamste eerst',
+    btnSeedGo:'Indelen', toastSeeded:'Ingedeeld:',
+    judgesTitle:'Judges', phJudgeName:'Naam judge', btnAddJudge:'+ Toevoegen',
+    judgePickTitle:'Wie ben je?', judgeFree:'Vrije keuze',
+    phAnnounce:'Bijv. Heat 2 opstellen bij de start', btnAnnounce:'📣 Stuur',
+    btnStartCountdown:'Start met countdown (10s)',
+    btnSaveTemplate:'Opslaan als sjabloon', btnFromTemplate:'Nieuw van sjabloon',
+    tplTitle:'Kies een sjabloon', tplNone:'Nog geen sjablonen opgeslagen.',
+    promptTplName:'Naam van het sjabloon:',
+    confirmTemplate:'De huidige simulatie wordt vervangen; atleten en tijden worden gewist. Doorgaan?',
+    toastTplSaved:'Sjabloon opgeslagen', toastTplLoaded:'Sjabloon geladen',
+    lblOrgName:'Gym of organisatie (optioneel)', phOrgName:'Bijv. CrossFit Rotterdam',
   },
   en: {
     tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
@@ -974,6 +1047,23 @@ const I18N = {
     posOverall:'Overall', posDivision:'In division', lblPlace:'Place', lblOf:'of',
     qrRegister:'Scan to join', qrWatch:'Scan for live standings',
     btnHeatCard:'🖼 Share heat card', toastHeatCard:'Heat card downloaded',
+    lblExpected:'Expected time', phExpected:'mm:ss (optional)',
+    promptExpected:'Expected finish time (mm:ss, empty = none):',
+    btnAutoSeed:'Auto assign heats', seedTitle:'Auto assign heats',
+    seedHint:'Enter the number of heats or the maximum per heat. Similar expected times are grouped together; the waitlist is untouched.',
+    seedHeatsLabel:'Number of heats', seedMaxLabel:'Max per heat', seedOrderLabel:'Order',
+    seedFastFirst:'Fastest heats first', seedSlowFirst:'Slowest first',
+    btnSeedGo:'Assign', toastSeeded:'Assigned:',
+    judgesTitle:'Judges', phJudgeName:'Judge name', btnAddJudge:'+ Add',
+    judgePickTitle:'Who are you?', judgeFree:'Free choice',
+    phAnnounce:'E.g. Heat 2 line up at the start', btnAnnounce:'📣 Send',
+    btnStartCountdown:'Start with countdown (10s)',
+    btnSaveTemplate:'Save as template', btnFromTemplate:'New from template',
+    tplTitle:'Choose a template', tplNone:'No templates saved yet.',
+    promptTplName:'Template name:',
+    confirmTemplate:'The current simulation will be replaced; athletes and times are erased. Continue?',
+    toastTplSaved:'Template saved', toastTplLoaded:'Template loaded',
+    lblOrgName:'Gym or organisation (optional)', phOrgName:'E.g. CrossFit Rotterdam',
   }
 };
 function t(k){ return (I18N[state.lang] && I18N[state.lang][k]) || I18N.nl[k] || k; }
@@ -1041,7 +1131,8 @@ let state = defaultState();
 function defaultState(){
   return {
     lang:'nl',
-    event:{ name:'', format:'full', customSegs:[], roxzone:false, registrationOpen:false, capacity:null },
+    event:{ name:'', orgName:'', format:'full', customSegs:[], roxzone:false, registrationOpen:false, capacity:null },
+    judges: [],            // {name, athleteIds:[]}
     divisions: DEFAULT_DIVISIONS_NL.slice(),
     divisionProfiles: defaultProfilesFor(DEFAULT_DIVISIONS_NL), // { divisienaam: profielkey }
     athletes: [],          // {id,name,division,heat,splits:[ms],dnf:false,workStarts:{segIndex:ms}}
@@ -1066,8 +1157,21 @@ function load(){
       }
       // saves van vóór fase 3: profielen afleiden uit de divisienamen
       if(!s.divisionProfiles) state.divisionProfiles = defaultProfilesFor(state.divisions);
+      if(!Array.isArray(s.judges)) state.judges = [];
     }
   }catch(e){ state = defaultState(); }
+}
+/* mm:ss invoer voor verwachte finishtijd */
+function parseMMSS(str){
+  const s = String(str||'').trim();
+  if(!s) return null;
+  const m = s.match(/^(\d{1,3})(?::([0-5]?\d))?$/);
+  if(!m) return null;
+  return parseInt(m[1])*60 + (m[2]?parseInt(m[2]):0);
+}
+function fmtMMSS(sec){
+  if(sec==null) return '';
+  return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
 }
 function uid(){ return 'a'+Math.random().toString(36).slice(2,9); }
 
@@ -1153,6 +1257,7 @@ function updateCustomSegs(text){
 }
 function renderSetup(){
   document.getElementById('eventName').value = state.event.name;
+  document.getElementById('orgName').value = state.event.orgName||'';
   ['full','half','custom'].forEach(f=>{
     document.getElementById('fmt-'+f).classList.toggle('selected', state.event.format===f);
   });
@@ -1268,8 +1373,10 @@ function addAthlete(){
   if(!name){ toast(t('toastNeedName')); return; }
   const division = document.getElementById('athDivision').value || state.divisions[0] || '';
   const heat = Math.max(1, parseInt(document.getElementById('athHeat').value)||1);
-  state.athletes.push({id:uid(), name, division, heat, splits:[], dnf:false, workStarts:{}});
+  const expectedTime = parseMMSS(document.getElementById('athExpected').value);
+  state.athletes.push({id:uid(), name, division, heat, splits:[], dnf:false, workStarts:{}, expectedTime});
   document.getElementById('athName').value='';
+  document.getElementById('athExpected').value='';
   save(); renderAthletes(); renderHeader(); liveStructural();
   toast(name+' '+t('toastAdded'));
 }
@@ -1285,7 +1392,8 @@ function bulkAdd(){
       const p = autoProfile(division); if(p) state.divisionProfiles[division] = p;
     }
     const heat = Math.max(1, parseInt(parts[2])||1);
-    state.athletes.push({id:uid(), name:parts[0], division, heat, splits:[], dnf:false, workStarts:{}});
+    const expectedTime = parseMMSS(parts[3]);
+    state.athletes.push({id:uid(), name:parts[0], division, heat, splits:[], dnf:false, workStarts:{}, expectedTime});
     n++;
   });
   if(n){ document.getElementById('bulkPaste').value=''; save(); renderAthletes(); renderDivisions(); renderHeader(); liveStructural(); toast(n+' '+t(n===1?'athletes_one':'athletes_other')+' '+t('toastAdded')); }
@@ -1312,37 +1420,71 @@ function moveAthlete(id){
   const h = parseInt(v);
   if(h>=1){ a.heat = h; a.waitlist=false; save(); renderAthletes(); renderHeader(); renderRace(); liveStructural(); }
 }
+function editExpected(id){
+  const a = state.athletes.find(x=>x.id===id); if(!a) return;
+  const v = prompt(t('promptExpected'), fmtMMSS(a.expectedTime));
+  if(v===null) return;
+  a.expectedTime = parseMMSS(v);
+  save(); renderAthletes(); liveStructural();
+}
 function athRowHtml(a, laneLabel){
-  return '<div class="ath-row">'+
+  return '<div class="ath-row" draggable="true" data-id="'+a.id+'" ondragstart="athDragStart(event)">'+
     '<span class="ath-lane">'+laneLabel+'</span>'+
-    '<span class="ath-name">'+esc(a.name)+'</span>'+
+    '<span class="ath-name">'+esc(a.name)+(a.expectedTime!=null?' <span class="ath-exp">'+fmtMMSS(a.expectedTime)+'</span>':'')+'</span>'+
     '<span class="ath-div">'+esc(a.division)+'</span>'+
     '<span class="ath-actions">'+
+    '<button class="icon-btn" title="'+t('lblExpected')+'" onclick="editExpected(\''+a.id+'\')">⏱</button>'+
     '<button class="icon-btn" title="'+t('rename')+'" onclick="renameAthlete(\''+a.id+'\')">✎</button>'+
     '<button class="icon-btn" title="'+t(a.heat>0?'moveHeat':'btnAssign')+'" onclick="moveAthlete(\''+a.id+'\')">⇄</button>'+
     '<button class="icon-btn" title="'+t('del')+'" onclick="deleteAthlete(\''+a.id+'\')">🗑</button>'+
     '</span></div>';
 }
+/* drag-and-drop tussen heat-groepen (desktop/iPad); verplaats-knop blijft de mobiele fallback */
+function athDragStart(ev){
+  const row = ev.target.closest('.ath-row'); if(!row) return;
+  ev.dataTransfer.setData('text/plain', row.getAttribute('data-id'));
+  ev.dataTransfer.effectAllowed = 'move';
+}
+function athDragOver(ev){ ev.preventDefault(); ev.dataTransfer.dropEffect='move'; ev.currentTarget.classList.add('drag-over'); }
+function athDragLeave(ev){ ev.currentTarget.classList.remove('drag-over'); }
+function athDrop(ev){
+  ev.preventDefault(); ev.currentTarget.classList.remove('drag-over');
+  const id = ev.dataTransfer.getData('text/plain');
+  const heat = parseInt(ev.currentTarget.getAttribute('data-heat'));
+  const a = state.athletes.find(x=>x.id===id);
+  if(!a || isNaN(heat) || (a.heat===heat && !a.waitlist)) return;
+  a.heat = heat; a.waitlist = false;
+  save(); renderAthletes(); renderHeader(); renderRace(); liveStructural();
+}
+function dragAttrs(heat){
+  return ' data-heat="'+heat+'" ondragover="athDragOver(event)" ondragleave="athDragLeave(event)" ondrop="athDrop(event)"';
+}
 function renderAthletes(){
   const wrap = document.getElementById('athleteList');
+  const canSeed = !live.enabled || live.role==='host';
+  let html='';
+  if(canSeed && state.athletes.some(a=>!a.waitlist)){
+    html += '<div style="margin-bottom:12px"><button class="btn btn-dark btn-sm" onclick="openSeed()">⚡ '+t('btnAutoSeed')+'</button></div>';
+  }
+  html += judgesBlockHtml();
   if(state.athletes.length===0){
-    wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🏁</div>'+t('noAthletesYet')+'</div>';
+    wrap.innerHTML = html+'<div class="empty-state"><div class="es-icon">🏁</div>'+t('noAthletesYet')+'</div>';
     return;
   }
-  let html='';
   // Lobby: ingeschreven maar nog niet ingedeeld (heat 0, niet op de wachtlijst)
   const lobby = state.athletes.filter(a=>a.heat===0 && !a.waitlist);
   if(lobby.length){
-    html += '<div class="heat-group lobby"><div class="heat-group-head"><h3>'+t('groupLobby')+'</h3>'+
+    html += '<div class="heat-group lobby"'+dragAttrs(0)+'><div class="heat-group-head"><h3>'+t('groupLobby')+'</h3>'+
       '<span class="hg-count">'+lobby.length+'</span></div>';
     lobby.forEach(a=> html += athRowHtml(a,'—'));
     html += '</div>';
   }
-  // Heats
-  heatNumbers().filter(h=>h>0).forEach(h=>{
+  // Heats (plus een lege drop-groep voor de eerstvolgende nieuwe heat)
+  const nums = heatNumbers().filter(h=>h>0);
+  nums.forEach(h=>{
     const list = state.athletes.filter(a=>a.heat===h && !a.waitlist);
     if(!list.length) return;
-    html += '<div class="heat-group"><div class="heat-group-head"><h3>'+t('heat')+' '+h+'</h3>'+
+    html += '<div class="heat-group"'+dragAttrs(h)+'><div class="heat-group-head"><h3>'+t('heat')+' '+h+'</h3>'+
       '<span class="hg-count">'+list.length+' '+t(list.length===1?'athletes_one':'athletes_other')+'</span></div>';
     list.forEach((a,idx)=> html += athRowHtml(a,'L'+(idx+1)));
     html += '</div>';
@@ -1356,6 +1498,91 @@ function renderAthletes(){
     html += '</div>';
   }
   wrap.innerHTML = html;
+}
+
+/* ---- automatisch indelen op verwachte tijd ---- */
+function openSeed(){
+  const inner=document.getElementById('seedInner');
+  inner.innerHTML='<div class="card"><div class="card-title">'+t('seedTitle')+'</div>'+
+    '<div class="card-sub">'+t('seedHint')+'</div>'+
+    '<div class="row">'+
+      '<div class="field"><label for="seedHeats">'+t('seedHeatsLabel')+'</label><input type="number" id="seedHeats" min="1" max="99" inputmode="numeric"></div>'+
+      '<div class="field"><label for="seedMax">'+t('seedMaxLabel')+'</label><input type="number" id="seedMax" min="1" max="99" inputmode="numeric"></div>'+
+    '</div>'+
+    '<div class="field"><label for="seedOrder">'+t('seedOrderLabel')+'</label>'+
+      '<select id="seedOrder" style="width:100%;min-height:48px;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--ink)">'+
+      '<option value="fast">'+t('seedFastFirst')+'</option><option value="slow">'+t('seedSlowFirst')+'</option></select></div>'+
+    '<div class="wizard-nav">'+
+      '<button class="btn btn-ghost" onclick="closeSeed()">'+t('wizBack')+'</button>'+
+      '<button class="btn btn-primary" onclick="autoSeed()">'+t('btnSeedGo')+'</button></div></div>';
+  document.getElementById('seedOverlay').classList.add('active');
+}
+function closeSeed(){ document.getElementById('seedOverlay').classList.remove('active'); }
+function autoSeed(){
+  const nHeats = parseInt(document.getElementById('seedHeats').value);
+  const maxPer = parseInt(document.getElementById('seedMax').value);
+  const order = document.getElementById('seedOrder').value;
+  const cand = state.athletes.filter(a=>!a.waitlist);
+  if(!cand.length){ toast(t('toastNoAthletes')); return; }
+  let blocks;
+  if(nHeats>=1) blocks = nHeats;
+  else if(maxPer>=1) blocks = Math.ceil(cand.length/maxPer);
+  else { toast(t('seedHint')); return; }
+  blocks = Math.max(1, Math.min(blocks, cand.length));
+  // sorteer op verwachte tijd; zonder tijd achteraan, daarna op naam
+  const sorted = cand.slice().sort((x,y)=>{
+    const ex = x.expectedTime==null ? Infinity : x.expectedTime;
+    const ey = y.expectedTime==null ? Infinity : y.expectedTime;
+    if(ex!==ey) return ex-ey;
+    return x.name.localeCompare(y.name);
+  });
+  if(order==='slow') sorted.reverse();
+  // verdeel sequentieel in blokken zodat vergelijkbare tijden samen zitten
+  const per = Math.ceil(sorted.length/blocks);
+  const sizes = [];
+  sorted.forEach((a,i)=>{
+    const h = Math.min(blocks, Math.floor(i/per)+1);
+    a.heat = h;
+    sizes[h-1] = (sizes[h-1]||0)+1;
+  });
+  closeSeed();
+  save(); renderAthletes(); renderHeader(); renderRace(); liveStructural();
+  toast(t('toastSeeded')+' '+sizes.length+' heats: '+sizes.join(' · '));
+}
+
+/* ---- judges (host, live) ---- */
+function judgesBlockHtml(){
+  if(!(live.enabled && live.role==='host')) return '';
+  let html='<div class="card" style="margin-bottom:16px"><div class="card-title">'+t('judgesTitle')+'</div>';
+  (state.judges||[]).forEach((j,ji)=>{
+    html+='<div class="judge-row"><div class="judge-row-head"><strong>'+esc(j.name)+'</strong>'+
+      '<button class="x-btn" onclick="removeJudge('+ji+')" aria-label="remove">×</button></div>'+
+      '<div class="chips">'+state.athletes.filter(a=>!a.waitlist).map(a=>
+        '<button class="chip selectable'+(j.athleteIds.includes(a.id)?' active':'')+'" onclick="toggleJudgeAssign('+ji+',\''+a.id+'\')">'+esc(a.name)+'</button>'
+      ).join('')+'</div></div>';
+  });
+  html+='<div class="row" style="margin-top:10px">'+
+    '<input type="text" id="newJudge" placeholder="'+t('phJudgeName')+'" style="padding:10px 12px;border:1px solid var(--line);border-radius:8px">'+
+    '<button class="btn btn-ghost btn-sm" onclick="addJudge()" style="flex:0 0 auto">'+t('btnAddJudge')+'</button></div></div>';
+  return html;
+}
+function addJudge(){
+  const inp=document.getElementById('newJudge');
+  const v=(inp.value||'').trim(); if(!v) return;
+  state.judges.push({name:v, athleteIds:[]});
+  save(); renderAthletes(); liveStructural();
+}
+function removeJudge(i){ state.judges.splice(i,1); save(); renderAthletes(); liveStructural(); }
+function toggleJudgeAssign(ji, id){
+  const j=state.judges[ji]; if(!j) return;
+  const i=j.athleteIds.indexOf(id);
+  if(i>=0) j.athleteIds.splice(i,1); else j.athleteIds.push(id);
+  save(); renderAthletes(); liveStructural();
+}
+function pickJudge(ji){
+  const j=state.judges[ji];
+  live.judgeAthletes = j ? j.athleteIds.slice() : [];
+  saveLiveSess(); closeRegOverlay(); showView('race');
 }
 
 /* ---------- Race ---------- */
@@ -1387,13 +1614,14 @@ function resetHeat(){
 function heatElapsed(n){
   const h = state.heats[n];
   if(!h || !h.startedAt) return 0;
-  return Date.now() - h.startedAt;
+  return Math.max(0, Date.now() - h.startedAt); // countdown: startedAt in de toekomst telt als 0
 }
 let lastTapAt = {};
 function recordSplit(id){
   const a = state.athletes.find(x=>x.id===id); if(!a) return;
   const h = heatOf(a.heat);
   if(!h.running) return;
+  if(h.startedAt && h.startedAt > Date.now()) return; // countdown loopt nog
   // double-tap guard: ignore a second tap on the same athlete within 600ms
   const nowT = Date.now();
   if(nowT - (lastTapAt[id]||0) < 600) return;
@@ -1482,6 +1710,8 @@ function renderRace(){
   clockEl.textContent = fmtTime(heatElapsed(n));
   clockEl.classList.toggle('live', !!(h && h.running));
   document.getElementById('btnStartHeat').disabled = !!(h && h.running);
+  document.getElementById('btnStartCountdown').disabled = !!(h && h.running);
+  document.getElementById('announceBox').style.display = (live.enabled && live.role==='host') ? 'flex' : 'none';
 
   const segs = getSegments();
   const wrap = document.getElementById('raceAthletes');
@@ -1631,6 +1861,9 @@ function openTV(){
   tvOpen = true;
   document.getElementById('tvOverlay').classList.add('active');
   document.getElementById('tvTitle').innerHTML = state.event.name ? esc(state.event.name) : 'HEAT<span class="hot">BOARD</span>';
+  const org=document.getElementById('tvOrg');
+  org.textContent = state.event.orgName||'';
+  org.style.display = state.event.orgName ? '' : 'none';
   try{ const p=document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if(p&&p.catch) p.catch(()=>{}); }catch(e){}
   renderTV();
 }
@@ -1734,6 +1967,11 @@ function shareCard(id){
   ctx.font = '500 24px "Chivo Mono", monospace'; ctx.fillStyle = DIM;
   const dateStr = new Date().toLocaleDateString(state.lang==='nl'?'nl-NL':'en-GB');
   ctx.textAlign = 'right'; ctx.fillText(dateStr, W-72, 108); ctx.textAlign = 'left';
+  // organisatienaam (optioneel)
+  if(state.event.orgName){
+    ctx.font = '700 28px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle = WARM;
+    ctx.fillText(clip(ctx, state.event.orgName.toUpperCase(), W-144), 72, 180);
+  }
   // event name
   ctx.font = '600 30px Saira, sans-serif'; ctx.fillStyle = MUT;
   ctx.fillText(clip(ctx, state.event.name || (state.lang==='nl'?'Fitness race simulatie':'Fitness race simulation'), W-144), 72, 224);
@@ -1945,6 +2183,7 @@ async function joinLiveSession(codeArg, roleArg){
     saveLiveSess(); applyRoleUI(); renderLiveUI(); renderAll();
     if(role==='tv') openTV();
     if(role==='athlete'){ if(live.athleteId) showAthleteView(); else showAthleteOnboard(live.athletePending||'pick'); }
+    if(role==='judge' && (state.judges||[]).length && !live.judgeAthletes.length) showAthleteOnboard('judgepick');
     toast(t('toastJoined')+' · '+code);
   }catch(e){ toast(t('toastSbFail')); liveTeardown(); }
 }
@@ -2001,7 +2240,7 @@ function liveStructural(){
 }
 async function pushSnapshot(showToast){
   if(!live.enabled || live.role!=='host') return;
-  liveEmit('snapshot',{event:state.event, divisions:state.divisions, divisionProfiles:state.divisionProfiles, athletes:state.athletes, heats:state.heats});
+  liveEmit('snapshot',{event:state.event, divisions:state.divisions, divisionProfiles:state.divisionProfiles, athletes:state.athletes, heats:state.heats, judges:state.judges});
   if(showToast) toast(t('toastSetupSent'));
 }
 
@@ -2013,6 +2252,7 @@ function applyEvent(type,p,rerender){
     if(p.divisionProfiles) state.divisionProfiles=p.divisionProfiles;
     if(p.athletes) state.athletes=p.athletes;
     if(p.heats) state.heats=p.heats;
+    if(Array.isArray(p.judges)) state.judges=p.judges;
   } else if(type==='split'){
     const a=state.athletes.find(x=>x.id===p.id);
     if(a) _applySplit(a, p.ms, false);
@@ -2034,9 +2274,11 @@ function applyEvent(type,p,rerender){
     if(!state.athletes.some(a=>a.id===p.id)){
       const cap=state.event.capacity;
       const accepted=state.athletes.filter(a=>!a.waitlist).length;
-      state.athletes.push({id:p.id, name:p.name, division:p.division, heat:0, splits:[], dnf:false, workStarts:{}, waitlist:(cap!=null && accepted>=cap)});
+      state.athletes.push({id:p.id, name:p.name, division:p.division, heat:0, splits:[], dnf:false, workStarts:{}, waitlist:(cap!=null && accepted>=cap), expectedTime:(p.expectedTime!=null?p.expectedTime:null)});
     }
     if(live.role==='host') liveStructural(); // host is autoritatief en her-broadcast de roster
+  } else if(type==='announce'){
+    if(p.text) showAnnounce(String(p.text));
   }
   save();
   if(rerender){ renderHeader(); renderAthletes(); renderRace(); if(document.getElementById('view-board').classList.contains('active')) renderBoard(); if(athleteViewOpen()) renderAthleteView(); }
@@ -2130,6 +2372,14 @@ function closeRegOverlay(){ const e=document.getElementById('regOverlay'); if(e)
 function regBrand(){ return '<div class="wizard-brand"><span class="brand-name">HEAT<span class="hot">BOARD</span></span></div>'; }
 function renderRegOverlay(){
   const inner=document.getElementById('regInner'); if(!inner) return;
+  if(onboardMode==='judgepick'){
+    inner.innerHTML=regBrand()+'<div class="card"><div class="card-title">'+t('judgePickTitle')+'</div>'+
+      '<div class="pick-list">'+(state.judges||[]).map((j,ji)=>
+        '<button class="btn btn-ghost btn-block pick-btn" onclick="pickJudge('+ji+')"><span>'+esc(j.name)+'</span><span class="pick-div">'+j.athleteIds.length+'</span></button>'
+      ).join('')+
+      '<button class="btn btn-ghost btn-block pick-btn" onclick="pickJudge(-1)"><span>'+t('judgeFree')+'</span></button></div></div>';
+    return;
+  }
   if(onboardMode==='pick'){
     const list=state.athletes.filter(a=>!a.waitlist).slice().sort((a,b)=>a.name.localeCompare(b.name));
     inner.innerHTML=regBrand()+'<div class="card"><div class="card-title">'+t('athPickTitle')+'</div>'+
@@ -2149,15 +2399,17 @@ function renderRegOverlay(){
     '<div class="card-sub">'+(state.event.name?esc(state.event.name):t('regSub'))+'</div>'+
     '<div class="field"><label for="regName">'+t('regNameLabel')+'</label><input type="text" id="regName" autocomplete="name"></div>'+
     '<div class="field"><label for="regDivision">'+t('regDivisionLabel')+'</label><select id="regDivision">'+divs+'</select></div>'+
+    '<div class="field"><label for="regExpected">'+t('lblExpected')+'</label><input type="text" id="regExpected" data-i18n-ph="phExpected" placeholder="mm:ss (optioneel)" inputmode="numeric"></div>'+
     '<button class="btn btn-primary btn-block" onclick="registerSelf()">'+t('btnRegister')+'</button></div>';
 }
 function registerSelf(){
   const name=(document.getElementById('regName').value||'').trim();
   if(!name){ toast(t('toastNeedName')); return; }
   const division=document.getElementById('regDivision').value||state.divisions[0]||'';
+  const expectedTime=parseMMSS((document.getElementById('regExpected')||{}).value);
   const id=uid();
-  applyEvent('register',{id,name,division},false);
-  liveEmit('register',{id,name,division});
+  applyEvent('register',{id,name,division,expectedTime},false);
+  liveEmit('register',{id,name,division,expectedTime});
   live.athleteId=id; saveLiveSess();
   closeRegOverlay(); showAthleteView();
   toast(t('toastRegistered'));
@@ -2258,6 +2510,140 @@ function renderTvQr(){
   }).catch(()=>{ box.style.display='none'; box._url=null; });
 }
 
+/* ============================================================
+   FASE 6 — aankondigingen, countdown, sjablonen
+   ============================================================ */
+/* ---- aankondigingen ---- */
+let announceTimer=null;
+function showAnnounce(text){
+  const b=document.getElementById('announceBanner'), tb=document.getElementById('tvAnnounce');
+  if(b){ b.textContent=text; b.classList.add('show'); }
+  if(tb){ tb.textContent=text; tb.classList.add('show'); }
+  clearTimeout(announceTimer);
+  announceTimer=setTimeout(()=>{
+    if(b) b.classList.remove('show');
+    if(tb) tb.classList.remove('show');
+  }, 8000);
+}
+function sendAnnounce(){
+  const inp=document.getElementById('announceText');
+  const text=(inp.value||'').trim(); if(!text) return;
+  inp.value='';
+  showAnnounce(text); // optimistisch, zoals splits
+  liveEmit('announce',{text});
+}
+
+/* ---- countdown-start met beeps (WebAudio, geen bestanden) ---- */
+let audioCtx=null, audioUnlocked=false, lastBeepSec=null;
+function unlockAudio(){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return;
+    if(!audioCtx) audioCtx=new AC();
+    if(audioCtx.state==='suspended') audioCtx.resume().catch(()=>{});
+    audioUnlocked=true;
+  }catch(e){}
+}
+document.addEventListener('pointerdown', unlockAudio, {capture:true});
+document.addEventListener('keydown', unlockAudio, {capture:true});
+function beep(freq, ms){
+  try{
+    if(!audioCtx || audioCtx.state!=='running') return;
+    const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=freq;
+    g.gain.setValueAtTime(0.35, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+ms/1000);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+ms/1000);
+  }catch(e){}
+}
+function startHeatCountdown(){
+  const n = state.ui.currentHeat;
+  const list = state.athletes.filter(a=>a.heat===n);
+  if(!list.length){ toast(t('toastNoAthletes')); return; }
+  const h = heatOf(n);
+  if(h.running) return;
+  if(!h.startedAt){ h.startedAt = Date.now() + 10000; }
+  h.running = true;
+  lastBeepSec=null;
+  save(); renderRace(); renderHeader(); requestWake();
+  liveEmit('start_heat',{heat:n, startedAt:h.startedAt});
+}
+function tickCountdown(){
+  const n = state.ui.currentHeat;
+  const h = state.heats[n];
+  const overlay = document.getElementById('countdownOverlay');
+  if(!overlay) return;
+  const visible = document.getElementById('view-race').classList.contains('active') || tvOpen;
+  const pending = h && h.running && h.startedAt && h.startedAt > Date.now();
+  if(!pending || !visible){
+    if(overlay.classList.contains('active')){
+      overlay.classList.remove('active');
+      // countdown echt afgelopen (niet weggenavigeerd): lange hoge toon + klok tonen
+      if(h && h.running && h.startedAt && Date.now()>=h.startedAt && lastBeepSec!==null){ beep(1320, 450); renderRace(); }
+      lastBeepSec=null;
+    }
+    return;
+  }
+  const sec = Math.ceil((h.startedAt - Date.now())/1000);
+  overlay.querySelector('.cd-num').textContent = sec;
+  overlay.classList.add('active');
+  if(sec!==lastBeepSec){
+    lastBeepSec=sec;
+    if(sec<=3 && sec>=1) beep(880, 120);
+  }
+}
+
+/* ---- sjablonen ---- */
+const TPL_LS='heatboard_templates';
+function loadTemplates(){ try{ return JSON.parse(localStorage.getItem(TPL_LS))||[]; }catch(e){ return []; } }
+function saveTemplate(){
+  const name = prompt(t('promptTplName'), state.event.name||'');
+  if(name===null) return;
+  const tpls = loadTemplates();
+  tpls.push({ id:uid(), tplName:(name.trim()||state.event.name||'Sjabloon'),
+    event:{ name:state.event.name, orgName:state.event.orgName||'', format:state.event.format, customSegs:state.event.customSegs, roxzone:!!state.event.roxzone },
+    divisions:state.divisions.slice(), divisionProfiles:Object.assign({}, state.divisionProfiles) });
+  try{ localStorage.setItem(TPL_LS, JSON.stringify(tpls)); toast(t('toastTplSaved')); }catch(e){}
+}
+function openTemplates(){
+  const tpls = loadTemplates();
+  const inner=document.getElementById('seedInner');
+  inner.innerHTML='<div class="card"><div class="card-title">'+t('tplTitle')+'</div>'+
+    (tpls.length ? '<div class="pick-list">'+tpls.map(tp=>
+      '<div class="row" style="align-items:center;flex-wrap:nowrap">'+
+      '<button class="btn btn-ghost btn-block pick-btn" onclick="applyTemplate(\''+tp.id+'\')"><span>'+esc(tp.tplName)+'</span><span class="pick-div">'+esc(t('fmt'+tp.event.format.charAt(0).toUpperCase()+tp.event.format.slice(1)+'Name'))+'</span></button>'+
+      '<button class="x-btn" style="flex:0 0 auto" onclick="deleteTemplate(\''+tp.id+'\')" aria-label="remove">×</button></div>'
+    ).join('')+'</div>' : '<div class="empty-state">'+t('tplNone')+'</div>')+
+    '<button class="btn btn-ghost btn-block" style="margin-top:12px" onclick="closeSeed()">'+t('wizBack')+'</button></div>';
+  document.getElementById('seedOverlay').classList.add('active');
+}
+function deleteTemplate(id){
+  const tpls = loadTemplates().filter(tp=>tp.id!==id);
+  try{ localStorage.setItem(TPL_LS, JSON.stringify(tpls)); }catch(e){}
+  openTemplates();
+}
+function applyTemplate(id){
+  const tp = loadTemplates().find(x=>x.id===id); if(!tp) return;
+  if(!confirm(t('confirmTemplate'))) return;
+  const lang = state.lang;
+  state = defaultState(); state.lang = lang;
+  state.event.name = tp.event.name||'';
+  state.event.orgName = tp.event.orgName||'';
+  state.event.format = tp.event.format||'full';
+  state.event.customSegs = tp.event.customSegs||[];
+  state.event.roxzone = !!tp.event.roxzone;
+  state.divisions = (tp.divisions||[]).slice();
+  state.divisionProfiles = Object.assign({}, tp.divisionProfiles||{});
+  state.ui.setupDone = true;
+  closeSeed();
+  save(); applyI18n(); renderAll(); liveStructural();
+  toast(t('toastTplLoaded'));
+}
+
+/* ---- organisatienaam ---- */
+function updateOrgName(v){ state.event.orgName = v; save(); liveStructural(); }
+
 /* ---- heat-kaartje (PNG, top 8) ---- */
 function heatCard(){
   const segs=getSegments();
@@ -2285,7 +2671,7 @@ function heatCard(){
   ctx.font='600 34px Saira, sans-serif'; ctx.fillStyle=TXT;
   ctx.fillText(clip(ctx, state.event.name||(state.lang==='nl'?'Fitness race simulatie':'Fitness race simulation'), W-144), 72, 214);
   ctx.font='700 22px "Saira Condensed", Saira, sans-serif'; ctx.fillStyle=MUT;
-  ctx.fillText(t('tabBoard').toUpperCase()+'  ·  TOP '+list.length, 72, 252);
+  ctx.fillText((state.event.orgName? clip(ctx, state.event.orgName.toUpperCase(), 500)+'  ·  ':'')+t('tabBoard').toUpperCase()+'  ·  TOP '+list.length, 72, 252);
   const startY=312, rowH=122, n=Math.max(1,segs.length-1);
   let rank=0;
   list.forEach((a,i)=>{
@@ -2350,6 +2736,7 @@ setInterval(()=>{
       }
     });
   }
+  tickCountdown();
   if(tvOpen) renderTV();
   if(athleteViewOpen()){
     const a=state.athletes.find(x=>x.id===live.athleteId);

@@ -14,7 +14,13 @@ Gratis browser-tool waarmee gyms een HYROX-achtige racesimulatie draaien: atlete
 - Klassement met filters, uitklapbare splits en roxzone/werktijd per station
 - TV-weergave voor een scherm aan de muur
 - CSV-export (puntkomma's, opent direct in Nederlandse Excel), scorekaart-PNG per atleet en een heat-kaartje (top 8) om te delen
-- Self-registration: atleten schrijven zichzelf in via een link of QR, met optionele capaciteit en wachtlijst
+- Self-registration: atleten schrijven zichzelf in via een link of QR, met optionele capaciteit en wachtlijst (inclusief verwachte finishtijd)
+- Slimme heat-indeling: automatisch indelen op verwachte tijd (aantal heats of max per heat, snelste of langzaamste eerst), plus drag-and-drop tussen heats op desktop/iPad
+- Judge-toewijzing: de organisator maakt judges aan en wijst atleten toe; een judge kiest bij het meedoen zijn naam en ziet direct de juiste atleten
+- Aankondigingen: de organisator stuurt een bericht dat op alle apparaten en op de TV als banner verschijnt
+- Start met countdown: 10 seconden aftellen op alle schermen, met beeps bij 3-2-1 en een starttoon; de klok start automatisch
+- Sjablonen: sla een opzet (format, divisies, roxzone) op en start er later een nieuwe sim mee
+- Organisatienaam: optioneel prominent op de TV, de scorekaart en het heat-kaartje
 - Persoonlijke atleet-weergave: elke deelnemer volgt live zijn eigen splits, roxzone-tijden en positie op zijn telefoon
 - QR-code op de TV: scannen om mee te doen (inschrijving open) of om de live standen te bekijken
 - Live sessie (bèta): judges tikken splits op hun eigen telefoon, alles komt live samen
