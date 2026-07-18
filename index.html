@@ -567,7 +567,7 @@ body.role-judge #tab-athletes{display:none}
   <div class="app-bar-top">
     <div class="brand">
       <span class="brand-name">HEAT<span class="hot">BOARD</span></span>
-      <span class="brand-tag">SIM v0.7</span>
+      <span class="brand-tag">SIM v0.7.1</span>
     </div>
     <div class="event-name-display" id="eventNameDisplay"></div>
     <span class="live-ind" id="liveDot"></span>
@@ -591,7 +591,7 @@ body.role-judge #tab-athletes{display:none}
     <div class="card-sub" data-i18n="setupSub">Naam, format en divisies. Alles wordt automatisch lokaal opgeslagen op dit apparaat.</div>
     <div class="field">
       <label for="eventName" data-i18n="lblEventName">Naam van de simulatie</label>
-      <input type="text" id="eventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim — Gym Rotterdam" oninput="updateEventName(this.value)">
+      <input type="text" id="eventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim · Gym Rotterdam" oninput="updateEventName(this.value)">
     </div>
     <div class="field">
       <label for="orgName" data-i18n="lblOrgName">Gym of organisatie (optioneel)</label>
@@ -796,7 +796,7 @@ body.role-judge #tab-athletes{display:none}
       <div class="card-sub" data-i18n="wizNameSub">Geef je simulatie een naam. Je kunt dit later altijd aanpassen bij Opzet.</div>
       <div class="field">
         <label for="wizEventName" data-i18n="lblEventName">Naam van de simulatie</label>
-        <input type="text" id="wizEventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim — Gym Rotterdam" oninput="updateEventName(this.value)">
+        <input type="text" id="wizEventName" data-i18n-ph="phEventName" placeholder="Bijv. Winter Sim · Gym Rotterdam" oninput="updateEventName(this.value)">
       </div>
     </div>
 
@@ -857,7 +857,7 @@ const I18N = {
     tabSetup:'Opzet', tabAthletes:'Atleten', tabRace:'Race', tabBoard:'Klassement',
     setupTitle:'Simulatie opzetten',
     setupSub:'Naam, format en divisies. Alles wordt automatisch lokaal opgeslagen op dit apparaat.',
-    lblEventName:'Naam van de simulatie', phEventName:'Bijv. Winter Sim — Gym Rotterdam',
+    lblEventName:'Naam van de simulatie', phEventName:'Bijv. Winter Sim · Gym Rotterdam',
     lblFormat:'Format',
     fmtFullName:'Volledige sim', fmtFullDesc:'8× 1 km run + 8 stations, officiële volgorde',
     fmtHalfName:'Halve sim', fmtHalfDesc:'4× run + 4 stations, ideaal voor een training',
@@ -913,7 +913,7 @@ const I18N = {
     finishAction:'Finish!', nextAction:'Volgende', shareCard:'Scorekaart (PNG)',
     segTotal:'Totaal', segOf:'van', splitsTitle:'Splits (cumulatief)',
     csvHeaders:'Positie;Naam;Divisie;Heat;Status;Totaal',
-    demoEventName:'Demo Sim — Rotterdam',
+    demoEventName:'Demo Sim · Rotterdam',
     wizStep:'Stap {n} van {total}',
     wizNameTitle:'Welkom bij HeatBoard',
     wizNameSub:'Geef je simulatie een naam. Je kunt dit later altijd aanpassen bij Opzet.',
@@ -988,7 +988,7 @@ const I18N = {
     tabSetup:'Setup', tabAthletes:'Athletes', tabRace:'Race', tabBoard:'Leaderboard',
     setupTitle:'Set up your simulation',
     setupSub:'Name, format and divisions. Everything is saved automatically on this device.',
-    lblEventName:'Simulation name', phEventName:'E.g. Winter Sim — Gym Rotterdam',
+    lblEventName:'Simulation name', phEventName:'E.g. Winter Sim · Gym Rotterdam',
     lblFormat:'Format',
     fmtFullName:'Full sim', fmtFullDesc:'8× 1 km run + 8 stations, official order',
     fmtHalfName:'Half sim', fmtHalfDesc:'4× run + 4 stations, perfect for a class',
@@ -1044,7 +1044,7 @@ const I18N = {
     finishAction:'Finish!', nextAction:'Next up', shareCard:'Score card (PNG)',
     segTotal:'Total', segOf:'of', splitsTitle:'Splits (cumulative)',
     csvHeaders:'Rank;Name;Division;Heat;Status;Total',
-    demoEventName:'Demo Sim — Rotterdam',
+    demoEventName:'Demo Sim · Rotterdam',
     wizStep:'Step {n} of {total}',
     wizNameTitle:'Welcome to HeatBoard',
     wizNameSub:'Give your simulation a name. You can change this later under Setup.',
@@ -1243,7 +1243,7 @@ function heatNumbers(){
 
 /* ---------- Time formatting ---------- */
 function fmtTime(ms){
-  if(ms==null || isNaN(ms)) return '–';
+  if(ms==null || isNaN(ms)) return '-';
   const s = Math.floor(ms/1000);
   const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), ss = s%60;
   const p = n=>String(n).padStart(2,'0');
@@ -1526,7 +1526,7 @@ function renderAthletes(){
   if(lobby.length){
     html += '<div class="heat-group lobby"'+dragAttrs(0)+'><div class="heat-group-head"><h3>'+t('groupLobby')+'</h3>'+
       '<span class="hg-count">'+lobby.length+'</span></div>';
-    lobby.forEach(a=> html += athRowHtml(a,'—'));
+    lobby.forEach(a=> html += athRowHtml(a,'·'));
     html += '</div>';
   }
   // Heats (plus een lege drop-groep voor de eerstvolgende nieuwe heat)
@@ -1544,7 +1544,7 @@ function renderAthletes(){
   if(wl.length){
     html += '<div class="heat-group"><div class="heat-group-head"><h3>'+t('groupWaitlist')+
       '<span class="waitlist-badge">'+wl.length+'</span></h3></div>';
-    wl.forEach(a=> html += athRowHtml(a,'—'));
+    wl.forEach(a=> html += athRowHtml(a,'·'));
     html += '</div>';
   }
   wrap.innerHTML = html;
@@ -1696,7 +1696,7 @@ function _applySplit(a, ms, showToast){
   if(a.splits.length >= segs.length) return;
   a.splits.push(ms);
   if(a.splits.length === segs.length){
-    if(showToast) toast('🏁 '+a.name+' — '+t('toastFinished')+' '+fmtTime(ms));
+    if(showToast) toast('🏁 '+a.name+' · '+t('toastFinished')+' '+fmtTime(ms));
     const list = state.athletes.filter(x=>x.heat===a.heat);
     const allDone = list.every(x=>x.dnf || x.splits.length===segs.length);
     if(allDone){ heatOf(a.heat).running = false; releaseWake(); }
@@ -1972,7 +1972,7 @@ function renderTV(){
     if(a.dnf) timeHtml = '<span class="tv-time progress">DNF</span>';
     else if(finished) timeHtml = '<span class="tv-time">'+fmtTime(a.splits[a.splits.length-1])+'</span>';
     else if(a.splits.length>0) timeHtml = '<span class="tv-time progress">'+a.splits.length+'/'+segs.length+'</span>';
-    else timeHtml = '<span class="tv-time progress">–</span>';
+    else timeHtml = '<span class="tv-time progress">-</span>';
     return '<div class="tv-row">'+
       '<span class="tv-rank">'+(finished&&!a.dnf?rank:'·')+'</span>'+
       '<span class="tv-name">'+esc(a.name)+'</span>'+
@@ -2575,7 +2575,7 @@ function renderAthleteView(){
     bhtml='<div class="card"><div class="card-title">'+t('tabBoard')+'</div>'+board.map(x=>{
       const fin=x.splits.length===segs.length && segs.length>0;
       if(fin && !x.dnf) rank++;
-      const tm=x.dnf?'DNF':fin?fmtTime(x.splits[x.splits.length-1]):(x.splits.length>0?x.splits.length+'/'+segs.length:'–');
+      const tm=x.dnf?'DNF':fin?fmtTime(x.splits[x.splits.length-1]):(x.splits.length>0?x.splits.length+'/'+segs.length:'-');
       return '<div class="av-brow'+(x.id===a.id?' me':'')+'"><span class="av-brank">'+(fin&&!x.dnf?rank:'·')+'</span><span class="av-bname">'+esc(x.name)+'</span><span class="av-btime">'+tm+'</span></div>';
     }).join('')+'</div>';
   }
@@ -3086,7 +3086,7 @@ function heatCard(){
     ctx.font='500 22px Saira, sans-serif'; ctx.fillStyle=DIM;
     ctx.fillText(clip(ctx, a.division, 420), 156, y+68);
     ctx.font='600 40px "Chivo Mono", monospace'; ctx.fillStyle=(i===0?HOT:TXT); ctx.textAlign='right';
-    const tm=a.dnf?'DNF':(fin?fmtTime(a.splits[a.splits.length-1]):(a.splits.length>0?a.splits.length+'/'+segs.length:'–'));
+    const tm=a.dnf?'DNF':(fin?fmtTime(a.splits[a.splits.length-1]):(a.splits.length>0?a.splits.length+'/'+segs.length:'-'));
     ctx.fillText(tm, W-72, y+34); ctx.textAlign='left';
     const stripY=y+84, stripW=W-228, gap=5, segW=(stripW-gap*(segs.length-1))/segs.length;
     segs.forEach((s,si)=>{

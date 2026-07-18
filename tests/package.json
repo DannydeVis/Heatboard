@@ -1,0 +1,12 @@
+{
+  "name": "heatboard-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Geautomatiseerde QA-suite voor HeatBoard. Staat volledig los van de app (index.html blijft dependency-vrij).",
+  "scripts": {
+    "test": "node run-all.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
