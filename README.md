@@ -70,4 +70,4 @@ De live sync gebruikt een gratis [Supabase](https://supabase.com)-project:
 
 ## Ontwikkeling
 
-Eén bestand (`index.html`) met alle HTML, CSS en JavaScript. Geen build-stap, geen dependencies. UI is tweetalig (NL/EN); elke tekst-string staat in beide `I18N`-maps. Deploy via GitHub Pages vanaf de `main`-branch.
+Eén bestand (`index.html`) met alle HTML, CSS en JavaScript. Geen build-stap, geen dependencies. UI is viertalig (NL/EN/DE/ES); elke tekst-string staat in alle vier de `I18N`-maps. Iconen zijn inline vector-SVG's (`currentColor`, dus theme-aware) in plaats van emoji. Deploy via GitHub Pages vanaf de `main`-branch.
