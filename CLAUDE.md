@@ -8,6 +8,7 @@ Single-file PWA: een HYROX-achtige heat-timing scoreboard (runs + stations, heat
 
 ## Conventies
 
-- UI is tweetalig (NL/EN). Elke nieuwe tekst-string moet in **beide** `I18N`-maps in `index.html` (nl én en), en in de HTML via `data-i18n` / `data-i18n-ph` attributen.
+- UI is viertalig (NL/EN/DE/ES). Elke nieuwe tekst-string moet in **alle vier** de `I18N`-maps in `index.html`, en in de HTML via `data-i18n` / `data-i18n-ph` attributen. De testsuite (`tests/i18n.test.js`) dwingt pariteit af.
+- `icon-512.png` is het enige extra statische asset naast `index.html` (app-icoon/OG-afbeelding); alle code blijft in `index.html`.
 - State wordt automatisch opgeslagen in localStorage (`heatboard_v1`) via `save()`; hergebruik bestaande helpers (`showView`, `renderAll`, `toast`, `esc`) en styling-classes (`.card`, `.field`, `.btn*`, `.format-opt`, `.chip`).
 - Standaardtaal van de app en van commit-teksten richting de eigenaar: Nederlands.

@@ -2,6 +2,8 @@
 
 Gratis browser-tool waarmee gyms een HYROX-achtige racesimulatie draaien: atleten in heats, live timing per segment, klassement, TV-weergave en een deelbare scorekaart. Gemaakt voor een coach met een iPad in een luidruchtige gym: grote raakvlakken, hoog contrast, leesbaar van afstand.
 
+**Viertalig:** Nederlands, Engels, Duits en Spaans. Bij het eerste bezoek kiest de app automatisch de browsertaal; wisselen kan altijd rechtsboven. De ?-knop in de header opent een korte uitleg van elk onderdeel.
+
 **Live versie:** https://dannydevis.github.io/Heatboard/
 
 ## Functies

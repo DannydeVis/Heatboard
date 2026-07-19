@@ -66,13 +66,14 @@ async function newPage(ctx, baseURL){
   return page;
 }
 
-// Sluit de wizard en markeert setup als klaar, zodat de app-tabs bruikbaar zijn.
+// Sluit de wizard, markeert setup als klaar en forceert NL (de suites asserten NL-teksten;
+// de app zelf detecteert bij een leeg toestel de browsertaal).
 async function enterApp(page, url){
   await page.goto(url || (page.__baseURL + '/index.html'));
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.waitForTimeout(150);
-  await page.evaluate(() => { try{ closeWizard(); }catch(e){} state.ui.setupDone = true; save(); });
+  await page.evaluate(() => { try{ closeWizard(); }catch(e){} setLang('nl'); state.ui.setupDone = true; save(); });
 }
 
 // Kleine assert-helper die per suite telt.
